@@ -2,34 +2,7 @@
 
 This repository contains the available javascript extension catalogues for the Mangayomi app.
 
-<details>
-<summary><span style="font-size:1.7em; font-weight:bold;">Available Extension List</span></summary>
-
-## Manga
-
-| Name | Version | Language | Last Updated |
-|------|---------|----------|---------------|
-| Mangapill | 1.0.2 | en | 2024/12/27 14:11 IST |
-| ReadComicOnline | 0.1.2 | en | 2025/04/21 11:20 IST |
-| Weeb Central | 0.1.0 | en | 2025/03/15 03:44 IST |
-
-## Anime
-
-| Name | Version | Language | Last Updated |
-|------|---------|----------|---------------|
-| Autoembed | 1.2.6.1 | all | 2025/05/01 23:00 IST |
-| Dramacool | 1.0.0 | all | 2025/04/06 23:41 IST |
-| Soaper | 1.0.4 | all | 2025/03/22 17:52 IST |
-| AnimeGG | 1.0.2 | en | 2025/03/17 20:40 IST |
-| AnimeKai | 0.2.4 | en | 2025/04/21 11:11 IST |
-| Animeonsen | 1.0.0 | en, ja | 2025/04/01 13:23 IST |
-| AnimeParadise | 0.0.1 | en | 2025/02/07 19:38 IST |
-| AnimeZ | 1.0.1 | en | 2025/03/17 18:24 IST |
-| Aniplay | 1.4.5 | en | 2025/04/27 19:33 IST |
-| Gojo | 0.0.5 | en | 2025/04/21 21:33 IST |
-| Sudatchi | 1.1.0 | en | 2025/02/15 11:24 IST |
-
-</details>
+{{Extension Table}}
 
 ## How to add the extensions
 

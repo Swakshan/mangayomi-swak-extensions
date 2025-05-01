@@ -1,0 +1,91 @@
+{
+    "manga": {
+        "Mangapill": {
+            "name": "Mangapill",
+            "version": "1.0.2",
+            "langs": "en",
+            "lastUpd": "2024/12/27 14:11 IST"
+        },
+        "ReadComicOnline": {
+            "name": "ReadComicOnline",
+            "version": "0.1.2",
+            "langs": "en",
+            "lastUpd": "2025/04/21 11:20 IST"
+        },
+        "Weeb Central": {
+            "name": "Weeb Central",
+            "version": "0.1.0",
+            "langs": "en",
+            "lastUpd": "2025/03/15 03:44 IST"
+        }
+    },
+    "anime": {
+        "Autoembed": {
+            "name": "Autoembed",
+            "version": "1.2.6.1",
+            "langs": "all",
+            "lastUpd": "2025/05/01 23:00 IST"
+        },
+        "Dramacool": {
+            "name": "Dramacool",
+            "version": "1.0.0",
+            "langs": "all",
+            "lastUpd": "2025/04/06 23:41 IST"
+        },
+        "Soaper": {
+            "name": "Soaper",
+            "version": "1.0.4",
+            "langs": "all",
+            "lastUpd": "2025/03/22 17:52 IST"
+        },
+        "AnimeGG": {
+            "name": "AnimeGG",
+            "version": "1.0.2",
+            "langs": "en",
+            "lastUpd": "2025/03/17 20:40 IST"
+        },
+        "AnimeKai": {
+            "name": "AnimeKai",
+            "version": "0.2.4",
+            "langs": "en",
+            "lastUpd": "2025/04/21 11:11 IST"
+        },
+        "Animeonsen": {
+            "name": "Animeonsen",
+            "version": "1.0.0",
+            "langs": "en, ja",
+            "lastUpd": "2025/04/01 13:23 IST"
+        },
+        "AnimeParadise": {
+            "name": "AnimeParadise",
+            "version": "0.0.1",
+            "langs": "en",
+            "lastUpd": "2025/02/07 19:38 IST"
+        },
+        "AnimeZ": {
+            "name": "AnimeZ",
+            "version": "1.0.1",
+            "langs": "en",
+            "lastUpd": "2025/03/17 18:24 IST"
+        },
+        "Aniplay": {
+            "name": "Aniplay",
+            "version": "1.4.5",
+            "langs": "en",
+            "lastUpd": "2025/04/27 19:33 IST"
+        },
+        "Gojo": {
+            "name": "Gojo",
+            "version": "0.0.5",
+            "langs": "en",
+            "lastUpd": "2025/04/21 21:33 IST"
+        },
+        "Sudatchi": {
+            "name": "Sudatchi",
+            "version": "1.1.0",
+            "langs": "en",
+            "lastUpd": "2025/02/15 11:24 IST"
+        }
+    },
+    "novel": {}
+}

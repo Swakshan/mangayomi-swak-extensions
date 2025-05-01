@@ -1,4 +1,4 @@
-name: Generate json index
+name: Generate json index & ReadMe
 
 on:
   push:
@@ -13,20 +13,32 @@ jobs:
       - name: Checkout 
         uses: actions/checkout@v3
 
-      - name: Setup Dart
-        uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-vercode: '3.x'
 
-      - name: Generage
+      - name: Install modules
         run: |
-          dart run source_generator.dart
+          pip install -r requirements.txt
+
+      - name: Update extensions
+        run: |
+          python scripts/source_generator.py
+
+      - name: Update ReadMe
+        run: |
+          python scripts/readme_generator.py
 
       - name: Commit and Push Changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git checkout main
-          git add index.json
-          git add anime_index.json
-          git add novel_index.json
-          git commit -m "Update extensions"
-          git push origin main --force
+          git add .
+          if git diff --cached --quiet; then
+            echo "No changes detected, skipping commit."
+          else
+            git commit -m "🤖: Update extensions"
+            git push origin main --force
+          fi
