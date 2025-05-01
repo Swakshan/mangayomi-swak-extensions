@@ -60,9 +60,10 @@ def generateVersionData():
 
 def generateExtensionList():
     lines = []
+    lines.append("# Available Extensions List")
     lines.append("<details>")
     lines.append(
-        '<summary><span style="font-size:1.7em; font-weight:bold;">Available Extension List</span></summary>\n'
+        '<summary><span style="font-size:1.7em; font-weight:bold;">Expand list</span></summary>\n'
     )
 
     data = readJsonFile(scripts_dir / "versions.json")

@@ -2,8 +2,9 @@
 
 This repository contains the available javascript extension catalogues for the Mangayomi app.
 
+# Available Extensions List
 <details>
-<summary><span style="font-size:1.7em; font-weight:bold;">Available Extension List</span></summary>
+<summary><span style="font-size:1.7em; font-weight:bold;">Expand list</span></summary>
 
 ## Manga
 
