@@ -6,7 +6,7 @@ const mangayomiSources = [{
     "iconUrl": "https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/javascript/icon/all.kisskh.jpg",
     "typeSource": "multi",
     "itemType": 1,
-    "version": "0.1.5",
+    "version": "0.1.6",
     "pkgPath": "anime/src/all/kisskh.js"
 }];
 
