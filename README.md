@@ -6,25 +6,30 @@ This repository contains the available javascript extension catalogues for the M
 <details>
 <summary><span style="font-size:1.7em; font-weight:bold;">Expand list</span></summary>
 
-## Novel
+## Manga
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| Animeonsen | 1.0.0 | en, ja | 2025/05/02 10:13 IST |
-| AnimeZ | 1.0.1 | en | 2025/05/02 10:13 IST |
-| Gojo | 0.0.5 | en | 2025/05/02 10:13 IST |
-| AnimeParadise | 0.0.1 | en | 2025/05/02 10:13 IST |
-| AnimeGG | 1.0.2 | en | 2025/05/02 10:13 IST |
-| Aniplay | 1.4.5 | en | 2025/05/02 10:13 IST |
-| Sudatchi | 1.1.0 | en | 2025/05/02 10:13 IST |
-| AnimeKai | 0.2.4 | en | 2025/05/02 10:13 IST |
-| Dramacool | 1.0.0 | all | 2025/05/02 10:13 IST |
-| Autoembed | 1.2.6.1 | all | 2025/05/02 10:13 IST |
-| Soaper | 1.0.4 | all | 2025/05/02 10:13 IST |
-| KissKH | 0.1.5 | all | 2025/05/02 10:13 IST |
-| ReadComicOnline | 0.1.2 | en | 2025/05/02 10:13 IST |
-| Weeb Central | 0.1.0 | en | 2025/05/02 10:13 IST |
-| Mangapill | 1.0.2 | en | 2025/05/02 10:13 IST |
+| Mangapill | 1.0.2 | en | 2024/12/27 14:11 IST |
+| ReadComicOnline | 0.1.2 | en | 2025/04/21 11:20 IST |
+| Weeb Central | 0.1.0 | en | 2025/03/15 03:44 IST |
+
+## Anime
+
+| Name | Version | Language | Last Updated |
+|------|---------|----------|---------------|
+| Autoembed | 1.2.6 | all | 2025/05/02 22:47 IST |
+| Dramacool | 1.0.0 | all | 2025/04/06 23:41 IST |
+| KissKH | 0.1.6 | all | 2025/05/02 22:47 IST |
+| Soaper | 1.0.4 | all | 2025/03/22 17:52 IST |
+| AnimeGG | 1.0.2 | en | 2025/03/17 20:40 IST |
+| AnimeKai | 0.2.4 | en | 2025/04/21 11:11 IST |
+| Animeonsen | 1.0.0 | en, ja | 2025/04/01 13:23 IST |
+| AnimeParadise | 0.0.1 | en | 2025/02/07 19:38 IST |
+| AnimeZ | 1.0.1 | en | 2025/03/17 18:24 IST |
+| Aniplay | 1.4.5 | en | 2025/04/27 19:33 IST |
+| Gojo | 0.0.5 | en | 2025/04/21 21:33 IST |
+| Sudatchi | 1.1.0 | en | 2025/02/15 11:24 IST |
 
 </details>
 
@@ -32,39 +37,39 @@ This repository contains the available javascript extension catalogues for the M
 
 Click on one of the buttons below to add the corresponding repository/repositories:
 
-<a href="https://intradeus.github.io/http-protocol-redirector?r=mangayomi://add-repo?repo_name=Mangayomi Swak Extensions%26repo_url=https://github.com/Swakshan/mangayomi-swak-extensions%26manga_url=https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/index.json%26anime_url=https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/anime_index.json%26novel_url=https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/novel_index.json"><img alt="Add all repositories" src="images/add-all-repositories.png" height="35"></a>
+<a href="https://intradeus.github.io/http-protocol-redirector?r=mangayomi://add-repo?repo_name=Mangayomi Swak Extensions%26repo_url=https://github.com/Swakshan/mangayomi-swak-extensions%26manga_url=https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/index.json%26anime_url=https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/anime_index.json%26novel_url=https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/novel_index.json"><img alt="Add all repositories" src="images/add-all-repositories.png" height="35"></a>
 
-<a href="https://intradeus.github.io/http-protocol-redirector?r=mangayomi://add-repo?repo_name=Mangayomi Swak Extensions%26repo_url=https://github.com/Swakshan/mangayomi-swak-extensions%26manga_url=https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/index.json"><img alt="Add manga repository" src="images/add-manga-repository.png" height="35"></a>
+<a href="https://intradeus.github.io/http-protocol-redirector?r=mangayomi://add-repo?repo_name=Mangayomi Swak Extensions%26repo_url=https://github.com/Swakshan/mangayomi-swak-extensions%26manga_url=https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/index.json"><img alt="Add manga repository" src="images/add-manga-repository.png" height="35"></a>
 
-<a href="https://intradeus.github.io/http-protocol-redirector?r=mangayomi://add-repo?repo_name=Mangayomi Swak Extensions%26repo_url=https://github.com/Swakshan/mangayomi-swak-extensions%26anime_url=https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/anime_index.json"><img alt="Add anime repository" src="images/add-anime-repository.png" height="35"></a>
+<a href="https://intradeus.github.io/http-protocol-redirector?r=mangayomi://add-repo?repo_name=Mangayomi Swak Extensions%26repo_url=https://github.com/Swakshan/mangayomi-swak-extensions%26anime_url=https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/anime_index.json"><img alt="Add anime repository" src="images/add-anime-repository.png" height="35"></a>
 
-<a href="https://intradeus.github.io/http-protocol-redirector?r=mangayomi://add-repo?repo_name=Mangayomi Swak Extensions%26repo_url=https://github.com/Swakshan/mangayomi-swak-extensions%26novel_url=https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/novel_index.json"><img alt="Add novel repository" src="images/add-novel-repository.png" height="35"></a>
+<a href="https://intradeus.github.io/http-protocol-redirector?r=mangayomi://add-repo?repo_name=Mangayomi Swak Extensions%26repo_url=https://github.com/Swakshan/mangayomi-swak-extensions%26novel_url=https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/novel_index.json"><img alt="Add novel repository" src="images/add-novel-repository.png" height="35"></a>
 
 If you installed the app via Live Container, then use the following buttons instead:
 
-<a href="https://intradeus.github.io/http-protocol-redirector?r=livecontainer://open-url?url=PW1hbmdheW9taTovL2FkZC1yZXBvP3JlcG9fbmFtZT1NYW5nYXlvbWkgU3dhayBFeHRlbnNpb25zJTI2cmVwb191cmw9aHR0cHM6Ly9naXRodWIuY29tL1N3YWtzaGFuL21hbmdheW9taS1zd2FrLWV4dGVuc2lvbnMlMjZtYW5nYV91cmw9aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9Td2Frc2hhbi9tYW5nYXlvbWktc3dhay1leHRlbnNpb25zL21haW4vaW5kZXguanNvbiUyNmFuaW1lX3VybD1odHRwczovL3Jhdy5naXRodWIuY29tL1N3YWtzaGFuL21hbmdheW9taS1zd2FrLWV4dGVuc2lvbnMvbWFpbi9hbmltZV9pbmRleC5qc29uJTI2bm92ZWxfdXJsPWh0dHBzOi8vcmF3LmdpdGh1Yi5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucy9tYWluL25vdmVsX2luZGV4Lmpzb24="><img alt="Add all repositories" src="images/add-all-repositories-livecontainer.png" height="35"></a>
+<a href="https://intradeus.github.io/http-protocol-redirector?r=livecontainer://open-url?url=bWFuZ2F5b21pOi8vYWRkLXJlcG8/cmVwb19uYW1lPU1hbmdheW9taSBTd2FrIEV4dGVuc2lvbnMlMjZyZXBvX3VybD1odHRwczovL2dpdGh1Yi5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucyUyNm1hbmdhX3VybD1odHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucy9yZWZzL2hlYWRzL21haW4vaW5kZXguanNvbiUyNmFuaW1lX3VybD1odHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucy9yZWZzL2hlYWRzL21haW4vYW5pbWVfaW5kZXguanNvbiUyNm5vdmVsX3VybD1odHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucy9yZWZzL2hlYWRzL21haW4vbm92ZWxfaW5kZXguanNvbg=="><img alt="Add all repositories" src="images/add-all-repositories-livecontainer.png" height="35"></a>
 
-<a href="https://intradeus.github.io/http-protocol-redirector?r=livecontainer://open-url?url=bWFuZ2F5b21pOi8vYWRkLXJlcG8/cmVwb19uYW1lPU1hbmdheW9taSBTd2FrIEV4dGVuc2lvbnMlMjZyZXBvX3VybD1odHRwczovL2dpdGh1Yi5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucyUyNm1hbmdhX3VybD1odHRwczovL3Jhdy5naXRodWIuY29tL1N3YWtzaGFuL21hbmdheW9taS1zd2FrLWV4dGVuc2lvbnMvbWFpbi9pbmRleC5qc29u"><img alt="Add manga repository" src="images/add-manga-repository-livecontainer.png" height="35"></a>
+<a href="https://intradeus.github.io/http-protocol-redirector?r=livecontainer://open-url?url=bWFuZ2F5b21pOi8vYWRkLXJlcG8/cmVwb19uYW1lPU1hbmdheW9taSBTd2FrIEV4dGVuc2lvbnMlMjZyZXBvX3VybD1odHRwczovL2dpdGh1Yi5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucyUyNm1hbmdhX3VybD1odHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucy9yZWZzL2hlYWRzL21haW4vaW5kZXguanNvbg=="><img alt="Add manga repository" src="images/add-manga-repository-livecontainer.png" height="35"></a>
 
-<a href="https://intradeus.github.io/http-protocol-redirector?r=livecontainer://open-url?url=bWFuZ2F5b21pOi8vYWRkLXJlcG8/cmVwb19uYW1lPU1hbmdheW9taSBTd2FrIEV4dGVuc2lvbnMlMjZyZXBvX3VybD1odHRwczovL2dpdGh1Yi5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucyUyNmFuaW1lX3VybD1odHRwczovL3Jhdy5naXRodWIuY29tL1N3YWtzaGFuL21hbmdheW9taS1zd2FrLWV4dGVuc2lvbnMvbWFpbi9hbmltZV9pbmRleC5qc29u"><img alt="Add anime repository" src="images/add-anime-repository-livecontainer.png" height="35"></a>
+<a href="https://intradeus.github.io/http-protocol-redirector?r=livecontainer://open-url?url=bWFuZ2F5b21pOi8vYWRkLXJlcG8/cmVwb19uYW1lPU1hbmdheW9taSBTd2FrIEV4dGVuc2lvbnMlMjZyZXBvX3VybD1odHRwczovL2dpdGh1Yi5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucyUyNmFuaW1lX3VybD1odHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucy9yZWZzL2hlYWRzL21haW4vYW5pbWVfaW5kZXguanNvbg=="><img alt="Add anime repository" src="images/add-anime-repository-livecontainer.png" height="35"></a>
 
-<a href="https://intradeus.github.io/http-protocol-redirector?r=livecontainer://open-url?url=bWFuZ2F5b21pOi8vYWRkLXJlcG8/cmVwb19uYW1lPU1hbmdheW9taSBTd2FrIEV4dGVuc2lvbnMlMjZyZXBvX3VybD1odHRwczovL2dpdGh1Yi5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucyUyNm5vdmVsX3VybD1odHRwczovL3Jhdy5naXRodWIuY29tL1N3YWtzaGFuL21hbmdheW9taS1zd2FrLWV4dGVuc2lvbnMvbWFpbi9ub3ZlbF9pbmRleC5qc29u"><img alt="Add novel repository" src="images/add-novel-repository-livecontainer.png" height="35"></a>
+<a href="https://intradeus.github.io/http-protocol-redirector?r=livecontainer://open-url?url=bWFuZ2F5b21pOi8vYWRkLXJlcG8/cmVwb19uYW1lPU1hbmdheW9taSBTd2FrIEV4dGVuc2lvbnMlMjZyZXBvX3VybD1odHRwczovL2dpdGh1Yi5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucyUyNm5vdmVsX3VybD1odHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vU3dha3NoYW4vbWFuZ2F5b21pLXN3YWstZXh0ZW5zaW9ucy9yZWZzL2hlYWRzL21haW4vbm92ZWxfaW5kZXguanNvbg=="><img alt="Add novel repository" src="images/add-novel-repository-livecontainer.png" height="35"></a>
 
 Or add them manually in the app (More -> Settings -> Browse):
 
 manga repo
 ```
-https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/index.json
+https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/index.json
 ```
 
 anime repo 
 ```
-https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/anime_index.json
+https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/anime_index.json
 ```
 
 novel repo 
 ```
-https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/novel_index.json
+https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/novel_index.json
 ```
 
 # Contributing

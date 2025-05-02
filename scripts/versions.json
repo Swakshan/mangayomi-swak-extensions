@@ -22,15 +22,21 @@
     "anime": {
         "Autoembed": {
             "name": "Autoembed",
-            "version": "1.2.6.1",
+            "version": "1.2.6",
             "langs": "all",
-            "lastUpd": "2025/05/01 23:00 IST"
+            "lastUpd": "2025/05/02 22:47 IST"
         },
         "Dramacool": {
             "name": "Dramacool",
             "version": "1.0.0",
             "langs": "all",
             "lastUpd": "2025/04/06 23:41 IST"
+        },
+        "KissKH": {
+            "name": "KissKH",
+            "version": "0.1.6",
+            "langs": "all",
+            "lastUpd": "2025/05/02 22:47 IST"
         },
         "Soaper": {
             "name": "Soaper",
