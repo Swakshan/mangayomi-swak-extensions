@@ -30,7 +30,7 @@ class Source:
     isFullData: bool = False
     appMinVerReq: str = "0.5.0"
     additionalParams: str = ""
-    sourceCodeLanguage: int = 0
+    sourceCodeLanguage: int = 1
 
     def __post_init__(self):
         # Set isManga based on itemType if it's None
@@ -39,7 +39,7 @@ class Source:
 
     @classmethod
     def fromJSON(self, json: Dict[str, Any]) -> "Source":
-        source_code_lang = json.get("sourceCodeLanguage", 0)
+        source_code_lang = json.get("sourceCodeLanguage", 1)
 
         # Calculate id using hash if not provided
         if "id" not in json or json["id"] is None:

@@ -18,7 +18,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "Dramacool",
@@ -39,7 +39,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "KissKH",
@@ -60,7 +60,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "Soaper",
@@ -81,7 +81,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "AnimeGG",
@@ -102,7 +102,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "AnimeKai",
@@ -123,7 +123,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "Animeonsen",
@@ -144,7 +144,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "Animeonsen",
@@ -165,7 +165,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "AnimeParadise",
@@ -186,7 +186,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "AnimeZ",
@@ -207,7 +207,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "Aniplay",
@@ -228,7 +228,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "Gojo",
@@ -249,7 +249,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "Sudatchi",
@@ -270,6 +270,6 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     }
 ]

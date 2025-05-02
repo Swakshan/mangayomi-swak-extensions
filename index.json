@@ -18,7 +18,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "ReadComicOnline",
@@ -39,7 +39,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     },
     {
         "name": "Weeb Central",
@@ -60,6 +60,6 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 0
+        "sourceCodeLanguage": 1
     }
 ]
