@@ -59,13 +59,16 @@ animeList = []
 mangaList = []
 novelList = []
 
+from pathlib import Path
+
 for filePath in js_files:
     info = extensionInfo(filePath)
     formattedInfo: list = formatExtenstionInfo(info)
-
-    if "\\anime\\src\\" in filePath:
+    
+    paths = Path(filePath).resolve().parts
+    if "anime" in paths:
         animeList.extend(formattedInfo)
-    elif "\\manga\\src\\" in filePath:
+    elif "manga" in paths:
         mangaList.extend(formattedInfo)
     else:
         novelList.extend(formattedInfo)

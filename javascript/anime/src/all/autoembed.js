@@ -10,7 +10,7 @@ const mangayomiSources = [
     "typeSource": "multi",
     "isManga": false,
     "itemType": 1,
-    "version": "1.2.6.1",
+    "version": "1.2.6",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/all/autoembed.js"
