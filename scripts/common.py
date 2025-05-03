@@ -17,7 +17,7 @@ def readJsonFile(fileName):
     data = readFile(fileName)
     return json.loads(data)
 
-def writeJsonFile(data,fileName):
+def writeJsonFile(fileName,data):
     f = open(fileName, "w",encoding="utf-8")
     json.dump(data,f,indent=4,ensure_ascii=False)
     f.close()

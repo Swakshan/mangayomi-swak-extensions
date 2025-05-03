@@ -32,11 +32,11 @@ def generateVersionData():
 
             if name in oldDataCat:
                 oldInfo = oldDataCat[name]
-                oldVersion = oldInfo['version']
+                oldVersion = oldInfo["version"]
                 if version == oldVersion:
                     collection[name] = oldInfo
                     continue
-            
+
             info = None
             if name in collection:
                 info: UpdateInfo = UpdateInfo().fromJSON(collection[name])
@@ -55,7 +55,7 @@ def generateVersionData():
 
         newData[str(itemType)] = collection
 
-    writeJsonFile(newData, versionPath)
+    writeJsonFile(versionPath, newData)
 
 
 def generateExtensionList():
@@ -84,6 +84,7 @@ def generateExtensionList():
     lines.append("</details>")
     print("DONE: Table")
     return "\n".join(lines)
+
 
 generateVersionData()
 extTable = generateExtensionList()

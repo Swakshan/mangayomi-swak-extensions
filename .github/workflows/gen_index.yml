@@ -31,11 +31,11 @@ jobs:
 
       - name: Update extensions
         run: |
-          python scripts/source_generator.py
+          python scripts/generator_source.py
 
       - name: Update ReadMe
         run: |
-          python scripts/readme_generator.py
+          python scripts/generator_readme.py
 
       - name: Commit and Push Changes
         run: |

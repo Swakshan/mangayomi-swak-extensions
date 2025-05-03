@@ -2,8 +2,9 @@ from pathlib import Path
 import os, shutil, json
 from glob import glob
 from pprint import pp
-from common import readFile, readJsonFile, writeJsonFile,getParentPath
-from model import Source, ItemType        
+from common import readFile, readJsonFile, writeJsonFile, getParentPath
+from model import Source, ItemType
+
 
 def extensionInfo(filepath):
     data = readFile(filepath)
@@ -28,7 +29,7 @@ def formatExtenstionInfo(info):
     bkInfo.pop("ids", None)
     bkInfo.pop("langs", None)
     rd = []
-    
+
     for lang in exlangs:
         id = exids
         if type(exids) is dict:
@@ -64,7 +65,7 @@ from pathlib import Path
 for filePath in js_files:
     info = extensionInfo(filePath)
     formattedInfo: list = formatExtenstionInfo(info)
-    
+
     paths = Path(filePath).resolve().parts
     if "anime" in paths:
         animeList.extend(formattedInfo)
@@ -73,6 +74,6 @@ for filePath in js_files:
     else:
         novelList.extend(formattedInfo)
 
-writeJsonFile(animeList, main_dir / "anime_index.json")
-writeJsonFile(mangaList, main_dir / "index.json")
-writeJsonFile(novelList, main_dir / "novel_index.json")
+writeJsonFile(main_dir / "anime_index.json", animeList)
+writeJsonFile(main_dir / "index.json", mangaList)
+writeJsonFile(main_dir / "novel_index.json", novelList)
