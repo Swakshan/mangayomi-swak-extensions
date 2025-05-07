@@ -1,15 +1,16 @@
 from common import readFile, writeFile, generateHash, getParentPath
 from model import ItemType, Source
+import json
 
 
-def createFunction(isAsync: bool, funcName: str, args: list):
+def createFunction(isAsync: bool, funcName: str, args: list, code=""):
     arg = ""
     if len(args) > 0:
         arg = ", ".join(args)
 
     return f"""
     {"async" if isAsync else ""} {funcName}({arg}) {{
-        throw new Error("{funcName} not implemented");
+        {'throw new Error("{funcName} not implemented");' if code == "" else code}
     }}
     """
 
@@ -19,6 +20,16 @@ def builder(source: dict, itemType: ItemType):
 
     code = "const mangayomiSources = [<>];".replace("<>", str(jsonExt))
     lines.append("class DefaultExtension extends MProvider {")
+    lines.append(
+        createFunction(
+            False, "constructor", [], "super();\n\t\tthis.client = new Client();"
+        )
+    )
+    lines.append(
+        createFunction(
+            False, "getPreference", ["key"], "return new SharedPreferences().get(key);"
+        )
+    )
     lines.append(createFunction(False, "getHeaders", ["url"]))
     lines.append(createFunction(True, "getPopular", ["page"]))
     lines.append(createFunction(True, "getLatestUpdates", ["page"]))
@@ -86,11 +97,12 @@ if len(langs) > 1:
     jsonExt["ids"] = ids
     jsonExt["langs"] = langs
 
-jsonExt["pkgPath"] = f"{itemType.name}/src/{langs[0]}/{name.lower()}.js"
+pkgPath = f"{itemType.name}/src/{langs[0]}/{name.lower()}.js"
+jsonExt["pkgPath"] = pkgPath
 
-
+jsonExt = json.dumps(jsonExt)
 code = builder(jsonExt, itemType)
 
-filePath = getParentPath() / "javascript" / jsonExt["pkgPath"]
+filePath = getParentPath() / "javascript" / pkgPath
 writeFile(filePath, code)
 print(f"DONE: {filePath}")
