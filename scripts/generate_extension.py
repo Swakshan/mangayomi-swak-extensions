@@ -70,7 +70,7 @@ apiUrl = apiUrl[:-1] if apiUrl != "" and apiUrl[-1] == "/" else apiUrl
 typeSource = (
     "single" if typeSource == "s" else "multi" if typeSource == "m" else "torrent"
 )
-isManga = True if isManga else False
+isManga = True if int(isManga) else False
 itemType = ItemType(int(itemType))
 
 ext = Source(
