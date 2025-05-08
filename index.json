@@ -1,26 +1,5 @@
 [
     {
-        "name": "Mangapill",
-        "id": 960321322,
-        "baseUrl": "https://mangapill.com",
-        "lang": "en",
-        "typeSource": "single",
-        "iconUrl": "https://www.google.com/s2/favicons?sz=64&domain=https://mangapill.com/",
-        "dateFormat": "",
-        "dateFormatLocale": "",
-        "isNsfw": false,
-        "hasCloudflare": false,
-        "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/manga/src/en/mangapill.js",
-        "apiUrl": "",
-        "version": "1.0.2",
-        "isManga": true,
-        "itemType": 0,
-        "isFullData": false,
-        "appMinVerReq": "0.5.0",
-        "additionalParams": "",
-        "sourceCodeLanguage": 1
-    },
-    {
         "name": "ReadComicOnline",
         "id": 376287717,
         "baseUrl": "https://readcomiconline.li",
@@ -39,7 +18,30 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 1
+        "sourceCodeLanguage": 1,
+        "notes": ""
+    },
+    {
+        "name": "Mangapill",
+        "id": 960321322,
+        "baseUrl": "https://mangapill.com",
+        "lang": "en",
+        "typeSource": "single",
+        "iconUrl": "https://www.google.com/s2/favicons?sz=64&domain=https://mangapill.com/",
+        "dateFormat": "",
+        "dateFormatLocale": "",
+        "isNsfw": false,
+        "hasCloudflare": false,
+        "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/manga/src/en/mangapill.js",
+        "apiUrl": "",
+        "version": "1.0.2",
+        "isManga": true,
+        "itemType": 0,
+        "isFullData": false,
+        "appMinVerReq": "0.5.0",
+        "additionalParams": "",
+        "sourceCodeLanguage": 1,
+        "notes": ""
     },
     {
         "name": "Weeb Central",
@@ -60,6 +62,7 @@
         "isFullData": false,
         "appMinVerReq": "0.5.0",
         "additionalParams": "",
-        "sourceCodeLanguage": 1
+        "sourceCodeLanguage": 1,
+        "notes": ""
     }
 ]
