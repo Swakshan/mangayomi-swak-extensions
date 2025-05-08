@@ -31,6 +31,7 @@ class Source:
     appMinVerReq: str = "0.5.0"
     additionalParams: str = ""
     sourceCodeLanguage: int = 1
+    notes: str = ""
 
     def __post_init__(self):
         # Set isManga based on itemType if it's None
@@ -68,6 +69,7 @@ class Source:
             appMinVerReq=json.get("appMinVerReq", "0.5.0"),
             additionalParams=json.get("additionalParams", ""),
             sourceCodeLanguage=source_code_lang,
+            notes=json.get("notes", ""),
         )
 
     def toJSON(self) -> Dict[str, Any]:
@@ -93,6 +95,7 @@ class Source:
             "appMinVerReq": self.appMinVerReq,
             "additionalParams": self.additionalParams,
             "sourceCodeLanguage": self.sourceCodeLanguage,
+            "notes": self.notes,
         }
 
 
