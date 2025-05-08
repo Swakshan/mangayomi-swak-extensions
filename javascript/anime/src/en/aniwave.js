@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -122,7 +122,90 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    function statusCode(status) {
+      return (
+        {
+          "Airing": 0,
+          "Finished Airing": 1,
+          "Completed": 1,
+          "Not Yet Aired": 4,
+        }[status] ?? 5
+      );
+    }
+
+    var baseUrl = this.getBaseUrl();
+    if (url.includes(baseUrl)) url = url.replace(baseUrl, "");
+
+    var doc = new Document(await this.request(url));
+
+    var info = doc.selectFirst("#w-info .binfo");
+    var imageUrl = info.selectFirst("img").getSrc;
+
+    var namePref = this.getPreference("aniwave_title_lang");
+    var nameSection = info.selectFirst("h1");
+    var name =
+      namePref == "ro" ? nameSection.text : nameSection.attr("data-jp");
+
+    var link = baseUrl + url;
+    var description = info.selectFirst(".synopsis.mb-3 .content").text;
+
+    var genre = [];
+    var status = 5;
+    info.select("div.bmeta .meta > div").forEach((item) => {
+      var itemText = item.text.trim();
+
+      if (itemText.includes("Genres")) {
+        item.select("a").forEach((g) => genre.push(g.text));
+      }
+      if (itemText.includes("Status")) {
+        var statusText = item.selectFirst("span").text;
+        status = statusCode(statusText);
+      }
+    });
+
+    var chapters = [];
+    var animeId = url.replace("/anime-watch/", "");
+    var vrf = this.vrfEncrypt(animeId);
+    var chapAAPISlug = `/ajax/episode/list/${animeId}?vrf=${vrf}`;
+    var epinfo = JSON.parse(await this.request(chapAAPISlug));
+    if (epinfo.status != 200) {
+      throw new Error("Episodes not found");
+    }
+    var result = epinfo.result;
+    doc = new Document(result);
+
+    doc.select("li").forEach((item) => {
+      var aTag = item.selectFirst("a");
+      var epNumber = aTag.attr("data-num");
+      var epId = aTag.attr("data-usr");
+      var hasDub = parseInt(aTag.attr("data-dub"));
+
+      var epUrl = `${epNumber}||${epId}||${hasDub}`;
+
+      var scanlator = hasDub ? "SUB, DUB" : "SUB";
+      scanlator = aTag.className.includes("filler")
+        ? `FILLER, ${scanlator}`
+        : scanlator;
+
+      var titleSplits = item.attr("title").split(" - ");
+
+      var epName = `Episode ${epNumber}`;
+      var epTitle = titleSplits[3];
+      epName = epTitle.length > 0 ? `${epName}: ${epTitle}` : epName;
+
+      var updData = titleSplits[2].replace("Ep Release: ", "");
+      var dateUpload = updData.length > 0 ? new Date(updData) : new Date();
+
+      chapters.push({
+        name: epName,
+        url: epUrl,
+        dateUpload: dateUpload.valueOf().toString(),
+        scanlator,
+      });
+    });
+
+    chapters.reverse();
+    return { name, imageUrl, link, description, genre, status, chapters };
   }
 
   async getVideoList(url) {
@@ -349,4 +432,158 @@ class DefaultExtension extends MProvider {
       },
     ];
   }
+
+  // ----------- Decoders -----------
+  // Thanks:- https://github.com/4kyoune/anime-stream/blob/main/src/utils/encrypt.js
+  // Source:- https://aniwave.se/assets/js/all.js?v=?v=0.29
+
+  utf8Encode(str) {
+    const utf8 = [];
+
+    for (let i = 0; i < str.length; i++) {
+      let charCode = str.charCodeAt(i);
+
+      if (charCode < 0x80) {
+        utf8.push(charCode);
+      } else if (charCode < 0x800) {
+        utf8.push(0xc0 | (charCode >> 6));
+        utf8.push(0x80 | (charCode & 0x3f));
+      } else if (charCode < 0xd800 || charCode >= 0xe000) {
+        utf8.push(0xe0 | (charCode >> 12));
+        utf8.push(0x80 | ((charCode >> 6) & 0x3f));
+        utf8.push(0x80 | (charCode & 0x3f));
+      } else {
+        i++;
+        if (i >= str.length) throw new Error("Malformed surrogate pair");
+        const surrogate1 = charCode;
+        const surrogate2 = str.charCodeAt(i);
+        const codePoint =
+          0x10000 + (((surrogate1 - 0xd800) << 10) | (surrogate2 - 0xdc00));
+
+        utf8.push(0xf0 | (codePoint >> 18));
+        utf8.push(0x80 | ((codePoint >> 12) & 0x3f));
+        utf8.push(0x80 | ((codePoint >> 6) & 0x3f));
+        utf8.push(0x80 | (codePoint & 0x3f));
+      }
+    }
+
+    return utf8;
+  }
+
+  utf8Decode(bytes) {
+    let str = "";
+    let i = 0;
+
+    while (i < bytes.length) {
+      let byte1 = bytes[i++];
+
+      if (byte1 < 0x80) {
+        str += String.fromCharCode(byte1);
+      } else if (byte1 < 0xe0) {
+        let byte2 = bytes[i++];
+        str += String.fromCharCode(((byte1 & 0x1f) << 6) | (byte2 & 0x3f));
+      } else if (byte1 < 0xf0) {
+        let byte2 = bytes[i++];
+        let byte3 = bytes[i++];
+        str += String.fromCharCode(
+          ((byte1 & 0x0f) << 12) | ((byte2 & 0x3f) << 6) | (byte3 & 0x3f)
+        );
+      } else {
+        let byte2 = bytes[i++];
+        let byte3 = bytes[i++];
+        let byte4 = bytes[i++];
+        let codePoint =
+          ((byte1 & 0x07) << 18) |
+          ((byte2 & 0x3f) << 12) |
+          ((byte3 & 0x3f) << 6) |
+          (byte4 & 0x3f);
+        codePoint -= 0x10000;
+        str += String.fromCharCode(
+          0xd800 + (codePoint >> 10),
+          0xdc00 + (codePoint & 0x3ff)
+        );
+      }
+    }
+
+    return str;
+  }
+
+  base64Encode(bytes) {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let result = "";
+    let i;
+
+    for (i = 0; i < bytes.length; i += 3) {
+      let b1 = bytes[i];
+      let b2 = i + 1 < bytes.length ? bytes[i + 1] : 0;
+      let b3 = i + 2 < bytes.length ? bytes[i + 2] : 0;
+
+      let triplet = (b1 << 16) | (b2 << 8) | b3;
+
+      result += chars[(triplet >> 18) & 0x3f];
+      result += chars[(triplet >> 12) & 0x3f];
+      result += i + 1 < bytes.length ? chars[(triplet >> 6) & 0x3f] : "=";
+      result += i + 2 < bytes.length ? chars[triplet & 0x3f] : "=";
+    }
+
+    return result;
+  }
+
+  base64urlEncode(bytes) {
+    return this.base64Encode(bytes)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+  }
+
+  rc4Encrypt(key, message) {
+    let _key = this.utf8Encode(key);
+    let _i = 0,
+      _j = 0;
+    let _box = Array.from({ length: 256 }, (_, i) => i);
+
+    let x = 0;
+    for (let i = 0; i < 256; i++) {
+      x = (x + _box[i] + _key[i % _key.length]) % 256;
+      [_box[i], _box[x]] = [_box[x], _box[i]];
+    }
+
+    let out = [];
+    for (let byte of message) {
+      _i = (_i + 1) % 256;
+      _j = (_j + _box[_i]) % 256;
+      [_box[_i], _box[_j]] = [_box[_j], _box[_i]];
+      let c = byte ^ _box[(_box[_i] + _box[_j]) % 256];
+      out.push(c);
+    }
+
+    return out;
+  }
+
+  vrfShift(vrf) {
+    const shifts = [-2, -4, -5, 6, 2, -3, 3, 6];
+    for (let i = 0; i < vrf.length; i++) {
+      const shift = shifts[i % 8];
+      vrf[i] = (vrf[i] + shift) & 0xff;
+    }
+    return vrf;
+  }
+
+  vrfEncrypt(input) {
+    const key = "ysJhV6U27FVIjjuk";
+    const inputBytes = this.utf8Encode(input);
+    const rc4Bytes = this.rc4Encrypt(key, inputBytes);
+    const vrfBase64url = this.base64urlEncode(rc4Bytes);
+
+    const vrf1Bytes = this.utf8Encode(vrfBase64url);
+    const vrf1Base64 = this.base64Encode(vrf1Bytes);
+    const vrf2Bytes = this.utf8Encode(vrf1Base64);
+    const shifted = this.vrfShift(vrf2Bytes);
+    const reversed = shifted.slice().reverse();
+
+    const finalBase64url = this.base64urlEncode(reversed);
+    return this.utf8Decode(this.utf8Encode(finalBase64url));
+  }
+  // End.
 }
