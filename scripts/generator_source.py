@@ -47,7 +47,7 @@ def formatExtenstionInfo(info):
             + pkgPath
         )
         rd.append(Source.fromJSON(bkInfo).toJSON())
-
+    print("DONE: Ext-" + info["name"])
     return rd
 
 
@@ -60,20 +60,24 @@ animeList = []
 mangaList = []
 novelList = []
 
-from pathlib import Path
 
-for filePath in js_files:
-    info = extensionInfo(filePath)
-    formattedInfo: list = formatExtenstionInfo(info)
+try:
+    for filePath in js_files:
+        paths = Path(filePath).resolve().parts
 
-    paths = Path(filePath).resolve().parts
-    if "anime" in paths:
-        animeList.extend(formattedInfo)
-    elif "manga" in paths:
-        mangaList.extend(formattedInfo)
-    else:
-        novelList.extend(formattedInfo)
+        info = extensionInfo(filePath)
+        formattedInfo: list = formatExtenstionInfo(info)
 
-writeJsonFile(main_dir / "anime_index.json", animeList)
-writeJsonFile(main_dir / "index.json", mangaList)
-writeJsonFile(main_dir / "novel_index.json", novelList)
+        if "anime" in paths:
+            animeList.extend(formattedInfo)
+        elif "manga" in paths:
+            mangaList.extend(formattedInfo)
+        else:
+            novelList.extend(formattedInfo)
+
+    writeJsonFile(main_dir / "anime_index.json", animeList)
+    writeJsonFile(main_dir / "index.json", mangaList)
+    writeJsonFile(main_dir / "novel_index.json", novelList)
+except Exception as e:
+    print("ERR: " + paths[len(paths) - 1])
+    print(e)
