@@ -5,14 +5,15 @@ on:
     branches:
       - main
     paths:
-        - 'javascript/**'
+      - "javascript/**"
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set timezone
@@ -23,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-vercode: '3.x'
+          python-vercode: "3.x"
 
       - name: Install modules
         run: |
