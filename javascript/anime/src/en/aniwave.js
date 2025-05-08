@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "0.0.7",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -156,8 +156,7 @@ class DefaultExtension extends MProvider {
 
       if (itemText.includes("Genres")) {
         item.select("a").forEach((g) => genre.push(g.text));
-      }
-      if (itemText.includes("Status")) {
+      } else if (itemText.includes("Status")) {
         var statusText = item.selectFirst("span").text;
         status = statusCode(statusText);
       }
@@ -208,8 +207,77 @@ class DefaultExtension extends MProvider {
     return { name, imageUrl, link, description, genre, status, chapters };
   }
 
+  // Extracts the streams url for different resolutions from a hls stream.
+  async extractStreams(url, isDub) {
+    var audio = isDub ? "HARD-DUB" : "HARD-SUB";
+    var hdr = this.getHeaders(this.getBaseUrl());
+
+    var streams = [
+      {
+        url: url,
+        originalUrl: url,
+        quality: `Auto : ${audio}`,
+        headers: hdr,
+      },
+    ];
+    var doExtract = this.getPreference("aniwave_pref_extract_streams");
+
+    if (!doExtract) {
+      return streams;
+    }
+
+    const response = await this.client.get(url, hdr);
+    const body = response.body;
+    const lines = body.split("\n");
+
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith("#EXT-X-STREAM-INF:")) {
+        var resolution = lines[i].match(/RESOLUTION=(\d+x\d+)/)[1];
+        var m3u8Url = lines[i + 1].trim();
+        m3u8Url = url.replace("master.m3u8", m3u8Url);
+        streams.push({
+          url: m3u8Url,
+          originalUrl: m3u8Url,
+          quality: `${resolution} : ${audio}`,
+          headers: hdr,
+        });
+      }
+    }
+    return streams;
+  }
+
+  async getStream(epNum, epId, isDub) {
+    var animeId = epId.split("-episode-")[0];
+    var slug = `/ajax/player/?ep=${epId}&dub=${isDub}&sn=${animeId}&epn=${epNum}&g=true&autostart=true`;
+    var body = await this.request(slug);
+
+    var sKey = "sources:[{";
+    var eKey = "}],";
+    var s = body.indexOf(sKey) + sKey.length - 2;
+    var e = body.indexOf(eKey) + 2;
+
+    var info = body.substring(s, e);
+
+    var streamUrl = JSON.parse(info)[0]["file"];
+    return await this.extractStreams(streamUrl, isDub);
+  }
+
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    var splits = url.split("||");
+    var epNum = splits[0];
+    var epId = splits[1];
+    var hasDub = parseInt(splits[2]) ? true : false;
+
+    var prefDubType = this.getPreference("aniwave_pref_stream_subdub_type");
+
+    var streams = [];
+    if (prefDubType.includes("sub")) {
+      streams = [...streams, ...(await this.getStream(epNum, epId, false))];
+    }
+    if (prefDubType.includes("dub") && hasDub) {
+      streams = [...streams, ...(await this.getStream(epNum, epId, true))];
+    }
+    return streams;
   }
 
   getFilterList() {
@@ -428,6 +496,24 @@ class DefaultExtension extends MProvider {
           valueIndex: 1,
           entries: ["English", "Romaji"],
           entryValues: ["en", "ro"],
+        },
+      },
+      {
+        key: "aniwave_pref_stream_subdub_type",
+        multiSelectListPreference: {
+          title: "Preferred stream sub/dub type",
+          summary: "",
+          values: ["sub", "dub"],
+          entries: ["Hard Sub", "Hard Dub"],
+          entryValues: ["sub", "dub"],
+        },
+      },
+      {
+        key: "aniwave_pref_extract_streams",
+        switchPreferenceCompat: {
+          title: "Split stream into different quality streams",
+          summary: "Split stream Auto into 360p/720p/1080p",
+          value: true,
         },
       },
     ];
