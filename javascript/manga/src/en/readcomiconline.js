@@ -10,9 +10,9 @@ const mangayomiSources = [
     "typeSource": "single",
     "isManga": true,
     "itemType": 0,
-    "version": "0.1.2",
-    "pkgPath": "manga/src/en/readcomiconline.js"
-  }
+    "version": "0.2.0",
+    "pkgPath": "manga/src/en/readcomiconline.js",
+  },
 ];
 
 // Authors: - Swakshan, kodjodevf
@@ -194,7 +194,7 @@ class DefaultExtension extends MProvider {
     var baseUrlOverride = "";
     const hostRegex = /return\s+baeu\s*\(\s*l\s*,\s*'([^']+?)'\s*\);?/g;
     match = hostRegex.exec(html);
-    if (match.length > 0) {
+    if (match != null && match.length > 0) {
       baseUrlOverride = match[1];
       if (baseUrlOverride.slice(-1) != "/") baseUrlOverride += "/";
     }
@@ -204,7 +204,6 @@ class DefaultExtension extends MProvider {
       var encodedImageUrl = match[1];
       var decodedImageUrl = this.decodeImageUrl(
         encodedImageUrl,
-        imageQuality,
         baseUrlOverride
       );
       pages.push({
@@ -409,51 +408,72 @@ class DefaultExtension extends MProvider {
     return String.fromCharCode(...outputBytes);
   }
 
-  extractBeforeDecode(url) {
-    return url.substring(15, 33) + url.substring(50);
+  extractAndConcatParts(input) {
+    return input.substring(15, 33) + input.substring(50);
   }
 
-  finalizeDecodedString(decoded) {
+  trimAndAppendChars(input) {
     return (
-      decoded.substring(0, decoded.length - 11) +
-      decoded[decoded.length - 2] +
-      decoded[decoded.length - 1]
+      input.substring(0, input.length - 11) +
+      input[input.length - 2] +
+      input[input.length - 1]
     );
   }
 
-  decoderFunction(encodedUrl) {
-    var decodedUrl = this.extractBeforeDecode(encodedUrl);
-    decodedUrl = this.finalizeDecodedString(decodedUrl);
-    decodedUrl = decodeURIComponent(this.base64UrlDecode(decodedUrl));
-    decodedUrl = decodedUrl.substring(0, 13) + decodedUrl.substring(17);
-    return decodedUrl.slice(0, -2) + "=s1600";
-  }
+  decodeImageUrl(obfuscatedUrl, customDomain) {
+    obfuscatedUrl = obfuscatedUrl
+      .replace(/sR__4kwqYI_/g, "a")
+      .replace(/b/g, "b")
+      .replace(/h/g, "h");
 
-  decodeImageUrl(encodedImageUrl, imageQuality, baseUrlOverride) {
-    // Default image qualities
-    var IMAGEQUALITY = [
-      { l: "900", m: "0", h: "1600", vh: "2041" },
-      { l: "900", m: "1600", h: "2041", vh: "0" },
-    ];
+    // If URL does not already start with HTTPS
+    if (!obfuscatedUrl.startsWith("https")) {
+      let queryParams = obfuscatedUrl.substring(obfuscatedUrl.indexOf("?"));
 
-    let finalUrl;
-    var qType = 0;
-    // Check if the url starts with https, if not then decode the url
-    if (!encodedImageUrl.startsWith("https")) {
-      encodedImageUrl = encodedImageUrl
-        .replace(/6UUQS__ACd__/g, "b")
-        .replace(/pw_.g28x/g, "b");
+      // Trim to base URL, removing size suffix
+      if (obfuscatedUrl.includes("=s0?")) {
+        obfuscatedUrl = obfuscatedUrl.substring(
+          0,
+          obfuscatedUrl.indexOf("=s0?")
+        );
+      } else {
+        obfuscatedUrl = obfuscatedUrl.substring(
+          0,
+          obfuscatedUrl.indexOf("=s1600?")
+        );
+      }
 
-      var encodedUrl = encodedImageUrl.split("=s")[0];
-      var decodedUrl = this.decoderFunction(encodedUrl);
+      // Extract and decode URL
+      obfuscatedUrl = this.extractAndConcatParts(obfuscatedUrl);
+      obfuscatedUrl = this.trimAndAppendChars(obfuscatedUrl);
+      obfuscatedUrl = this.base64UrlDecode(obfuscatedUrl);
 
-      var queryParams = encodedImageUrl.substring(encodedImageUrl.indexOf("?"));
-      finalUrl = baseUrlOverride + decodedUrl + queryParams;
-    } else {
-      // If the url starts with https, then just override the base url
-      qType = 1;
-      finalUrl = baseUrlOverride + encodedImageUrl.split(".com/")[1];
+      // Remove 4 characters from index 13 to 17
+      obfuscatedUrl =
+        obfuscatedUrl.substring(0, 13) + obfuscatedUrl.substring(17);
+
+      // Append size indicator
+      if (obfuscatedUrl.includes("=s0")) {
+        obfuscatedUrl =
+          obfuscatedUrl.substring(0, obfuscatedUrl.length - 2) + "=s0";
+      } else {
+        obfuscatedUrl =
+          obfuscatedUrl.substring(0, obfuscatedUrl.length - 2) + "=s1600";
+      }
+
+      // Combine decoded base URL with original query params
+      obfuscatedUrl =
+        "https://2.bp.blogspot.com/" + obfuscatedUrl + queryParams;
     }
-    return finalUrl.replace("s1600", `s${IMAGEQUALITY[qType][imageQuality]}`);
+
+    // Optionally replace domain with a custom one
+    if (customDomain && customDomain !== "") {
+      obfuscatedUrl = obfuscatedUrl.replace(
+        "https://2.bp.blogspot.com",
+        customDomain
+      );
+    }
+
+    return obfuscatedUrl;
   }
 }
