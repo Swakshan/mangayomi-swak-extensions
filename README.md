@@ -10,27 +10,27 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| Mangapill | 1.0.2 | en | 2024/12/27 14:11 IST |
-| Weeb Central | 0.1.0 | en | 2025/03/15 03:44 IST |
 | ReadComicOnline | 0.2.3 | en | 2025/05/09 22:20 IST |
+| Weeb Central | 0.1.0 | en | 2025/03/15 03:44 IST |
+| Mangapill | 1.0.2 | en | 2024/12/27 14:11 IST |
 
 ## Anime
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| AnimeParadise | 0.0.1 | en | 2025/02/07 19:38 IST |
-| Sudatchi | 1.1.0 | en | 2025/02/15 11:24 IST |
-| AnimeZ | 1.0.1 | en | 2025/03/17 18:24 IST |
-| AnimeGG | 1.0.2 | en | 2025/03/17 20:40 IST |
-| Soaper | 1.0.4 | all | 2025/03/22 17:52 IST |
-| Animeonsen | 1.0.0 | en, ja | 2025/04/01 13:23 IST |
-| Dramacool | 1.0.0 | all | 2025/04/06 23:41 IST |
-| AnimeKai | 0.2.4 | en | 2025/04/21 11:11 IST |
-| Gojo | 0.0.5 | en | 2025/04/21 21:33 IST |
-| Aniplay | 1.4.5 | en | 2025/04/27 19:33 IST |
+| Aniwave | 0.0.7 | en | 2025/05/09 00:11 IST |
 | KissKH | 0.1.6 | all | 2025/05/02 22:47 IST |
 | Autoembed | 1.2.6 | all | 2025/05/02 22:47 IST |
-| Aniwave | 0.0.7 | en | 2025/05/09 00:11 IST |
+| Aniplay | 1.4.5 | en | 2025/04/27 19:33 IST |
+| Gojo | 0.0.5 | en | 2025/04/21 21:33 IST |
+| AnimeKai | 0.2.4 | en | 2025/04/21 11:11 IST |
+| Dramacool | 1.0.0 | all | 2025/04/06 23:41 IST |
+| Animeonsen | 1.0.0 | en, ja | 2025/04/01 13:23 IST |
+| Soaper | 1.0.4 | all | 2025/03/22 17:52 IST |
+| AnimeGG | 1.0.2 | en | 2025/03/17 20:40 IST |
+| AnimeZ | 1.0.1 | en | 2025/03/17 18:24 IST |
+| Sudatchi | 1.1.0 | en | 2025/02/15 11:24 IST |
+| AnimeParadise | 0.0.1 | en | 2025/02/07 19:38 IST |
 
 </details>
 

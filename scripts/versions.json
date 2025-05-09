@@ -1,10 +1,10 @@
 {
     "manga": {
-        "Mangapill": {
-            "name": "Mangapill",
-            "version": "1.0.2",
+        "ReadComicOnline": {
+            "name": "ReadComicOnline",
+            "version": "0.2.3",
             "langs": "en",
-            "lastUpd": 1735288860
+            "lastUpd": 1746809429.294991
         },
         "Weeb Central": {
             "name": "Weeb Central",
@@ -12,73 +12,19 @@
             "langs": "en",
             "lastUpd": 1741990440
         },
-        "ReadComicOnline": {
-            "name": "ReadComicOnline",
-            "version": "0.2.3",
+        "Mangapill": {
+            "name": "Mangapill",
+            "version": "1.0.2",
             "langs": "en",
-            "lastUpd": 1746809429.294991
+            "lastUpd": 1735288860
         }
     },
     "anime": {
-        "AnimeParadise": {
-            "name": "AnimeParadise",
-            "version": "0.0.1",
+        "Aniwave": {
+            "name": "Aniwave",
+            "version": "0.0.7",
             "langs": "en",
-            "lastUpd": 1738937280
-        },
-        "Sudatchi": {
-            "name": "Sudatchi",
-            "version": "1.1.0",
-            "langs": "en",
-            "lastUpd": 1739598840
-        },
-        "AnimeZ": {
-            "name": "AnimeZ",
-            "version": "1.0.1",
-            "langs": "en",
-            "lastUpd": 1742216040
-        },
-        "AnimeGG": {
-            "name": "AnimeGG",
-            "version": "1.0.2",
-            "langs": "en",
-            "lastUpd": 1742224200
-        },
-        "Soaper": {
-            "name": "Soaper",
-            "version": "1.0.4",
-            "langs": "all",
-            "lastUpd": 1742646120
-        },
-        "Animeonsen": {
-            "name": "Animeonsen",
-            "version": "1.0.0",
-            "langs": "en, ja",
-            "lastUpd": 1743493980
-        },
-        "Dramacool": {
-            "name": "Dramacool",
-            "version": "1.0.0",
-            "langs": "all",
-            "lastUpd": 1743963060
-        },
-        "AnimeKai": {
-            "name": "AnimeKai",
-            "version": "0.2.4",
-            "langs": "en",
-            "lastUpd": 1745214060
-        },
-        "Gojo": {
-            "name": "Gojo",
-            "version": "0.0.5",
-            "langs": "en",
-            "lastUpd": 1745251380
-        },
-        "Aniplay": {
-            "name": "Aniplay",
-            "version": "1.4.5",
-            "langs": "en",
-            "lastUpd": 1745762580
+            "lastUpd": 1746729660
         },
         "KissKH": {
             "name": "KissKH",
@@ -92,11 +38,65 @@
             "langs": "all",
             "lastUpd": 1746206220
         },
-        "Aniwave": {
-            "name": "Aniwave",
-            "version": "0.0.7",
+        "Aniplay": {
+            "name": "Aniplay",
+            "version": "1.4.5",
             "langs": "en",
-            "lastUpd": 1746729660
+            "lastUpd": 1745762580
+        },
+        "Gojo": {
+            "name": "Gojo",
+            "version": "0.0.5",
+            "langs": "en",
+            "lastUpd": 1745251380
+        },
+        "AnimeKai": {
+            "name": "AnimeKai",
+            "version": "0.2.4",
+            "langs": "en",
+            "lastUpd": 1745214060
+        },
+        "Dramacool": {
+            "name": "Dramacool",
+            "version": "1.0.0",
+            "langs": "all",
+            "lastUpd": 1743963060
+        },
+        "Animeonsen": {
+            "name": "Animeonsen",
+            "version": "1.0.0",
+            "langs": "en, ja",
+            "lastUpd": 1743493980
+        },
+        "Soaper": {
+            "name": "Soaper",
+            "version": "1.0.4",
+            "langs": "all",
+            "lastUpd": 1742646120
+        },
+        "AnimeGG": {
+            "name": "AnimeGG",
+            "version": "1.0.2",
+            "langs": "en",
+            "lastUpd": 1742224200
+        },
+        "AnimeZ": {
+            "name": "AnimeZ",
+            "version": "1.0.1",
+            "langs": "en",
+            "lastUpd": 1742216040
+        },
+        "Sudatchi": {
+            "name": "Sudatchi",
+            "version": "1.1.0",
+            "langs": "en",
+            "lastUpd": 1739598840
+        },
+        "AnimeParadise": {
+            "name": "AnimeParadise",
+            "version": "0.0.1",
+            "langs": "en",
+            "lastUpd": 1738937280
         }
     },
     "novel": {}
