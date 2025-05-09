@@ -15,7 +15,7 @@ def generateVersionData():
     FILES = ["", "anime_", "novel_"]
     title = ["manga", "anime", "novel"]
 
-    currentDT = datetime.now(timezone("Asia/Kolkata")).strftime("%Y/%m/%d %H:%M IST")
+    currentDT = datetime.now(timezone("Asia/Kolkata")).timestamp()
 
     newData = {}
     for file in FILES:
@@ -53,12 +53,15 @@ def generateVersionData():
             if info is not None:
                 collection[name] = info.toJSON()
 
-        newData[str(itemType)] = collection
+        newData[str(itemType)] = dict(
+            sorted(collection.items(), key=lambda item: item[1]["lastUpd"])
+        )
 
     writeJsonFile(versionPath, newData)
 
 
 def generateExtensionList():
+    tz = timezone("Asia/Kolkata")
     lines = []
     lines.append("## Available Extensions List")
     lines.append("<details>")
@@ -76,8 +79,11 @@ def generateExtensionList():
         lines.append("|------|---------|----------|---------------|")
         for item in items:
             item = catData[item]
+            lastUpd = datetime.fromtimestamp(item["lastUpd"], tz).strftime(
+                "%Y/%m/%d %H:%M IST"
+            )
             lines.append(
-                f"| {item['name']} | {item['version']} | {item['langs']} | {item['lastUpd']} |"
+                f"| {item['name']} | {item['version']} | {item['langs']} | {lastUpd} |"
             )
         lines.append("")  # Add blank line between sections
 

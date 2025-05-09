@@ -104,7 +104,8 @@ class UpdateInfo:
     name: str = ""
     version: str = "0.0.0"
     langs: List[str] = field(default_factory=list)
-    lastUpd: str = "9999/12/31 00:00 IST"
+    lastUpd: int = 253370745000
+    #"9999/01/01 00:00"
 
     def setLang(self, lang):
         self.langs.append(lang)
