@@ -54,7 +54,9 @@ def generateVersionData():
                 collection[name] = info.toJSON()
 
         newData[str(itemType)] = dict(
-            sorted(collection.items(), key=lambda item: item[1]["lastUpd"])
+            sorted(
+                collection.items(), key=lambda item: item[1]["lastUpd"], reverse=True
+            )
         )
 
     writeJsonFile(versionPath, newData)
