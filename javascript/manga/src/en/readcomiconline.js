@@ -10,9 +10,9 @@ const mangayomiSources = [
     "typeSource": "single",
     "isManga": true,
     "itemType": 0,
-    "version": "0.1.2",
-    "pkgPath": "manga/src/en/readcomiconline.js"
-  }
+    "version": "0.2.3",
+    "pkgPath": "manga/src/en/readcomiconline.js",
+  },
 ];
 
 // Authors: - Swakshan, kodjodevf
@@ -117,7 +117,9 @@ class DefaultExtension extends MProvider {
         }[status] ?? 5
       );
     }
-    var link = this.source.baseUrl + url;
+    var baseUrl = this.source.baseUrl;
+    if (url.includes(baseUrl)) url = url.replace(baseUrl, "");
+    var link = baseUrl + link;
     var doc = await this.request(url);
 
     var detailsSection = doc.selectFirst(".barContent");
@@ -185,8 +187,10 @@ class DefaultExtension extends MProvider {
     var pages = [];
     var hdr = this.getHeaders();
     let match;
-    var imageQuality = this.getPreference("readcomiconline_page_quality");
+    var imageQuality = this.getPreference("readcomiconline_image_quality");
+    var prefServer = this.getPreference("readcomiconline_server");
 
+    var url = `${url}&s=${prefServer}&quality=${imageQuality}`;
     var doc = await this.request(url);
     var html = doc.html;
 
@@ -194,9 +198,10 @@ class DefaultExtension extends MProvider {
     var baseUrlOverride = "";
     const hostRegex = /return\s+baeu\s*\(\s*l\s*,\s*'([^']+?)'\s*\);?/g;
     match = hostRegex.exec(html);
-    if (match.length > 0) {
+    if (match != null && match.length > 0) {
       baseUrlOverride = match[1];
-      if (baseUrlOverride.slice(-1) != "/") baseUrlOverride += "/";
+      if (baseUrlOverride.slice(-1) == "/")
+        baseUrlOverride = baseUrlOverride.substring(0, -1);
     }
 
     const pageRegex = /pht\s*=\s*'([^']+?)';?/g;
@@ -204,7 +209,6 @@ class DefaultExtension extends MProvider {
       var encodedImageUrl = match[1];
       var decodedImageUrl = this.decodeImageUrl(
         encodedImageUrl,
-        imageQuality,
         baseUrlOverride
       );
       pages.push({
@@ -366,13 +370,23 @@ class DefaultExtension extends MProvider {
   getSourcePreferences() {
     return [
       {
-        key: "readcomiconline_page_quality",
+        key: "readcomiconline_image_quality",
         listPreference: {
           title: "Preferred image quality",
           summary: "",
-          valueIndex: 2,
-          entries: ["Low", "Medium", "High", "Highest"],
-          entryValues: ["l", "m", "h", "vh"],
+          valueIndex: 1,
+          entries: ["Low", "High"],
+          entryValues: ["lq", "hq"],
+        },
+      },
+      {
+        key: "readcomiconline_server",
+        listPreference: {
+          title: "Preferred server",
+          summary: "",
+          valueIndex: 0,
+          entries: ["Server 1", "Server 2"],
+          entryValues: ["s1", "s2"],
         },
       },
     ];
@@ -409,51 +423,68 @@ class DefaultExtension extends MProvider {
     return String.fromCharCode(...outputBytes);
   }
 
-  extractBeforeDecode(url) {
-    return url.substring(15, 33) + url.substring(50);
+  extractAndConcatParts(input) {
+    return input.substring(15, 33) + input.substring(50);
   }
 
-  finalizeDecodedString(decoded) {
+  trimAndAppendChars(input) {
     return (
-      decoded.substring(0, decoded.length - 11) +
-      decoded[decoded.length - 2] +
-      decoded[decoded.length - 1]
+      input.substring(0, input.length - 11) +
+      input[input.length - 2] +
+      input[input.length - 1]
     );
   }
 
-  decoderFunction(encodedUrl) {
-    var decodedUrl = this.extractBeforeDecode(encodedUrl);
-    decodedUrl = this.finalizeDecodedString(decodedUrl);
-    decodedUrl = decodeURIComponent(this.base64UrlDecode(decodedUrl));
-    decodedUrl = decodedUrl.substring(0, 13) + decodedUrl.substring(17);
-    return decodedUrl.slice(0, -2) + "=s1600";
-  }
+  decodeImageUrl(obfuscatedUrl, customDomain) {
+    var decodedUrl = "";
+    obfuscatedUrl = obfuscatedUrl
+      .replace(/sR__4kwqYI_/g, "a")
+      .replace(/b/g, "b")
+      .replace(/h/g, "h");
 
-  decodeImageUrl(encodedImageUrl, imageQuality, baseUrlOverride) {
-    // Default image qualities
-    var IMAGEQUALITY = [
-      { l: "900", m: "0", h: "1600", vh: "2041" },
-      { l: "900", m: "1600", h: "2041", vh: "0" },
-    ];
+    // If URL does not already start with HTTPS
+    if (!obfuscatedUrl.startsWith("https")) {
+      let queryParams = obfuscatedUrl.substring(obfuscatedUrl.indexOf("?"));
 
-    let finalUrl;
-    var qType = 0;
-    // Check if the url starts with https, if not then decode the url
-    if (!encodedImageUrl.startsWith("https")) {
-      encodedImageUrl = encodedImageUrl
-        .replace(/6UUQS__ACd__/g, "b")
-        .replace(/pw_.g28x/g, "b");
+      // Trim to base URL, removing size suffix
+      if (obfuscatedUrl.includes("=s0?")) {
+        decodedUrl = obfuscatedUrl.substring(0, obfuscatedUrl.indexOf("=s0?"));
+      } else {
+        decodedUrl = obfuscatedUrl.substring(
+          0,
+          obfuscatedUrl.indexOf("=s1600?")
+        );
+      }
 
-      var encodedUrl = encodedImageUrl.split("=s")[0];
-      var decodedUrl = this.decoderFunction(encodedUrl);
+      // Extract and decode URL
+      decodedUrl = this.extractAndConcatParts(decodedUrl);
+      decodedUrl = this.trimAndAppendChars(decodedUrl);
+      decodedUrl = this.base64UrlDecode(decodedUrl);
 
-      var queryParams = encodedImageUrl.substring(encodedImageUrl.indexOf("?"));
-      finalUrl = baseUrlOverride + decodedUrl + queryParams;
+      // Remove 4 characters from index 13 to 17
+      decodedUrl = decodedUrl.substring(0, 13) + decodedUrl.substring(17);
+
+      // Append size indicator
+      if (obfuscatedUrl.includes("=s0")) {
+        decodedUrl = decodedUrl.substring(0, decodedUrl.length - 2) + "=s0";
+      } else {
+        decodedUrl = decodedUrl.substring(0, decodedUrl.length - 2) + "=s1600";
+      }
+
+      // Combine decoded base URL with original query params
+      decodedUrl = "https://2.bp.blogspot.com/" + decodedUrl + queryParams;
     } else {
-      // If the url starts with https, then just override the base url
-      qType = 1;
-      finalUrl = baseUrlOverride + encodedImageUrl.split(".com/")[1];
+      decodedUrl = obfuscatedUrl;
     }
-    return finalUrl.replace("s1600", `s${IMAGEQUALITY[qType][imageQuality]}`);
+
+    // Optionally replace domain with a custom one
+    if (customDomain && customDomain !== "") {
+      decodedUrl = decodedUrl.replace(
+        "https://2.bp.blogspot.com",
+        customDomain
+      );
+    }
+
+    return decodedUrl;
   }
 }
