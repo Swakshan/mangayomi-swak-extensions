@@ -10,7 +10,7 @@ const mangayomiSources = [
     "typeSource": "single",
     "isManga": true,
     "itemType": 0,
-    "version": "0.2.1",
+    "version": "0.2.2",
     "pkgPath": "manga/src/en/readcomiconline.js",
   },
 ];
@@ -186,8 +186,9 @@ class DefaultExtension extends MProvider {
     var hdr = this.getHeaders();
     let match;
     var imageQuality = this.getPreference("readcomiconline_image_quality");
+    var prefServer = this.getPreference("readcomiconline_server");
 
-    var url = `${url}&s=&quality=${imageQuality}`;
+    var url = `${url}&s=${prefServer}&quality=${imageQuality}`;
     var doc = await this.request(url);
     var html = doc.html;
 
@@ -197,7 +198,8 @@ class DefaultExtension extends MProvider {
     match = hostRegex.exec(html);
     if (match != null && match.length > 0) {
       baseUrlOverride = match[1];
-      if (baseUrlOverride.slice(-1) != "/") baseUrlOverride += "/";
+      if (baseUrlOverride.slice(-1) == "/")
+        baseUrlOverride = baseUrlOverride.substring(0, -1);
     }
 
     const pageRegex = /pht\s*=\s*'([^']+?)';?/g;
@@ -373,6 +375,16 @@ class DefaultExtension extends MProvider {
           valueIndex: 1,
           entries: ["Low", "High"],
           entryValues: ["lq", "hq"],
+        },
+      },
+      {
+        key: "readcomiconline_server",
+        listPreference: {
+          title: "Preferred server",
+          summary: "",
+          valueIndex: 0,
+          entries: ["Server 1", "Server 2"],
+          entryValues: ["s1", "s2"],
         },
       },
     ];
