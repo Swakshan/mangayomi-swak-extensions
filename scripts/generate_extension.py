@@ -10,7 +10,7 @@ def createFunction(isAsync: bool, funcName: str, args: list, code=""):
 
     return f"""
     {"async" if isAsync else ""} {funcName}({arg}) {{
-        {'throw new Error("{funcName} not implemented");' if code == "" else code}
+        {f'throw new Error("{funcName} not implemented");' if code == "" else code}
     }}
     """
 
