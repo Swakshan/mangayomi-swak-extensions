@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -101,7 +101,93 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    var baseUrl = this.source.baseUrl;
+    var linkSlug = `${baseUrl}/title/`;
+
+    if (url.includes(linkSlug)) {
+      url = url.replace(linkSlug, "");
+      var id = url.replace("t", "");
+      if (url.includes("t")) {
+        url = `series||tmdb:${id}`;
+      } else {
+        url = `movie||tmdb:${id}`;
+      }
+    }
+
+    var parts = url.split("||");
+    var media_type = parts[0];
+    var id = parts[1];
+    var body = await this.tmdbRequest(`meta/${media_type}/${id}.json`);
+    var result = body.meta;
+
+    var tmdb_id = id.substring(5);
+    var imdb_id = result.imdb_id;
+    var linkCode = tmdb_id;
+
+    var dateNow = Date.now().valueOf();
+    var release = result.released
+      ? new Date(result.released).valueOf()
+      : dateNow;
+    var chapters = [];
+
+    var name = result.name;
+    var imageUrl = result.poster;
+
+    var description = result.description;
+    var genre = result.genre;
+    var year = result.year.split("-")[0];
+
+    if (media_type == "series") {
+      linkCode = `t${tmdb_id}`;
+      var videos = result.videos;
+      for (var i in videos) {
+        var video = videos[i];
+        var seasonNum = video.season;
+
+        if (!seasonNum) continue;
+
+        release = video.released ? new Date(video.released).valueOf() : dateNow;
+
+        if (release < dateNow) {
+          var episodeNum = video.episode;
+          var name = `S${seasonNum}:E${episodeNum} - ${video.name}`;
+          var eplink = {
+            name: name,
+            season: seasonNum,
+            episode: episodeNum,
+            year: year,
+            tmdb: tmdb_id,
+            imdb: imdb_id,
+          };
+
+          chapters.push({
+            name: name,
+            url: JSON.stringify(eplink),
+            dateUpload: release.toString(),
+          });
+        }
+      }
+    } else {
+      if (release < dateNow) {
+        var eplink = {
+          name: name,
+          year: year,
+          tmdb: tmdb_id,
+          imdb: imdb_id,
+        };
+        chapters.push({
+          name: "Movie",
+          url: JSON.stringify(eplink),
+          dateUpload: release.toString(),
+        });
+      }
+    }
+
+    chapters.reverse();
+
+    var link = `${linkSlug}${linkCode}`;
+
+    return { name, imageUrl, description, genre, link, chapters };
   }
 
   async getVideoList(url) {
