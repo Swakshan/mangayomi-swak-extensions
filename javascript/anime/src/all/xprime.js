@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -34,8 +34,12 @@ class DefaultExtension extends MProvider {
     return new SharedPreferences().get(key);
   }
 
-  getHeaders(url) {
-    throw new Error("getHeaders not implemented");
+  getHeaders() {
+    var baseUrl = this.source.baseUrl;
+    return {
+      Reference: baseUrl,
+      Origin: baseUrl,
+    };
   }
 
   async tmdbRequest(slug) {
@@ -150,9 +154,9 @@ class DefaultExtension extends MProvider {
 
         if (release < dateNow) {
           var episodeNum = video.episode;
-          var name = `S${seasonNum}:E${episodeNum} - ${video.name}`;
+          var epName = `S${seasonNum}:E${episodeNum} - ${video.name}`;
           var eplink = {
-            name: name,
+            name: epName,
             season: seasonNum,
             episode: episodeNum,
             year: year,
@@ -190,12 +194,163 @@ class DefaultExtension extends MProvider {
     return { name, imageUrl, description, genre, link, chapters };
   }
 
-  async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+  async serverRequest(slug, hdr) {
+    var api = this.source.apiUrl + "/" + slug;
+    var req = await this.client.get(api, hdr);
+    if (req.statusCode == 200) {
+      return JSON.parse(req.body);
+    } else {
+      return null;
+    }
   }
 
-  getFilterList() {
-    throw new Error("getFilterList not implemented");
+  async primebox(data) {
+    var serverName = "primebox";
+    var hdr = this.getHeaders();
+
+    var slug = serverName;
+    slug += "?name=" + data.name;
+    slug += "&fallback_year=" + data.year;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var subtitles = [];
+    var body = await this.serverRequest(slug, hdr);
+    if (body) {
+      if (body.hasOwnProperty("available_qualities")) {
+        var streams = body.streams;
+        var available_qualities = body.available_qualities;
+        for (var quality of available_qualities) {
+          var stream = streams[quality];
+          streamUrls.push({
+            url: stream,
+            originalUrl: stream,
+            quality: `${quality} : ${serverName}`,
+            headers: hdr,
+          });
+        }
+      }
+      subtitles = body.subtitles;
+    }
+    return { streamUrls, subtitles };
+  }
+
+  async primenet(data) {
+    var serverName = "primenet";
+    var hdr = this.getHeaders();
+
+    var slug = serverName;
+    slug += "?id=" + data.tmdb;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var body = await this.serverRequest(slug, hdr);
+    if (body) {
+      if (body.hasOwnProperty("url")) {
+        var stream = body.url;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `Auto : ${serverName}`,
+          headers: hdr,
+        });
+      }
+    }
+    return { streamUrls, subtitles: [] };
+  }
+
+  async harbour(data) {
+    var serverName = "harbour";
+    var hdr = this.getHeaders();
+
+    var slug = serverName;
+    slug += "?name=" + data.name;
+    slug += "&id=" + data.imdb;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var body = await this.serverRequest(slug, hdr);
+    if (body) {
+      if (body.hasOwnProperty("url")) {
+        var stream = body.url;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `Auto : ${serverName}`,
+          headers: hdr,
+        });
+      }
+    }
+    return { streamUrls, subtitles: [] };
+  }
+
+  async volkswagen(data) {
+    var serverName = "volkswagen";
+    var hdr = this.getHeaders();
+
+    var slug = serverName;
+    slug += "?name=" + data.name;
+    slug += "&id=" + data.imdb;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var body = await this.serverRequest(slug, hdr);
+    if (body) {
+      if (body.hasOwnProperty("streams")) {
+        var stream = body.streams.german.url;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `Auto : ${serverName}`,
+          headers: hdr,
+        });
+      }
+    }
+    return { streamUrls, subtitles: [] };
+  }
+
+  async getVideoList(url) {
+    var prefServer = this.getPreference("xprime_pref_stream_server");
+    if (prefServer.length < 1) prefServer = ["primebox"];
+
+    var streams = [];
+    var subtitles = [];
+
+    var data = JSON.parse(url);
+    for (var server of prefServer) {
+      var serverData = {};
+      if (server == "primebox") {
+        serverData = await this.primebox(data);
+      } else if (server == "primenet") {
+        serverData = await this.primenet(data);
+      } else if (server == "harbour") {
+        serverData = await this.harbour(data);
+      } else if (server == "volkswagen") {
+        serverData = await this.volkswagen(data);
+      }
+
+      streams = [...streams, ...serverData.streamUrls];
+      subtitles = [...subtitles, ...serverData.subtitles];
+    }
+
+    if (streams.length < 1)
+      throw new Error("No streams found from any selected servers");
+
+    streams[0].subtitles = subtitles;
+
+    return streams;
   }
 
   getSourcePreferences() {
@@ -218,6 +373,16 @@ class DefaultExtension extends MProvider {
           valueIndex: 0,
           entries: ["Movies", "Series"],
           entryValues: ["movies", "series"],
+        },
+      },
+      {
+        key: "xprime_pref_stream_server",
+        multiSelectListPreference: {
+          title: "Preferred server",
+          summary: "Choose the server/s you want to extract streams from",
+          values: ["primebox", "primenet", "harbour"],
+          entries: ["Primebox", "Primenet", "Harbour", "Volkswagen"],
+          entryValues: ["primebox", "primenet", "harbour", "volkswagen"],
         },
       },
     ];
