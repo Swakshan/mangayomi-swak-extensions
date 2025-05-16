@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -169,7 +169,7 @@ class DefaultExtension extends MProvider {
           var episodeNum = video.episode;
           var epName = `S${seasonNum}:E${episodeNum} - ${video.name}`;
           var eplink = {
-            name: epName,
+            name: name,
             season: seasonNum,
             episode: episodeNum,
             year: year,
@@ -178,7 +178,7 @@ class DefaultExtension extends MProvider {
           };
 
           chapters.push({
-            name: name,
+            name: epName,
             url: JSON.stringify(eplink),
             dateUpload: release.toString(),
           });
@@ -324,7 +324,7 @@ class DefaultExtension extends MProvider {
     var streamUrls = [];
     var body = await this.serverRequest(slug, hdr);
     if (body) {
-      if (body.hasOwnProperty("streams")) {
+      if (body.status == "ok" && body.hasOwnProperty("streams")) {
         var stream = body.streams.german.url;
         streamUrls.push({
           url: stream,
