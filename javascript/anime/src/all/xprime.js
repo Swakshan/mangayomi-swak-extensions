@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -105,6 +105,16 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
+    function statusCode(status) {
+      return (
+        {
+          "Returning Series": 0,
+          "Ended": 1,
+          "In Production": 4,
+        }[status] ?? 5
+      );
+    }
+
     var baseUrl = this.source.baseUrl;
     var linkSlug = `${baseUrl}/title/`;
 
@@ -132,6 +142,8 @@ class DefaultExtension extends MProvider {
     var release = result.released
       ? new Date(result.released).valueOf()
       : dateNow;
+    var status = 5;
+
     var chapters = [];
 
     var name = result.name;
@@ -142,6 +154,7 @@ class DefaultExtension extends MProvider {
     var year = result.year.split("-")[0];
 
     if (media_type == "series") {
+      status = statusCode(result.status);
       linkCode = `t${tmdb_id}`;
       var videos = result.videos;
       for (var i in videos) {
@@ -173,6 +186,7 @@ class DefaultExtension extends MProvider {
       }
     } else {
       if (release < dateNow) {
+        status = 1;
         var eplink = {
           name: name,
           year: year,
@@ -184,6 +198,8 @@ class DefaultExtension extends MProvider {
           url: JSON.stringify(eplink),
           dateUpload: release.toString(),
         });
+      } else {
+        status = 4;
       }
     }
 
@@ -191,7 +207,7 @@ class DefaultExtension extends MProvider {
 
     var link = `${linkSlug}${linkCode}`;
 
-    return { name, imageUrl, description, genre, link, chapters };
+    return { name, imageUrl, status, description, genre, link, chapters };
   }
 
   async serverRequest(slug, hdr) {
@@ -369,8 +385,8 @@ class DefaultExtension extends MProvider {
     if (streams.length < 1)
       throw new Error("No streams found from any selected servers");
 
-    if(subtitles.length<1){
-      var tmdb = data.tmdb
+    if (subtitles.length < 1) {
+      var tmdb = data.tmdb;
       var s = 0;
       var e = 0;
       if (data.hasOwnProperty("season")) {
