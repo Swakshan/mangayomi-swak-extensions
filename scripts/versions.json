@@ -20,21 +20,27 @@
         }
     },
     "anime": {
+        "XPrime": {
+            "name": "XPrime",
+            "version": "1.0.0",
+            "langs": "all",
+            "lastUpd": 1747399631.426205
+        },
         "Aniwave": {
             "name": "Aniwave",
             "version": "0.0.7",
             "langs": "en",
             "lastUpd": 1746729660
         },
-        "KissKH": {
-            "name": "KissKH",
-            "version": "0.1.6",
-            "langs": "all",
-            "lastUpd": 1746206220
-        },
         "Autoembed": {
             "name": "Autoembed",
             "version": "1.2.6",
+            "langs": "all",
+            "lastUpd": 1746206220
+        },
+        "KissKH": {
+            "name": "KissKH",
+            "version": "0.1.6",
             "langs": "all",
             "lastUpd": 1746206220
         },
