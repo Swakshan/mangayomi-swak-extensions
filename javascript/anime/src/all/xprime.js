@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -321,6 +321,27 @@ class DefaultExtension extends MProvider {
     return { streamUrls, subtitles: [] };
   }
 
+  // Gets subtitles based on TMDB id.
+  async getSubtitleList(id, s, e) {
+    var api = `https://sub.wyzie.ru/search?id=${id}`;
+    var hdr = {};
+
+    if (s != "0") api = `${api}&season=${s}&episode=${e}`;
+
+    var response = await new Client().get(api, hdr);
+    var body = JSON.parse(response.body);
+
+    var subs = [];
+    for (var sub of body) {
+      subs.push({
+        file: sub.url,
+        label: sub.display,
+      });
+    }
+
+    return subs;
+  }
+
   async getVideoList(url) {
     var prefServer = this.getPreference("xprime_pref_stream_server");
     if (prefServer.length < 1) prefServer = ["primebox"];
@@ -347,6 +368,17 @@ class DefaultExtension extends MProvider {
 
     if (streams.length < 1)
       throw new Error("No streams found from any selected servers");
+
+    if(subtitles.length<1){
+      var tmdb = data.tmdb
+      var s = 0;
+      var e = 0;
+      if (data.hasOwnProperty("season")) {
+        s = data.season;
+        e = data.episode;
+      }
+      subtitles = await this.getSubtitleList(tmdb, s, e);
+    }
 
     streams[0].subtitles = subtitles;
 
