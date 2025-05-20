@@ -1,7 +1,7 @@
 [
     {
         "name": "Mangapill",
-        "id": 960321322,
+        "id": 2302373605,
         "baseUrl": "https://mangapill.com",
         "lang": "en",
         "typeSource": "single",
@@ -12,7 +12,7 @@
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/manga/src/en/mangapill.js",
         "apiUrl": "",
-        "version": "1.0.2",
+        "version": "1.0.3",
         "isManga": true,
         "itemType": 0,
         "isFullData": false,
