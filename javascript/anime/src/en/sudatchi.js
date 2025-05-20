@@ -2,26 +2,23 @@ const mangayomiSources = [
   {
     "name": "Sudatchi",
     "lang": "en",
-    "id": 398530136,
     "baseUrl": "https://sudatchi.com",
     "apiUrl": "",
     "iconUrl":
       "https://www.google.com/s2/favicons?sz=128&domain=https://sudatchi.com",
     "typeSource": "single",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "itemType": 1,
-    "pkgPath": "anime/src/en/sudatchi.js"
-  }
+    "pkgPath": "anime/src/en/sudatchi.js",
+  },
 ];
-
-// Authors: - Swakshan
 
 class DefaultExtension extends MProvider {
   getHeaders(url) {
     return {
-      Referer: this.source.baseUrl,
+      "Referer": this.source.baseUrl,
     };
   }
 
@@ -132,7 +129,9 @@ class DefaultExtension extends MProvider {
 
     var url = this.source.baseUrl + "/api/fetchAnime";
 
-    var res = await new Client().post(url, this.getHeaders(), { query: query });
+    var res = await new Client().post(url, this.getHeaders(), {
+      "query": query,
+    });
     var body = JSON.parse(res.body);
 
     var list = await this.formListForAnilist(body.results);
@@ -149,16 +148,19 @@ class DefaultExtension extends MProvider {
       {
         "Currently Airing": 0,
         "Finished Airing": 1,
-        Hiatus: 2,
-        Discontinued: 3,
+        "Hiatus": 2,
+        "Discontinued": 3,
         "Not Yet Released": 4,
       }[status] ?? 5
     );
   }
 
   async getDetail(url) {
+    var linkSlug = "https://sudatchi.com/anime/";
+    if (url.includes(linkSlug)) url = url.replace(linkSlug, "");
+
     var lang = this.getPreference("sudatchi_pref_lang");
-    var link = `https://sudatchi.com/anime/${url}`;
+    var link = `${linkSlug}${url}`;
     var details = await this.requestApi(`/anime/${url}`);
     var titles = details.title;
     var name = titles.romaji;

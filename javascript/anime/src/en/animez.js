@@ -2,19 +2,16 @@ const mangayomiSources = [
   {
     "name": "AnimeZ",
     "lang": "en",
-    "id": 492689523,
     "baseUrl": "https://animez.org",
     "apiUrl": "",
     "iconUrl":
       "https://www.google.com/s2/favicons?sz=256&domain=https://animez.org/",
     "typeSource": "multi",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "anime/src/en/animez.js"
   }
 ];
-
-// Authors: - Swakshan
 
 class DefaultExtension extends MProvider {
   constructor() {
@@ -24,7 +21,7 @@ class DefaultExtension extends MProvider {
 
   getHeaders(url) {
     return {
-      Referer: this.source.baseUrl,
+      "Referer": this.source.baseUrl,
     };
   }
 
@@ -125,7 +122,9 @@ class DefaultExtension extends MProvider {
     return await this.page(slug);
   }
   async getDetail(url) {
-    var link = this.source.baseUrl + url;
+    var baseUrl = this.source.baseUrl;
+    if (url.includes(baseUrl)) url = url.replace(baseUrl, "");
+    var link = +url;
     var body = await this.request(url);
     var name = body.selectFirst("#title-detail-manga").text;
     var animeId = body.selectFirst("#title-detail-manga").attr("data-manga");

@@ -1,7 +1,6 @@
 const mangayomiSources = [
   {
     "name": "Autoembed",
-    "id": 536971840,
     "lang": "all",
     "baseUrl": "https://watch.autoembed.cc",
     "apiUrl": "https://tom.autoembed.cc",
@@ -10,14 +9,12 @@ const mangayomiSources = [
     "typeSource": "multi",
     "isManga": false,
     "itemType": 1,
-    "version": "1.2.6",
+    "version": "1.2.7",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/all/autoembed.js"
   }
 ];
-
-// Authors: - Swakshan, kodjodevf
 
 class DefaultExtension extends MProvider {
   decodeBase64 = function (f) {
@@ -114,6 +111,19 @@ class DefaultExtension extends MProvider {
     return await this.getSearchInfo(`tmdb.popular/search=${query}.json`);
   }
   async getDetail(url) {
+    var baseUrl = this.source.baseUrl;
+    var linkSlug = `${baseUrl}/title/`;
+
+    if (url.includes(linkSlug)) {
+      url = url.replace(linkSlug, "");
+      var id = url.replace("t", "");
+      if (url.includes("t")) {
+        url = `series||tmdb:${id}`;
+      } else {
+        url = `movie||tmdb:${id}`;
+      }
+    }
+
     var parts = url.split("||");
     var media_type = parts[0];
     var id = parts[1];
@@ -132,7 +142,7 @@ class DefaultExtension extends MProvider {
     var item = {
       name: result.name,
       imageUrl: result.poster,
-      link: `${this.source.baseUrl}/${media_type}/${tmdb_id}`,
+      link: `${linkSlug}${linkCode}`,
       description: result.description,
       genre: result.genre,
     };
@@ -276,7 +286,7 @@ class DefaultExtension extends MProvider {
 
     if (subPref === 2) {
       api = `https://sources.hexa.watch/subs/${id}`;
-      hdr = { Origin: "https://api.hexa.watch" };
+      hdr = { "Origin": "https://api.hexa.watch" };
       if (s != "0") api = `${api}/${s}/${e}`;
     } else {
       if (s != "0") api = `${api}&season=${s}&episode=${e}`;
@@ -334,7 +344,7 @@ class DefaultExtension extends MProvider {
           url: link,
           originalUrl: link,
           quality: "auto",
-          headers: { Origin: "https://play2.123embed.net" },
+          headers: { "Origin": "https://play2.123embed.net" },
         });
         break;
       }
@@ -379,7 +389,7 @@ class DefaultExtension extends MProvider {
         }
         var api = `https://flicky.host/player/desi.php?id=${id}`;
         var response = await new Client().get(api, {
-          Referer: "https://flicky.host/",
+          "Referer": "https://flicky.host/",
           "sec-fetch-dest": "iframe",
         });
 
@@ -435,7 +445,7 @@ class DefaultExtension extends MProvider {
           id = `${id}/${s}/${e}`;
         }
         var api = `https://sources.hexa.watch/plsdontscrapemeuwu/${id}`;
-        var hdr = { Origin: "https://api.hexa.watch" };
+        var hdr = { "Origin": "https://api.hexa.watch" };
         var response = await new Client().get(api, hdr);
 
         if (response.statusCode != 200) {
@@ -655,10 +665,10 @@ class DefaultExtension extends MProvider {
       },
       {
         key: "autoembed_split_stream_quality",
-        switchPreferenceCompat: {
-          title: "Split stream into different quality streams",
-          summary: "Split stream Auto into 360p/720p/1080p",
-          value: true,
+        "switchPreferenceCompat": {
+          "title": "Split stream into different quality streams",
+          "summary": "Split stream Auto into 360p/720p/1080p",
+          "value": true,
         },
       },
       {
@@ -682,11 +692,11 @@ class DefaultExtension extends MProvider {
       },
       {
         key: "autoembed_pref_navtive_subtitle",
-        switchPreferenceCompat: {
-          title: "Use native subtitles as well",
-          summary:
+        "switchPreferenceCompat": {
+          "title": "Use native subtitles as well",
+          "summary":
             "Use subtitles provided by the source along with subtitle API",
-          value: true,
+          "value": true,
         },
       },
       {

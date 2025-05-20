@@ -2,19 +2,16 @@ const mangayomiSources = [
   {
     "name": "AnimeParadise",
     "lang": "en",
-    "id": 419768715,
     "baseUrl": "https://animeparadise.moe",
     "apiUrl": "https://api.animeparadise.moe",
     "iconUrl":
       "https://www.google.com/s2/favicons?sz=128&domain=https://animeparadise.moe",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "pkgPath": "anime/src/en/animeparadise.js"
   }
 ];
-
-// Authors: - Swakshan
 
 class DefaultExtension extends MProvider {
   getPreference(key) {
@@ -42,24 +39,24 @@ class DefaultExtension extends MProvider {
     if ("episodes" in jsonData) {
       jsonData.episodes.forEach((item) => {
         list.push({
-          name: item.origin.title,
-          link: item.origin.link,
-          imageUrl: item.image,
+          "name": item.origin.title,
+          "link": item.origin.link,
+          "imageUrl": item.image,
         });
       });
     } else {
       jsonData.data.forEach((item) => {
         list.push({
-          name: item.title,
-          link: item.link,
-          imageUrl: item.posterImage.original,
+          "name": item.title,
+          "link": item.link,
+          "imageUrl": item.posterImage.original,
         });
       });
     }
 
     return {
-      list: list,
-      hasNextPage: false,
+      "list": list,
+      "hasNextPage": false,
     };
   }
 
@@ -89,14 +86,16 @@ class DefaultExtension extends MProvider {
   statusCode(status) {
     return (
       {
-        current: 0,
-        finished: 1,
+        "current": 0,
+        "finished": 1,
       }[status] ?? 5
     );
   }
 
   async getDetail(url) {
-    var link = this.source.baseUrl + `/anime/${url}`;
+    var linkSlug = this.source.baseUrl + `/anime/`;
+    if (url.includes(linkSlug)) url = url.replace(linkSlug, "");
+
     var jsonData = await this.extractFromUrl(`/anime/${url}`);
     jsonData = jsonData.data;
     var details = {};
@@ -112,6 +111,7 @@ class DefaultExtension extends MProvider {
       var epUrl = `${ep.uid}?origin=${ep.origin}`;
       chapters.push({ name: epName, url: epUrl });
     });
+    details.link = `${linkSlug}${url}`;
     details.chapters = chapters.reverse();
     return details;
   }
@@ -173,8 +173,8 @@ class DefaultExtension extends MProvider {
     var subtitles = [];
     epData.subData.forEach((sub) => {
       subtitles.push({
-        label: sub.label,
-        file: `${this.source.apiUrl}/stream/file/${sub.src}`,
+        "label": sub.label,
+        "file": `${this.source.apiUrl}/stream/file/${sub.src}`,
       });
     });
 

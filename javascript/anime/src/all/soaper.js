@@ -8,7 +8,7 @@ const mangayomiSources = [
     "iconUrl":
       "https://www.google.com/s2/favicons?sz=128&domain=https://soaper.cc/",
     "typeSource": "multi",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "itemType": 1,
     "dateFormat": "",
     "dateFormatLocale": "",
@@ -135,9 +135,9 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    var doc = await this.request(url);
-
     const baseUrl = this.getPreference("soaper_override_base_url");
+    var slug = url.replace(`${baseUrl}/`,'')
+    var doc = await this.request(slug);
     var name = doc
       .selectFirst(".col-sm-12.col-lg-12.text-center")
       .selectFirst("h4")
@@ -148,10 +148,10 @@ class DefaultExtension extends MProvider {
     var imageUrl = `${baseUrl}${poster}`;
 
     var description = doc.selectFirst("p#wrap").text.trim();
-    var link = `${baseUrl}/${url}`;
+    var link = `${baseUrl}/${slug}`;
 
     var chapters = [];
-    if (url.indexOf("tv_") != -1) {
+    if (slug.indexOf("tv_") != -1) {
       var seasonList = doc.select(".alert.alert-info-ex.col-sm-12");
       var seasonCount = seasonList.length;
       for (var season of seasonList) {
@@ -171,7 +171,7 @@ class DefaultExtension extends MProvider {
     } else {
       chapters.push({
         name: "Movie",
-        url: url,
+        url: slug,
       });
     }
 

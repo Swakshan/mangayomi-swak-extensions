@@ -2,26 +2,23 @@ const mangayomiSources = [
   {
     "name": "Mangapill",
     "lang": "en",
-    "id": 960321322,
     "baseUrl": "https://mangapill.com",
     "apiUrl": "",
     "iconUrl":
       "https://www.google.com/s2/favicons?sz=64&domain=https://mangapill.com/",
     "typeSource": "single",
     "isManga": true,
-    "version": "1.0.2",
+    "version": "1.0.3",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/en/mangapill.js"
   }
 ];
 
-// Authors: - Swakshan, kodjodevf
-
 class DefaultExtension extends MProvider {
   getHeaders(url) {
     return {
-      Referer: this.source.baseUrl,
+      "Referer": this.source.baseUrl,
     };
   }
 
@@ -118,8 +115,10 @@ class DefaultExtension extends MProvider {
 
   async getMangaDetail(slug) {
     var lang = await this.getPreference("pref_title_lang");
+    var baseUrl = this.source.baseUrl;
+    if (slug.includes(baseUrl)) slug = slug.replace(baseUrl, "");
 
-    var link = `${this.source.baseUrl}${slug}`;
+    var link = `${baseUrl}${slug}`;
     var res = await new Client().get(link, this.getHeaders());
     var doc = new Document(res.body);
 

@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://www.animegg.org/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.2",
+    "version": "1.0.3",
     "pkgPath": "anime/src/en/animegg.js"
   }
 ];
@@ -131,9 +131,11 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    var link = this.source.baseUrl + url;
+    var baseUrl = this.source.baseUrl;
+    var slug = url.replace(baseUrl, "");
+    var link = baseUrl + slug;
 
-    var body = await this.request(url);
+    var body = await this.request(slug);
 
     var media = body.selectFirst(".media");
     var title = media.selectFirst("h1").text;
