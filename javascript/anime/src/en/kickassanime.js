@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -37,6 +37,9 @@ class DefaultExtension extends MProvider {
   getHeaders(url) {
     return {
       Referer: url,
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+      "content-type": "application/json",
     };
   }
 
@@ -47,7 +50,8 @@ class DefaultExtension extends MProvider {
   async apiCall(slug) {
     var baseUrl = this.getBaseUrl();
     var url = baseUrl + "/api/show" + slug;
-    var res = await this.client.get(url, this.getHeaders(url));
+    var hdr = this.getHeaders(url);
+    var res = await this.client.get(url, hdr);
     return JSON.parse(res.body);
   }
 
@@ -124,13 +128,12 @@ class DefaultExtension extends MProvider {
     var body = {
       "page": page,
       "query": query,
-      "filters":filterQuery
+      "filters": filterQuery,
     };
 
     var baseUrl = this.getBaseUrl();
     var url = baseUrl + "/api/fsearch";
     var hdr = this.getHeaders(url);
-    hdr["content-type"] = "application/json";
 
     var res = await this.client.post(url, hdr, body);
     var rd = JSON.parse(res.body);
@@ -141,7 +144,69 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    function statusCode(status) {
+      return (
+        {
+          "currently_airing": 0,
+          "finished_airing": 1,
+        }[status] ?? 5
+      );
+    }
+
+    var link = url;
+    var baseUrl = this.getBaseUrl();
+    var slug = url.replace(baseUrl, "");
+    var anime = await this.apiCall(slug);
+
+    var titlePref = this.getPreference("kaa_title_lang");
+    var name = anime.hasOwnProperty(titlePref) ? anime[titlePref] : anime.title;
+    var posterSlug = anime.hasOwnProperty("poster") ? anime.poster.hq : "";
+
+    var name = anime.hasOwnProperty(titlePref) ? anime[titlePref] : anime.title;
+    var imageUrl = `${baseUrl}/image/poster/${posterSlug}.webp`;
+    var description = anime.synopsis;
+    var genre = anime.genres;
+    var status = statusCode(anime.status);
+    var type = anime.type;
+    genre.push(type);
+
+    var audioPref = this.getPreference("kaa_stream_lang");
+    var locales = anime.locales;
+    if (!locales.includes(audioPref)) {
+      if (audioPref === "others") {
+        locales = locales.filter((l) => !["ja-JP", "en-US"].includes(l));
+      }
+      audioPref = locales[0];
+    }
+    var chapters = [];
+    var hasNextPage = true;
+    var current_page = 1;
+    while (hasNextPage) {
+      var api = `${slug}/episodes?lang=${audioPref}&page=${current_page}`;
+      var response = await this.apiCall(api);
+      var results = response.result;
+      results.forEach((result) => {
+        var epTitle = result.hasOwnProperty("title") ? result.title : "";
+        var epNumber = result.episode_number;
+        var epName = `Episode ${epNumber}`;
+        epName = epTitle.length > 0 ? `${epName}: ${epTitle}` : epName;
+        epName = type == "movie" ? "Movie" : epName;
+
+        var epLink = `${slug}/episode/ep-${epNumber}-${result.slug}`;
+
+        chapters.push({
+          name: epName,
+          url: epLink,
+        });
+      });
+
+      hasNextPage = !(current_page == response.pages.length);
+      current_page++;
+    }
+
+    chapters.reverse();
+
+    return { name, imageUrl, status, description, genre, link, chapters };
   }
 
   getFilterList() {
@@ -300,6 +365,16 @@ class DefaultExtension extends MProvider {
           valueIndex: 1,
           entries: ["English", "Romaji"],
           entryValues: ["title_en", "title"],
+        },
+      },
+      {
+        key: "kaa_stream_lang",
+        listPreference: {
+          title: "Preferred stream language",
+          summary: "Choose in which language anime audio should be shown",
+          valueIndex: 0,
+          entries: ["Japanese", "English", "Others"],
+          entryValues: ["ja-JP", "en-US", "others"],
         },
       },
     ];
