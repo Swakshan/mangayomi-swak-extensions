@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -342,7 +342,23 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    var streams = [];
+    var doc = await this.apiCall(url);
+    var servers = doc.servers;
+    for (var server of servers) {
+      var vidStreams = [];
+      var shortName = server.shortName;
+      var link = server.src;
+      if (shortName == "Vid") {
+        vidStreams = await this.decodeVidStreaming(link);
+      } else if (shortName == "Cat") {
+        vidStreams = await this.decodeCatStreaming(link);
+      }
+
+      streams = [...streams, ...vidStreams];
+    }
+
+    return streams;
   }
 
   getSourcePreferences() {
@@ -379,6 +395,7 @@ class DefaultExtension extends MProvider {
       },
     ];
   }
+
   base64Encode(input) {
     const chars =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -404,6 +421,220 @@ class DefaultExtension extends MProvider {
     }
 
     return output;
+  }
+
+  // ---------Decorders----------
+  hexToString(hex) {
+    let str = "";
+    for (let i = 0; i < hex.length; i += 2) {
+      str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    }
+    return str;
+  }
+
+  sha1(msg) {
+    function rotl(n, s) {
+      return (n << s) | (n >>> (32 - s));
+    }
+
+    function toHexStr(n) {
+      let s = "",
+        v;
+      for (let i = 7; i >= 0; i--) {
+        v = (n >>> (i * 4)) & 0xf;
+        s += v.toString(16);
+      }
+      return s;
+    }
+
+    // UTF-8 encode
+    msg = unescape(encodeURIComponent(msg));
+    let msgLen = msg.length;
+
+    let wordArray = [];
+    for (let i = 0; i < msgLen - 3; i += 4) {
+      wordArray.push(
+        (msg.charCodeAt(i) << 24) |
+          (msg.charCodeAt(i + 1) << 16) |
+          (msg.charCodeAt(i + 2) << 8) |
+          msg.charCodeAt(i + 3)
+      );
+    }
+
+    let i = msgLen % 4;
+    let tail = 0;
+    if (i === 0) {
+      tail = 0x080000000;
+    } else if (i === 1) {
+      tail = (msg.charCodeAt(msgLen - 1) << 24) | 0x0800000;
+    } else if (i === 2) {
+      tail =
+        (msg.charCodeAt(msgLen - 2) << 24) |
+        (msg.charCodeAt(msgLen - 1) << 16) |
+        0x08000;
+    } else {
+      tail =
+        (msg.charCodeAt(msgLen - 3) << 24) |
+        (msg.charCodeAt(msgLen - 2) << 16) |
+        (msg.charCodeAt(msgLen - 1) << 8) |
+        0x80;
+    }
+    wordArray.push(tail);
+
+    while (wordArray.length % 16 !== 14) wordArray.push(0);
+    wordArray.push(msgLen >>> 29);
+    wordArray.push((msgLen << 3) & 0x0ffffffff);
+
+    let H0 = 0x67452301;
+    let H1 = 0xefcdab89;
+    let H2 = 0x98badcfe;
+    let H3 = 0x10325476;
+    let H4 = 0xc3d2e1f0;
+
+    for (let blockstart = 0; blockstart < wordArray.length; blockstart += 16) {
+      let W = wordArray.slice(blockstart, blockstart + 16);
+      for (let t = 16; t < 80; t++) {
+        W[t] = rotl(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
+      }
+
+      let a = H0,
+        b = H1,
+        c = H2,
+        d = H3,
+        e = H4;
+      for (let t = 0; t < 80; t++) {
+        let temp;
+        if (t < 20) {
+          temp = (b & c) | (~b & d);
+          temp =
+            ((rotl(a, 5) + temp + e + W[t] + 0x5a827999) & 0xffffffff) >>> 0;
+        } else if (t < 40) {
+          temp = b ^ c ^ d;
+          temp =
+            ((rotl(a, 5) + temp + e + W[t] + 0x6ed9eba1) & 0xffffffff) >>> 0;
+        } else if (t < 60) {
+          temp = (b & c) | (b & d) | (c & d);
+          temp =
+            ((rotl(a, 5) + temp + e + W[t] + 0x8f1bbcdc) & 0xffffffff) >>> 0;
+        } else {
+          temp = b ^ c ^ d;
+          temp =
+            ((rotl(a, 5) + temp + e + W[t] + 0xca62c1d6) & 0xffffffff) >>> 0;
+        }
+
+        e = d;
+        d = c;
+        c = rotl(b, 30);
+        b = a;
+        a = temp;
+      }
+
+      H0 = (H0 + a) & 0xffffffff;
+      H1 = (H1 + b) & 0xffffffff;
+      H2 = (H2 + c) & 0xffffffff;
+      H3 = (H3 + d) & 0xffffffff;
+      H4 = (H4 + e) & 0xffffffff;
+    }
+
+    return (
+      toHexStr(H0) + toHexStr(H1) + toHexStr(H2) + toHexStr(H3) + toHexStr(H4)
+    );
+  }
+
+  async decodeVidStreaming(url) {
+    var id = url.substring(url.indexOf("id=") + 3, url.indexOf("&ln="));
+    var body = (await this.client.get(url)).body;
+
+    var sKey = "cid: '";
+    var eKey = "',";
+    var s = body.indexOf(sKey) + sKey.length;
+    var e = body.indexOf(eKey, s);
+    var cid = body.substring(s, e);
+    cid = this.hexToString(cid);
+
+    var cidSp = cid.split("|");
+    var ip = cidSp[0];
+    var route = cidSp[1].replace("player.php", "source.php");
+    var key = "e13d38099bf562e8b9851a652d2043d3";
+    var hdr = this.getHeaders("https://krussdomi.com/");
+    delete hdr["content-type"];
+    var ua = hdr["User-Agent"];
+    var timestamp = parseInt(Date.now() / 1000);
+    var signature = "";
+    var pattern = ["IP", "USERAGENT", "ROUTE", "ID", "TIMESTAMP", "KEY"];
+
+    pattern.forEach((step) => {
+      if (step == "IP") signature += ip;
+      else if (step == "USERAGENT") signature += ua;
+      else if (step == "ROUTE") signature += route;
+      else if (step == "ID") signature += id;
+      else if (step == "TIMESTAMP") signature += timestamp;
+      else if (step == "KEY") signature += key;
+    });
+
+    var signHash = this.sha1(signature);
+    var api = `https://krussdomi.com${route}?id=${id}&e=${timestamp}&s=${signHash}`;
+
+    body = (await this.client.get(api, hdr)).body;
+    var data = JSON.parse(body)["data"];
+    var dataSp = data.replace("\\", "").split(":");
+    var encText = dataSp[0];
+    var iv = dataSp[1].substring(0, 16);
+    var txt = cryptoHandler(encText, iv, key, false);
+    txt = txt
+      .substring(txt.indexOf("krussdomi.com"))
+      .replace("krussdomi.com", '{"url":"https://hls.krussdomi.com');
+    data = JSON.parse(txt);
+
+    var streamUrl = data.url;
+    var subtitles = [];
+
+    data.subtitles.forEach((sub) => {
+      subtitles.push({
+        file: "https" + sub.src,
+        label: sub.name,
+      });
+    });
+
+    return [
+      {
+        url: streamUrl,
+        originalUrl: streamUrl,
+        quality: "Auto - VidStreaming",
+        headers: hdr,
+        subtitles: subtitles,
+      },
+    ];
+  }
+
+  async decodeCatStreaming(url) {
+    var body = (await this.client.get(url)).body;
+
+    var sKey = "props=";
+    var eKey = "ssr client";
+    var s = body.indexOf(sKey) + sKey.length + 1;
+    var e = body.indexOf(eKey, s) - 2;
+    var data = JSON.parse(body.substring(s, e).replaceAll("&quot;", '"'));
+
+    var streamUrl = "https" + data.manifest[1];
+    var subtitles = [];
+
+    data.subtitles[1].forEach((sub) => {
+      sub = sub[1];
+      subtitles.push({
+        file: sub.src[1],
+        label: sub.name[1],
+      });
+    });
+
+    return [
+      {
+        url: streamUrl,
+        originalUrl: streamUrl,
+        quality: "Auto - CatStreaming",
+        subtitles: subtitles,
+      },
+    ];
   }
 
   // End
