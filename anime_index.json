@@ -242,6 +242,28 @@
         "notes": ""
     },
     {
+        "name": "KickAssAnime",
+        "id": 4096048097,
+        "baseUrl": "https://kaa.mx",
+        "lang": "en",
+        "typeSource": "multi",
+        "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://kaa.mx/",
+        "dateFormat": "",
+        "dateFormatLocale": "",
+        "isNsfw": false,
+        "hasCloudflare": false,
+        "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/en/kickassanime.js",
+        "apiUrl": "",
+        "version": "0.0.7",
+        "isManga": false,
+        "itemType": 1,
+        "isFullData": false,
+        "appMinVerReq": "0.5.0",
+        "additionalParams": "",
+        "sourceCodeLanguage": 1,
+        "notes": ""
+    },
+    {
         "name": "AnimeGG",
         "id": 209614032,
         "baseUrl": "https://www.animegg.org",

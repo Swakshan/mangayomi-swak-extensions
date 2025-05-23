@@ -18,6 +18,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| KickAssAnime | 0.0.7 | en | 2025/05/23 13:27 IST |
 | Autoembed | 1.2.7 | all | 2025/05/20 16:17 IST |
 | Soaper | 1.0.5 | all | 2025/05/20 16:17 IST |
 | Animeonsen | 1.0.1 | en, ja | 2025/05/20 16:17 IST |

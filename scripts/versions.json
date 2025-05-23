@@ -20,6 +20,12 @@
         }
     },
     "anime": {
+        "KickAssAnime": {
+            "name": "KickAssAnime",
+            "version": "0.0.7",
+            "langs": "en",
+            "lastUpd": 1747987051.04447
+        },
         "Autoembed": {
             "name": "Autoembed",
             "version": "1.2.7",
