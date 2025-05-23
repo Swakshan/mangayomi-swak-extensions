@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -37,6 +37,7 @@ class DefaultExtension extends MProvider {
   getHeaders(url) {
     return {
       Referer: url,
+      Origin: url,
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
       "content-type": "application/json",
@@ -358,7 +359,7 @@ class DefaultExtension extends MProvider {
       streams = [...streams, ...vidStreams];
     }
 
-    return streams;
+    return this.sortStreams(streams);
   }
 
   getSourcePreferences() {
@@ -393,6 +394,24 @@ class DefaultExtension extends MProvider {
           entryValues: ["ja-JP", "en-US", "others"],
         },
       },
+      {
+        key: "kaa_pref_extract_streams",
+        switchPreferenceCompat: {
+          title: "Split stream into different quality streams",
+          summary: "Split stream Auto into 360p/720p/1080p",
+          value: true,
+        },
+      },
+      {
+        key: "kaa_pref_video_resolution",
+        listPreference: {
+          title: "Preferred video resolution",
+          summary: "",
+          valueIndex: 0,
+          entries: ["Auto", "1080p", "720p", "480p", "360p"],
+          entryValues: ["auto", "1080", "720", "480", "360"],
+        },
+      },
     ];
   }
 
@@ -423,7 +442,7 @@ class DefaultExtension extends MProvider {
     return output;
   }
 
-  // ---------Decorders----------
+  // --------- Decorders ----------
   hexToString(hex) {
     let str = "";
     for (let i = 0; i < hex.length; i += 2) {
@@ -587,30 +606,25 @@ class DefaultExtension extends MProvider {
     data = JSON.parse(txt);
 
     var streamUrl = data.url;
+    var streams = await this.extractStreams(streamUrl, hdr, "VidStreaming");
     var subtitles = [];
 
-    data.subtitles.forEach((sub) => {
+    data.subtitles.forEach((sub) => {      
       subtitles.push({
-        file: "https" + sub.src,
+        file: "https:" + sub.src,
         label: sub.name,
       });
     });
 
-    return [
-      {
-        url: streamUrl,
-        originalUrl: streamUrl,
-        quality: "Auto - VidStreaming",
-        headers: hdr,
-        subtitles: subtitles,
-      },
-    ];
+    streams[0].subtitles = subtitles;
+
+    return streams;
   }
 
   async decodeCatStreaming(url) {
     var hdr = this.getHeaders("https://krussdomi.com");
     delete hdr["content-type"];
-    var body = (await this.client.get(url,hdr)).body;
+    var body = (await this.client.get(url, hdr)).body;
 
     var sKey = "props=";
     var eKey = "ssr client";
@@ -619,25 +633,91 @@ class DefaultExtension extends MProvider {
     var data = JSON.parse(body.substring(s, e).replaceAll("&quot;", '"'));
 
     var streamUrl = "https:" + data.manifest[1];
+    var streams = await this.extractStreams(streamUrl, hdr, "CatStreaming");
     var subtitles = [];
 
     data.subtitles[1].forEach((sub) => {
       sub = sub[1];
+      var label = `${sub.language[1]} - ${sub.name[1]}`;
       subtitles.push({
         file: sub.src[1],
-        label: sub.name[1],
+        label,
       });
     });
 
-    return [
+    streams[0].subtitles = subtitles;
+
+    return streams;
+  }
+
+  //------- Stream manipulations -------
+
+  async extractStreams(url, hdr, host) {
+    var streams = [
       {
-        url: streamUrl,
-        originalUrl: streamUrl,
-        quality: "Auto - CatStreaming",
-        subtitles: subtitles,
+        url: url,
+        originalUrl: url,
+        quality: `Auto - ${host}`,
         headers: hdr,
       },
     ];
+    var doExtract = this.getPreference("kaa_pref_extract_streams");
+    if (!doExtract) return streams;
+
+    const response = await new Client().get(url);
+    const body = response.body;
+    const lines = body.split("\n");
+    var audios = [];
+
+    var baseUrl = url.replace("master.m3u8", "");
+
+    for (let i = 0; i < lines.length; i++) {
+      var currentLine = lines[i];
+      if (currentLine.startsWith("#EXT-X-STREAM-INF:")) {
+        var resolution = currentLine.match(/RESOLUTION=(\d+x\d+)/)[1];
+        var m3u8Url = baseUrl + lines[i + 1].trim();
+        streams.push({
+          url: m3u8Url,
+          originalUrl: m3u8Url,
+          quality: `${resolution} - ${host}`,
+          headers: hdr,
+        });
+      } else if (currentLine.startsWith("#EXT-X-MEDIA:TYPE=AUDIO")) {
+        var attributesString = currentLine.split(",");
+        var attributeRegex = /([A-Z-]+)=("([^"]*)"|[^,]*)/g;
+        let match;
+        var trackInfo = {};
+        while ((match = attributeRegex.exec(attributesString)) !== null) {
+          var key = match[1];
+          var value = match[3] || match[2];
+          if (key === "NAME") {
+            trackInfo.label = value;
+          } else if (key === "URI") {
+            trackInfo.file = baseUrl + value;
+          }
+        }
+        (trackInfo.headers = hdr), audios.push(trackInfo);
+      }
+    }
+    streams[0].audios = audios;
+    return streams;
+  }
+
+  sortStreams(streams) {
+    var sortedStreams = [];
+    var copyStreams = streams.slice();
+
+    var pref = this.getPreference("kaa_pref_video_resolution");
+    for (var stream of streams) {
+      if (stream.quality.indexOf(pref) > -1) {
+        sortedStreams.push(stream);
+        var index = copyStreams.indexOf(stream);
+        if (index > -1) {
+          copyStreams.splice(index, 1);
+        }
+      }
+    }
+    return [...sortedStreams, ...copyStreams];
   }
 
   // End
