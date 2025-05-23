@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -608,7 +608,9 @@ class DefaultExtension extends MProvider {
   }
 
   async decodeCatStreaming(url) {
-    var body = (await this.client.get(url)).body;
+    var hdr = this.getHeaders("https://krussdomi.com");
+    delete hdr["content-type"];
+    var body = (await this.client.get(url,hdr)).body;
 
     var sKey = "props=";
     var eKey = "ssr client";
@@ -616,7 +618,7 @@ class DefaultExtension extends MProvider {
     var e = body.indexOf(eKey, s) - 2;
     var data = JSON.parse(body.substring(s, e).replaceAll("&quot;", '"'));
 
-    var streamUrl = "https" + data.manifest[1];
+    var streamUrl = "https:" + data.manifest[1];
     var subtitles = [];
 
     data.subtitles[1].forEach((sub) => {
@@ -633,6 +635,7 @@ class DefaultExtension extends MProvider {
         originalUrl: streamUrl,
         quality: "Auto - CatStreaming",
         subtitles: subtitles,
+        headers: hdr,
       },
     ];
   }
