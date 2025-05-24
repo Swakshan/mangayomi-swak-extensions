@@ -9,11 +9,11 @@ const mangayomiSources = [
     "typeSource": "multi",
     "isManga": false,
     "itemType": 1,
-    "version": "1.2.7",
+    "version": "1.3.3",
     "dateFormat": "",
     "dateFormatLocale": "",
-    "pkgPath": "anime/src/all/autoembed.js"
-  }
+    "pkgPath": "anime/src/all/autoembed.js",
+  },
 ];
 
 class DefaultExtension extends MProvider {
@@ -142,7 +142,7 @@ class DefaultExtension extends MProvider {
     var item = {
       name: result.name,
       imageUrl: result.poster,
-      link: `${linkSlug}${linkCode}`,
+      link: `${linkSlug}${tmdb_id}`,
       description: result.description,
       genre: result.genre,
     };
@@ -277,29 +277,27 @@ class DefaultExtension extends MProvider {
 
   // Gets subtitles based on TMDB id.
   async getSubtitleList(id, s, e) {
+    var subs = [];
     var subPref = parseInt(
-      this.getPreference("autoembed_pref_subtitle_source")
+      this.getPreference("autoembed_pref_subtitle_source_2")
     );
 
-    var api = `https://sub.wyzie.ru/search?id=${id}`;
-    var hdr = {};
-
     if (subPref === 2) {
-      api = `https://sources.hexa.watch/subs/${id}`;
-      hdr = { "Origin": "https://api.hexa.watch" };
-      if (s != "0") api = `${api}/${s}/${e}`;
+      var slug = `s.php?id=${id}`;
+      if (s != "0") slug = `st.php?id=${id}&s=${s}&e=${e}`;
+      var response = await new Client().get("https://vid3c.site/"+slug);
+      subs = JSON.parse(response.body);
     } else {
+      var api = `https://sub.wyzie.ru/search?id=${id}`;
       if (s != "0") api = `${api}&season=${s}&episode=${e}`;
-    }
-    var response = await new Client().get(api, hdr);
-    var body = JSON.parse(response.body);
-
-    var subs = [];
-    for (var sub of body) {
-      subs.push({
-        file: sub.url,
-        label: sub.display,
-      });
+      var response = await new Client().get(api);
+      var body = JSON.parse(response.body);
+      for (var sub of body) {
+        subs.push({
+          file: sub.url,
+          label: sub.display,
+        });
+      }
     }
 
     return subs;
@@ -307,7 +305,7 @@ class DefaultExtension extends MProvider {
 
   // For anime episode video list
   async getVideoList(url) {
-    var streamAPI = parseInt(this.getPreference("autoembed_stream_source_3"));
+    var streamAPI = parseInt(this.getPreference("autoembed_stream_source_4"));
     var nativeSubs = this.getPreference("autoembed_pref_navtive_subtitle");
 
     var parts = url.split("||");
@@ -326,60 +324,72 @@ class DefaultExtension extends MProvider {
     var subtitles = [];
     switch (streamAPI) {
       case 2: {
+        var hdr = {
+          "Referer": "https://2embed.cc",
+          "sec-fetch-dest": "iframe",
+        };
+        var slug = `embed/${id}`;
         if (media_type == "tv") {
-          id = `${id}/${s}/${e}`;
+          slug = `embedtv/${id}&s=${s}&e=${e}`;
         }
-        var api = `https://play2.123embed.net/server/3?path=/${media_type}/${id}`;
-        var response = await new Client().get(api);
+        var api = `https://2embed.cc/${slug}`;
+        var response = await new Client().get(api, hdr);
 
         if (response.statusCode != 200) {
           throw new Error(
-            "play2.123embed.net unavailable\nPlease choose a different server"
-          );
-        }
-
-        var body = JSON.parse(response.body);
-        var link = body.playlist[0].file;
-        streams.push({
-          url: link,
-          originalUrl: link,
-          quality: "auto",
-          headers: { "Origin": "https://play2.123embed.net" },
-        });
-        break;
-      }
-      case 3: {
-        if (media_type == "tv") {
-          id = `${id}&s=${s}&e=${e}`;
-        }
-        var api = `https://autoembed.cc/embed/player.php?id=${id}`;
-
-        var response = await new Client().get(api);
-
-        if (response.statusCode != 200) {
-          throw new Error(
-            "autoembed.cc unavailable\nPlease choose a different server"
+            "2embed.cc unavailable\nPlease choose a different server"
           );
         }
         var body = response.body;
-        var sKey = '"file": ';
-        var eKey = "]});";
+        var sKey = "swish?id=";
         var start = body.indexOf(sKey);
         if (start < 0) {
           throw new Error(
-            "autoembed.cc videos unavailable\nPlease choose a different server"
+            "2embed.cc videos unavailable\nPlease choose a different server"
           );
         }
         start += sKey.length;
 
-        var end = body.substring(start).indexOf(eKey) + start - 1;
-        var strms = JSON.parse(body.substring(start, end) + "]");
-        for (var strm of strms) {
-          var link = strm.file;
-          var lang = strm.title;
-          var streamSplit = await this.splitStreams(link, lang);
-          streams = [...streams, ...streamSplit];
+        var eKey = "'";
+        var end = body.indexOf(eKey, start);
+        var strmId = body.substring(start, end);
+
+        var uplUrl = `https://uqloads.xyz/e/${strmId}`;
+
+        response = await new Client().get(uplUrl, hdr);
+
+        body = response.body;
+        sKey = "eval(function";
+        start = body.indexOf(sKey);
+        if (start < 0) {
+          throw new Error(
+            "2embed.cc videos unavailable\nPlease choose a different server"
+          );
         }
+
+        eKey = "split('|')))";
+        end = body.indexOf(eKey, start) + eKey.length;
+        var data = body.substring(start, end);
+        var strmData = unpackJs(data);
+        // console.log(strms);
+        sKey = '"hls2":"';
+        start = strmData.indexOf(sKey);
+        if (start < 0) {
+          throw new Error(
+            "2embed.cc videos unavailable\nPlease choose a different server"
+          );
+        }
+        start += sKey.length;
+        eKey = '"}';
+        end = strmData.indexOf(eKey, start);
+        var streamUrl = strmData.substring(start, end);
+
+        streams.push({
+          url: streamUrl,
+          originalUrl: streamUrl,
+          quality: `2embed - Auto`,
+          headers: hdr,
+        });
 
         break;
       }
@@ -387,7 +397,7 @@ class DefaultExtension extends MProvider {
         if (media_type == "tv") {
           id = `${id}&season=${s}&episode=${e}`;
         }
-        var api = `https://flicky.host/player/desi.php?id=${id}`;
+        var api = `https://player.flicky.host/multi.php?id=${id}`;
         var response = await new Client().get(api, {
           "Referer": "https://flicky.host/",
           "sec-fetch-dest": "iframe",
@@ -419,54 +429,6 @@ class DefaultExtension extends MProvider {
           streams = [...streams, ...streamSplit];
         }
 
-        break;
-      }
-      case 5: {
-        if (media_type == "tv") {
-          id = `${id}/${s}/${e}`;
-        }
-        var api = `https://vidapi.click/api/video/${media_type}/${id}`;
-        var response = await new Client().get(api);
-
-        if (response.statusCode != 200) {
-          throw new Error(
-            "vidapi.click unavailable\nPlease choose a different server"
-          );
-        }
-
-        var body = JSON.parse(response.body);
-        var link = body.sources[0].file;
-        if (nativeSubs) subtitles = body.tracks;
-        streams = await this.extractStreams(link);
-        break;
-      }
-      case 6: {
-        if (media_type == "tv") {
-          id = `${id}/${s}/${e}`;
-        }
-        var api = `https://sources.hexa.watch/plsdontscrapemeuwu/${id}`;
-        var hdr = { "Origin": "https://api.hexa.watch" };
-        var response = await new Client().get(api, hdr);
-
-        if (response.statusCode != 200) {
-          throw new Error(
-            "hexa.watch unavailable\nPlease choose a different server"
-          );
-        }
-
-        var body = JSON.parse(response.body);
-        var strms = body.streams;
-        for (var strm of strms) {
-          var streamLink = strm.url;
-          if (streamLink.length > 0) {
-            streams.push({
-              url: strm.url,
-              originalUrl: strm.url,
-              quality: `${strm.label} - Auto`,
-              headers: strm.headers,
-            });
-          }
-        }
         break;
       }
       case 7: {
@@ -672,22 +634,19 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "autoembed_stream_source_3",
+        key: "autoembed_stream_source_4",
         listPreference: {
           title: "Preferred stream source",
           summary: "",
           valueIndex: 0,
           entries: [
             "tom.autoembed.cc",
-            "123embed.net",
-            "autoembed.cc - Indian languages",
+            "2embed.cc",
             "flicky.host - Indian languages",
-            "vidapi.click",
-            "hexa.watch",
             "vidsrc.su",
             "embed.su",
           ],
-          entryValues: ["1", "2", "3", "4", "5", "6", "7", "8"],
+          entryValues: ["1", "2", "4", "7", "8"],
         },
       },
       {
@@ -700,12 +659,12 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "autoembed_pref_subtitle_source",
+        key: "autoembed_pref_subtitle_source_2",
         listPreference: {
           title: "Preferred subtitle source",
           summary: "",
           valueIndex: 0,
-          entries: ["sub.wyzie.ru", "hexa.watch"],
+          entries: ["sub.wyzie.ru", "vid3c.site"],
           entryValues: ["1", "2"],
         },
       },
