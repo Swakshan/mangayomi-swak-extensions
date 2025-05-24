@@ -20,17 +20,17 @@
         }
     },
     "anime": {
+        "Autoembed": {
+            "name": "Autoembed",
+            "version": "1.3.3",
+            "langs": "all",
+            "lastUpd": 1748094760.694626
+        },
         "KickAssAnime": {
             "name": "KickAssAnime",
             "version": "0.0.7",
             "langs": "en",
             "lastUpd": 1747987051.04447
-        },
-        "Autoembed": {
-            "name": "Autoembed",
-            "version": "1.2.7",
-            "langs": "all",
-            "lastUpd": 1747738043.896285
         },
         "Soaper": {
             "name": "Soaper",
