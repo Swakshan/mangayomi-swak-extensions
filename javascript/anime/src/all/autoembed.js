@@ -9,7 +9,7 @@ const mangayomiSources = [
     "typeSource": "multi",
     "isManga": false,
     "itemType": 1,
-    "version": "1.3.0",
+    "version": "1.3.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/all/autoembed.js",
@@ -277,29 +277,27 @@ class DefaultExtension extends MProvider {
 
   // Gets subtitles based on TMDB id.
   async getSubtitleList(id, s, e) {
+    var subs = [];
     var subPref = parseInt(
-      this.getPreference("autoembed_pref_subtitle_source")
+      this.getPreference("autoembed_pref_subtitle_source_2")
     );
 
-    var api = `https://sub.wyzie.ru/search?id=${id}`;
-    var hdr = {};
-
     if (subPref === 2) {
-      api = `https://sources.hexa.watch/subs/${id}`;
-      hdr = { "Origin": "https://api.hexa.watch" };
-      if (s != "0") api = `${api}/${s}/${e}`;
+      var slug = `s.php?id=${id}`;
+      if (s != "0") slug = `st.php?id=${id}&s=${s}&e=${e}`;
+      var response = await new Client().get("https://vid3c.site/"+slug);
+      subs = JSON.parse(response.body);
     } else {
+      var api = `https://sub.wyzie.ru/search?id=${id}`;
       if (s != "0") api = `${api}&season=${s}&episode=${e}`;
-    }
-    var response = await new Client().get(api, hdr);
-    var body = JSON.parse(response.body);
-
-    var subs = [];
-    for (var sub of body) {
-      subs.push({
-        file: sub.url,
-        label: sub.display,
-      });
+      var response = await new Client().get(api);
+      var body = JSON.parse(response.body);
+      for (var sub of body) {
+        subs.push({
+          file: sub.url,
+          label: sub.display,
+        });
+      }
     }
 
     return subs;
@@ -661,12 +659,12 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "autoembed_pref_subtitle_source",
+        key: "autoembed_pref_subtitle_source_2",
         listPreference: {
           title: "Preferred subtitle source",
           summary: "",
           valueIndex: 0,
-          entries: ["sub.wyzie.ru", "hexa.watch"],
+          entries: ["sub.wyzie.ru", "vid3c.site"],
           entryValues: ["1", "2"],
         },
       },
