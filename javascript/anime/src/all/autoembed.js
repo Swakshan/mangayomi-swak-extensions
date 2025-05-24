@@ -9,7 +9,7 @@ const mangayomiSources = [
     "typeSource": "multi",
     "isManga": false,
     "itemType": 1,
-    "version": "1.3.2",
+    "version": "1.3.3",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/all/autoembed.js",
@@ -142,7 +142,7 @@ class DefaultExtension extends MProvider {
     var item = {
       name: result.name,
       imageUrl: result.poster,
-      link: `${linkSlug}${linkCode}`,
+      link: `${linkSlug}${tmdb_id}`,
       description: result.description,
       genre: result.genre,
     };
