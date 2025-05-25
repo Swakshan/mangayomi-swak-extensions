@@ -10,7 +10,7 @@ const mangayomiSources = [
     "typeSource": "single",
     "isManga": true,
     "itemType": 0,
-    "version": "0.2.3",
+    "version": "0.2.5",
     "pkgPath": "manga/src/en/readcomiconline.js",
   },
 ];
@@ -204,18 +204,31 @@ class DefaultExtension extends MProvider {
         baseUrlOverride = baseUrlOverride.substring(0, -1);
     }
 
-    const pageRegex = /pht\s*=\s*'([^']+?)';?/g;
-    while ((match = pageRegex.exec(html)) !== null) {
-      var encodedImageUrl = match[1];
-      var decodedImageUrl = this.decodeImageUrl(
-        encodedImageUrl,
-        baseUrlOverride
-      );
-      pages.push({
-        url: decodedImageUrl,
-        headers: hdr,
-      });
-    }
+    var sKey = "var pth = '';";
+    var eKey = "=";
+    var s = html.indexOf(sKey) + sKey.length;
+    var e = html.indexOf(eKey, s);
+    var variableTag = html.substring(s, e).trim().split(" ")[1];
+
+    eKey = "//beau";
+    var lines = html.substring(eKey, html.indexOf(eKey, e)).split("\n");
+
+    lines.forEach((line) => {
+      line = line.trim();
+      if (line.startsWith(variableTag)) {
+        var encodedImageUrl = line
+          .replace(`${variableTag} = '`, "")
+          .slice(0, -2);
+        var decodedImageUrl = this.decodeImageUrl(
+          encodedImageUrl,
+          baseUrlOverride
+        );
+        pages.push({
+          url: decodedImageUrl,
+          headers: hdr,
+        });
+      }
+    });
     return pages;
   }
   getFilterList() {
@@ -438,7 +451,7 @@ class DefaultExtension extends MProvider {
   decodeImageUrl(obfuscatedUrl, customDomain) {
     var decodedUrl = "";
     obfuscatedUrl = obfuscatedUrl
-      .replace(/sR__4kwqYI_/g, "a")
+      .replace(/6UUQS__ACd__/g, "g")
       .replace(/b/g, "b")
       .replace(/h/g, "h");
 
