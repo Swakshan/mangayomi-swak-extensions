@@ -1,16 +1,16 @@
 {
     "manga": {
+        "ReadComicOnline": {
+            "name": "ReadComicOnline",
+            "version": "0.2.5",
+            "langs": "en",
+            "lastUpd": 1748159698.481894
+        },
         "Mangapill": {
             "name": "Mangapill",
             "version": "1.0.3",
             "langs": "en",
             "lastUpd": 1747738043.896285
-        },
-        "ReadComicOnline": {
-            "name": "ReadComicOnline",
-            "version": "0.2.3",
-            "langs": "en",
-            "lastUpd": 1746809429.294991
         },
         "Weeb Central": {
             "name": "Weeb Central",
