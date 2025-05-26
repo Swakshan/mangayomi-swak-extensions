@@ -5,14 +5,15 @@ const mangayomiSources = [
     "baseUrl": "https://xprime.tv",
     "lang": "all",
     "typeSource": "multi",
-    "iconUrl": "https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/javascript/icon/all.xprime.jpg",
+    "iconUrl":
+      "https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/javascript/icon/all.xprime.jpg",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "1.0.1",
+    "version": "1.0.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -336,6 +337,70 @@ class DefaultExtension extends MProvider {
     return { streamUrls, subtitles: [] };
   }
 
+  async fox(data) {
+    var serverName = "fox";
+    var hdr = this.getHeaders();
+
+    var slug = serverName;
+    slug += "?name=" + data.name;
+    slug += "&id=" + data.tmdb;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var subtitles = [];
+    var body = await this.serverRequest(slug, hdr);
+    if (body) {
+      if (body.hasOwnProperty("url")) {
+        var stream = body.url;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `Auto : ${serverName}`
+        });
+      }
+      if (body.hasOwnProperty("subtitles")) {
+        subtitles = body.subtitles;
+      }
+    }
+    return { streamUrls, subtitles: subtitles };
+  }
+
+  async phoenix(data) {
+    var serverName = "phoenix";
+    var hdr = this.getHeaders();
+
+    var slug = serverName;
+    slug += "?name=" + data.name;
+    slug += "&id=" + data.tmdb;
+    slug += "&imdb=" + data.imdb;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var subtitles = [];
+    var body = await this.serverRequest(slug, hdr);
+    if (body) {
+      if (body.hasOwnProperty("url")) {
+        var stream = body.url;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `Auto : ${serverName}`,
+          headers: hdr,
+        });
+      }
+      if (body.hasOwnProperty("subtitles")) {
+        subtitles = body.subtitles;
+      }
+    }
+    return { streamUrls, subtitles: subtitles };
+  }
+
   // Gets subtitles based on TMDB id.
   async getSubtitleList(id, s, e) {
     var api = `https://sub.wyzie.ru/search?id=${id}`;
@@ -375,6 +440,10 @@ class DefaultExtension extends MProvider {
         serverData = await this.harbour(data);
       } else if (server == "volkswagen") {
         serverData = await this.volkswagen(data);
+      } else if (server == "fox") {
+        serverData = await this.fox(data);
+      } else if (server == "phoenix") {
+        serverData = await this.phoenix(data);
       }
 
       streams = [...streams, ...serverData.streamUrls];
@@ -423,13 +492,27 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "xprime_pref_stream_server",
+        key: "xprime_pref_stream_server_1",
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
           values: ["primebox", "primenet", "harbour"],
-          entries: ["Primebox", "Primenet", "Harbour", "Volkswagen"],
-          entryValues: ["primebox", "primenet", "harbour", "volkswagen"],
+          entries: [
+            "Primebox",
+            "Primenet",
+            "Harbour",
+            "Fox",
+            "Phoenix",
+            "Volkswagen",
+          ],
+          entryValues: [
+            "primebox",
+            "primenet",
+            "harbour",
+            "fox",
+            "phoenix",
+            "volkswagen",
+          ],
         },
       },
     ];
