@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -218,6 +218,8 @@ class DefaultExtension extends MProvider {
     var subtitles = [];
 
     var data = JSON.parse(url);
+    data.hdr = this.getHeaders();
+
     for (var server of prefServer) {
       var serverData = {};
       if (server == "primebox") {
@@ -320,6 +322,7 @@ class DefaultExtension extends MProvider {
 
   async primebox(data) {
     var serverName = "primebox";
+    var hdr = data.hdr;
 
     var slug = serverName;
     slug += "?name=" + data.name;
@@ -342,6 +345,7 @@ class DefaultExtension extends MProvider {
             url: stream,
             originalUrl: stream,
             quality: `${quality} : ${serverName}`,
+            headers: hdr,
           });
         }
       }
@@ -369,6 +373,7 @@ class DefaultExtension extends MProvider {
           url: stream,
           originalUrl: stream,
           quality: `Auto : ${serverName}`,
+          headers: data.hdr,
         });
       }
     }
@@ -395,6 +400,7 @@ class DefaultExtension extends MProvider {
           url: stream,
           originalUrl: stream,
           quality: `Auto : ${serverName}`,
+          headers: data.hdr,
         });
       }
     }
@@ -421,6 +427,7 @@ class DefaultExtension extends MProvider {
           url: stream,
           originalUrl: stream,
           quality: `Auto : ${serverName}`,
+          headers: data.hdr,
         });
       }
     }
@@ -448,6 +455,7 @@ class DefaultExtension extends MProvider {
           url: stream,
           originalUrl: stream,
           quality: `Auto : ${serverName}`,
+          headers: data.hdr,
         });
       }
       if (body.hasOwnProperty("subtitles")) {
@@ -479,6 +487,7 @@ class DefaultExtension extends MProvider {
           url: stream,
           originalUrl: stream,
           quality: `Auto : ${serverName}`,
+          headers: data.hdr,
         });
       }
       if (body.hasOwnProperty("subtitles")) {
