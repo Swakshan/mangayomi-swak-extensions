@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -210,220 +210,8 @@ class DefaultExtension extends MProvider {
     return { name, imageUrl, status, description, genre, link, chapters };
   }
 
-  async serverRequest(slug, hdr) {
-    var api = this.source.apiUrl + "/" + slug;
-    var req = await this.client.get(api, hdr);
-    if (req.statusCode == 200) {
-      return JSON.parse(req.body);
-    } else {
-      return null;
-    }
-  }
-
-  async primebox(data) {
-    var serverName = "primebox";
-    var hdr = this.getHeaders();
-
-    var slug = serverName;
-    slug += "?name=" + data.name;
-    slug += "&fallback_year=" + data.year;
-    if (data.hasOwnProperty("season")) {
-      slug += "&season=" + data.season;
-      slug += "&episode=" + data.episode;
-    }
-
-    var streamUrls = [];
-    var subtitles = [];
-    var body = await this.serverRequest(slug, hdr);
-    if (body) {
-      if (body.hasOwnProperty("available_qualities")) {
-        var streams = body.streams;
-        var available_qualities = body.available_qualities;
-        for (var quality of available_qualities) {
-          var stream = streams[quality];
-          streamUrls.push({
-            url: stream,
-            originalUrl: stream,
-            quality: `${quality} : ${serverName}`,
-            headers: hdr,
-          });
-        }
-      }
-      subtitles = body.subtitles;
-    }
-    return { streamUrls, subtitles };
-  }
-
-  async primenet(data) {
-    var serverName = "primenet";
-    var hdr = this.getHeaders();
-
-    var slug = serverName;
-    slug += "?id=" + data.tmdb;
-    if (data.hasOwnProperty("season")) {
-      slug += "&season=" + data.season;
-      slug += "&episode=" + data.episode;
-    }
-
-    var streamUrls = [];
-    var body = await this.serverRequest(slug, hdr);
-    if (body) {
-      if (body.hasOwnProperty("url")) {
-        var stream = body.url;
-        streamUrls.push({
-          url: stream,
-          originalUrl: stream,
-          quality: `Auto : ${serverName}`,
-          headers: hdr,
-        });
-      }
-    }
-    return { streamUrls, subtitles: [] };
-  }
-
-  async harbour(data) {
-    var serverName = "harbour";
-    var hdr = this.getHeaders();
-
-    var slug = serverName;
-    slug += "?name=" + data.name;
-    slug += "&id=" + data.imdb;
-    if (data.hasOwnProperty("season")) {
-      slug += "&season=" + data.season;
-      slug += "&episode=" + data.episode;
-    }
-
-    var streamUrls = [];
-    var body = await this.serverRequest(slug, hdr);
-    if (body) {
-      if (body.hasOwnProperty("url")) {
-        var stream = body.url;
-        streamUrls.push({
-          url: stream,
-          originalUrl: stream,
-          quality: `Auto : ${serverName}`,
-          headers: hdr,
-        });
-      }
-    }
-    return { streamUrls, subtitles: [] };
-  }
-
-  async volkswagen(data) {
-    var serverName = "volkswagen";
-    var hdr = this.getHeaders();
-
-    var slug = serverName;
-    slug += "?name=" + data.name;
-    slug += "&id=" + data.imdb;
-    if (data.hasOwnProperty("season")) {
-      slug += "&season=" + data.season;
-      slug += "&episode=" + data.episode;
-    }
-
-    var streamUrls = [];
-    var body = await this.serverRequest(slug, hdr);
-    if (body) {
-      if (body.status == "ok" && body.hasOwnProperty("streams")) {
-        var stream = body.streams.german.url;
-        streamUrls.push({
-          url: stream,
-          originalUrl: stream,
-          quality: `Auto : ${serverName}`,
-          headers: hdr,
-        });
-      }
-    }
-    return { streamUrls, subtitles: [] };
-  }
-
-  async fox(data) {
-    var serverName = "fox";
-    var hdr = this.getHeaders();
-
-    var slug = serverName;
-    slug += "?name=" + data.name;
-    slug += "&id=" + data.tmdb;
-    if (data.hasOwnProperty("season")) {
-      slug += "&season=" + data.season;
-      slug += "&episode=" + data.episode;
-    }
-
-    var streamUrls = [];
-    var subtitles = [];
-    var body = await this.serverRequest(slug, hdr);
-    if (body) {
-      if (body.hasOwnProperty("url")) {
-        var stream = body.url;
-        streamUrls.push({
-          url: stream,
-          originalUrl: stream,
-          quality: `Auto : ${serverName}`
-        });
-      }
-      if (body.hasOwnProperty("subtitles")) {
-        subtitles = body.subtitles;
-      }
-    }
-    return { streamUrls, subtitles: subtitles };
-  }
-
-  async phoenix(data) {
-    var serverName = "phoenix";
-    var hdr = this.getHeaders();
-
-    var slug = serverName;
-    slug += "?name=" + data.name;
-    slug += "&id=" + data.tmdb;
-    slug += "&imdb=" + data.imdb;
-    if (data.hasOwnProperty("season")) {
-      slug += "&season=" + data.season;
-      slug += "&episode=" + data.episode;
-    }
-
-    var streamUrls = [];
-    var subtitles = [];
-    var body = await this.serverRequest(slug, hdr);
-    if (body) {
-      if (body.hasOwnProperty("url")) {
-        var stream = body.url;
-        streamUrls.push({
-          url: stream,
-          originalUrl: stream,
-          quality: `Auto : ${serverName}`,
-          headers: hdr,
-        });
-      }
-      if (body.hasOwnProperty("subtitles")) {
-        subtitles = body.subtitles;
-      }
-    }
-    return { streamUrls, subtitles: subtitles };
-  }
-
-  // Gets subtitles based on TMDB id.
-  async getSubtitleList(id, s, e) {
-    var api = `https://sub.wyzie.ru/search?id=${id}`;
-    var hdr = {};
-
-    if (s != "0") api = `${api}&season=${s}&episode=${e}`;
-
-    var response = await new Client().get(api, hdr);
-    var body = JSON.parse(response.body);
-
-    var subs = [];
-    for (var sub of body) {
-      subs.push({
-        file: sub.url,
-        label: sub.display,
-      });
-    }
-
-    return subs;
-  }
-
   async getVideoList(url) {
-    var prefServer = this.getPreference("xprime_pref_stream_server");
+    var prefServer = this.getPreference("xprime_pref_stream_server_1");
     if (prefServer.length < 1) prefServer = ["primebox"];
 
     var streams = [];
@@ -516,6 +304,209 @@ class DefaultExtension extends MProvider {
         },
       },
     ];
+  }
+
+  // -------- Servers --------
+
+  async serverRequest(slug, hdr) {
+    var api = this.source.apiUrl + "/" + slug;
+    var req = await this.client.get(api, hdr);
+    if (req.statusCode == 200) {
+      return JSON.parse(req.body);
+    } else {
+      return null;
+    }
+  }
+
+  async primebox(data) {
+    var serverName = "primebox";
+
+    var slug = serverName;
+    slug += "?name=" + data.name;
+    slug += "&fallback_year=" + data.year;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var subtitles = [];
+    var body = await this.serverRequest(slug);
+    if (body) {
+      if (body.hasOwnProperty("available_qualities")) {
+        var streams = body.streams;
+        var available_qualities = body.available_qualities;
+        for (var quality of available_qualities) {
+          var stream = streams[quality];
+          streamUrls.push({
+            url: stream,
+            originalUrl: stream,
+            quality: `${quality} : ${serverName}`,
+          });
+        }
+      }
+      subtitles = body.subtitles;
+    }
+    return { streamUrls, subtitles };
+  }
+
+  async primenet(data) {
+    var serverName = "primenet";
+
+    var slug = serverName;
+    slug += "?id=" + data.tmdb;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var body = await this.serverRequest(slug);
+    if (body) {
+      if (body.hasOwnProperty("url")) {
+        var stream = body.url;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `Auto : ${serverName}`,
+        });
+      }
+    }
+    return { streamUrls, subtitles: [] };
+  }
+
+  async harbour(data) {
+    var serverName = "harbour";
+
+    var slug = serverName;
+    slug += "?name=" + data.name;
+    slug += "&id=" + data.imdb;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var body = await this.serverRequest(slug);
+    if (body) {
+      if (body.hasOwnProperty("url")) {
+        var stream = body.url;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `Auto : ${serverName}`,
+        });
+      }
+    }
+    return { streamUrls, subtitles: [] };
+  }
+
+  async volkswagen(data) {
+    var serverName = "volkswagen";
+
+    var slug = serverName;
+    slug += "?name=" + data.name;
+    slug += "&id=" + data.imdb;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var body = await this.serverRequest(slug);
+    if (body) {
+      if (body.status == "ok" && body.hasOwnProperty("streams")) {
+        var stream = body.streams.german.url;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `Auto : ${serverName}`,
+        });
+      }
+    }
+    return { streamUrls, subtitles: [] };
+  }
+
+  async fox(data) {
+    var serverName = "fox";
+
+    var slug = serverName;
+    slug += "?name=" + data.name;
+    slug += "&id=" + data.tmdb;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var subtitles = [];
+    var body = await this.serverRequest(slug);
+    if (body) {
+      if (body.hasOwnProperty("url")) {
+        var stream = body.url;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `Auto : ${serverName}`,
+        });
+      }
+      if (body.hasOwnProperty("subtitles")) {
+        subtitles = body.subtitles;
+      }
+    }
+    return { streamUrls, subtitles: subtitles };
+  }
+
+  async phoenix(data) {
+    var serverName = "phoenix";
+
+    var slug = serverName;
+    slug += "?name=" + data.name;
+    slug += "&id=" + data.tmdb;
+    slug += "&imdb=" + data.imdb;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var subtitles = [];
+    var body = await this.serverRequest(slug);
+    if (body) {
+      if (body.hasOwnProperty("url")) {
+        var stream = body.url;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `Auto : ${serverName}`,
+        });
+      }
+      if (body.hasOwnProperty("subtitles")) {
+        subtitles = body.subtitles;
+      }
+    }
+    return { streamUrls, subtitles: subtitles };
+  }
+
+  // Gets subtitles based on TMDB id.
+  async getSubtitleList(id, s, e) {
+    var api = `https://sub.wyzie.ru/search?id=${id}`;
+    var hdr = {};
+
+    if (s != "0") api = `${api}&season=${s}&episode=${e}`;
+
+    var response = await new Client().get(api, hdr);
+    var body = JSON.parse(response.body);
+
+    var subs = [];
+    for (var sub of body) {
+      subs.push({
+        file: sub.url,
+        label: sub.display,
+      });
+    }
+
+    return subs;
   }
 
   // End.
