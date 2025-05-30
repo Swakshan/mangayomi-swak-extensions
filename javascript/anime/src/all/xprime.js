@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -349,7 +349,9 @@ class DefaultExtension extends MProvider {
           });
         }
       }
-      subtitles = body.subtitles;
+      if (body.hasOwnProperty("subtitles")) {
+        subtitles = body.subtitles ?? subtitles;
+      }
     }
     return { streamUrls, subtitles };
   }
@@ -459,7 +461,7 @@ class DefaultExtension extends MProvider {
         });
       }
       if (body.hasOwnProperty("subtitles")) {
-        subtitles = body.subtitles;
+        subtitles = body.subtitles ?? subtitles;
       }
     }
     return { streamUrls, subtitles: subtitles };
@@ -491,7 +493,7 @@ class DefaultExtension extends MProvider {
         });
       }
       if (body.hasOwnProperty("subtitles")) {
-        subtitles = body.subtitles;
+        subtitles = body.subtitles ?? subtitles;
       }
     }
     return { streamUrls, subtitles: subtitles };
