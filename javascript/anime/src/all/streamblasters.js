@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -47,7 +47,7 @@ class DefaultExtension extends MProvider {
     return new Document(res);
   }
 
-  async pageList(slug) {
+  async pageListing(slug) {
     var url = this.getBaseUrl() + slug;
     var doc = await this.request(url);
 
@@ -72,7 +72,7 @@ class DefaultExtension extends MProvider {
 
   async homePage(page) {
     var slug = page > 1 ? `/page/${page}/` : ``;
-    return await this.pageList(slug);
+    return await this.pageListing(slug);
   }
 
   async getPopular(page) {
@@ -86,11 +86,37 @@ class DefaultExtension extends MProvider {
   async search(query, page, filters) {
     var query = `/?s=${query}`;
     var slug = page > 1 ? `/page/${page}${query}` : query;
-    return await this.pageList(slug);
+    return await this.pageListing(slug);
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    var link = url.replace("www.", "");
+    var doc = await this.request(link);
+    var name = doc
+      .selectFirst("span.current")
+      .text.replace(" Watch Online", "");
+    var imageUrl = doc.selectFirst("img.blog-picture.tmdb-picture").getSrc;
+
+    var description = doc
+      .selectFirst("div.tmdb-section-overview")
+      .selectFirst("p")
+      .text.trim();
+
+    var status = 1;
+    var chapters = [];
+    doc
+      .selectFirst("div.series-listing")
+      .select("a")
+      .forEach((item) => {
+        var epLink = item.getHref;
+        var epName = item.selectFirst("span").text;
+        chapters.push({
+          name: epName,
+          url: epLink,
+        });
+      });
+
+    return { name, imageUrl, description, link, status, chapters };
   }
 
   async getVideoList(url) {
