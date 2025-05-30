@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -43,7 +43,8 @@ class DefaultExtension extends MProvider {
   }
 
   async request(url) {
-    var res = (await this.client.get(url)).body;
+    var proxy = "https://api.allorigins.win/raw?url="
+    var res = (await this.client.get(proxy+url)).body;
     return new Document(res);
   }
 
@@ -95,7 +96,6 @@ class DefaultExtension extends MProvider {
     var name = doc
       .selectFirst("span.current")
       .text.replace(" Watch Online", "");
-    var imageUrl = doc.selectFirst("img.blog-picture.tmdb-picture").getSrc;
 
     var description = doc
       .selectFirst("div.tmdb-section-overview")
@@ -116,7 +116,7 @@ class DefaultExtension extends MProvider {
         });
       });
 
-    return { name, imageUrl, description, link, status, chapters };
+    return { name, description, link, status, chapters };
   }
 
   async getVideoList(url) {
@@ -142,7 +142,7 @@ class DefaultExtension extends MProvider {
       if (s < 1)
         throw new Error("Video key not found. Try different player/source");
 
-      var e = body.indexOf(eKey, s + sKey.length);N
+      var e = body.indexOf(eKey, s + sKey.length);
       var obfJs = body.substring(s, e);
       var strmData = unpackJs(obfJs);
 
