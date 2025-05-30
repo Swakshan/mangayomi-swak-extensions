@@ -18,7 +18,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| XPrime | 1.0.7 | all | 2025/05/27 00:38 IST |
+| XPrime | 1.0.8 | all | 2025/05/30 12:51 IST |
 | Autoembed | 1.3.3 | all | 2025/05/24 19:22 IST |
 | KickAssAnime | 0.0.7 | en | 2025/05/23 13:27 IST |
 | Soaper | 1.0.5 | all | 2025/05/20 16:17 IST |
