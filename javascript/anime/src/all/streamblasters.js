@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.3",
+    "version": "0.0.6",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -120,7 +120,48 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    var link = url.replace("www.", "");
+    var doc = await this.request(link);
+    var iframe = doc.selectFirst("iframe").getSrc;
+    var streamUrl = "";
+
+    var doc = await this.request(iframe);
+    var title = doc.selectFirst("title").text.trim();
+    var body = doc.html;
+
+    if (iframe.includes("lulu")) {
+      var sKey = 'file:"';
+      var eKey = '"';
+      var s = body.indexOf(sKey);
+      var e = body.indexOf(eKey, s + sKey.length);
+      var streamUrl = body.substring(s + sKey.length, e);
+    } else {
+      var sKey = "eval(function(";
+      var eKey = "</script>";
+      var s = body.indexOf(sKey);
+      if (s < 1)
+        throw new Error("Video key not found. Try different player/source");
+
+      var e = body.indexOf(eKey, s + sKey.length);N
+      var obfJs = body.substring(s, e);
+      var strmData = unpackJs(obfJs);
+
+      sKey = '"hls2":"';
+      eKey = '"';
+      var s = strmData.indexOf(sKey);
+      if (s < 1)
+        throw new Error("Video key not found. Try different player/source");
+      var e = strmData.indexOf(eKey, s + sKey.length);
+      var streamUrl = strmData.substring(s, e);
+    }
+
+    return [
+      {
+        url: streamUrl,
+        originalUrl: streamUrl,
+        quality: title,
+      },
+    ];
   }
 
   getFilterList() {
