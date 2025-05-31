@@ -92,7 +92,7 @@ class DefaultExtension extends MProvider {
 
   async getDetail(url) {
     var link = url.replace("www.", "");
-    var doc = await this.request(link,false);
+    var doc = await this.request(link,true);
     var name = doc
       .selectFirst("span.current")
       .text.replace(" Watch Online", "");
