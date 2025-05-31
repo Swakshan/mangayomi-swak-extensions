@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.7",
+    "version": "1.0.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -42,15 +42,15 @@ class DefaultExtension extends MProvider {
     return this.getPreference("sb_override_base_url");
   }
 
-  async request(url) {
-    var proxy = "https://api.allorigins.win/raw?url="
-    var res = (await this.client.get(proxy+url)).body;
+  async request(url,proxy=false) {
+    var proxy = proxy?"https://api.allorigins.win/raw?url=":""
+    var res = (await this.client.get(proxy + url)).body;
     return new Document(res);
   }
 
   async pageListing(slug) {
     var url = this.getBaseUrl() + slug;
-    var doc = await this.request(url);
+    var doc = await this.request(url,true);
 
     var list = [];
     var items = doc.select(".blog-items.blog-items-control > article");
@@ -92,7 +92,7 @@ class DefaultExtension extends MProvider {
 
   async getDetail(url) {
     var link = url.replace("www.", "");
-    var doc = await this.request(link);
+    var doc = await this.request(link,false);
     var name = doc
       .selectFirst("span.current")
       .text.replace(" Watch Online", "");
@@ -121,7 +121,7 @@ class DefaultExtension extends MProvider {
 
   async getVideoList(url) {
     var link = url.replace("www.", "");
-    var doc = await this.request(link);
+    var doc = await this.request(link,true);
     var iframe = doc.selectFirst("iframe").getSrc;
     var streamUrl = "";
 
@@ -151,7 +151,8 @@ class DefaultExtension extends MProvider {
       var s = strmData.indexOf(sKey);
       if (s < 1)
         throw new Error("Video key not found. Try different player/source");
-      var e = strmData.indexOf(eKey, s + sKey.length);
+      s += sKey.length;
+      var e = strmData.indexOf(eKey, s);
       var streamUrl = strmData.substring(s, e);
     }
 
