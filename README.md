@@ -18,16 +18,17 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| Streamblasters | 1.0.0 | all | 2025/05/31 10:17 IST |
 | XPrime | 1.0.8 | all | 2025/05/30 12:51 IST |
 | Autoembed | 1.3.3 | all | 2025/05/24 19:22 IST |
 | KickAssAnime | 0.0.7 | en | 2025/05/23 13:27 IST |
-| Soaper | 1.0.5 | all | 2025/05/20 16:17 IST |
-| Animeonsen | 1.0.1 | en, ja | 2025/05/20 16:17 IST |
-| AnimeZ | 1.0.2 | en | 2025/05/20 16:17 IST |
 | Sudatchi | 1.1.1 | en | 2025/05/20 16:17 IST |
 | AnimeGG | 1.0.3 | en | 2025/05/20 16:17 IST |
-| Gojo | 0.0.6 | en | 2025/05/20 16:17 IST |
+| Animeonsen | 1.0.1 | en, ja | 2025/05/20 16:17 IST |
 | AnimeParadise | 0.0.2 | en | 2025/05/20 16:17 IST |
+| Gojo | 0.0.6 | en | 2025/05/20 16:17 IST |
+| AnimeZ | 1.0.2 | en | 2025/05/20 16:17 IST |
+| Soaper | 1.0.5 | all | 2025/05/20 16:17 IST |
 | Aniwave | 0.0.7 | en | 2025/05/09 00:11 IST |
 | KissKH | 0.1.6 | all | 2025/05/02 22:47 IST |
 | Aniplay | 1.4.5 | en | 2025/04/27 19:33 IST |
