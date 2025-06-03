@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -35,9 +35,11 @@ class DefaultExtension extends MProvider {
   }
 
   getHeaders(url) {
+    var cookies = "nsfw=" + this.getPreference("mangapark_browsing_mode");
     return {
       "Referer": url,
       "Origin": url,
+      "Cookie": cookies,
     };
   }
 
@@ -45,13 +47,11 @@ class DefaultExtension extends MProvider {
     return this.getPreference("mangapark_override_base_url");
   }
 
-  async request(slug, cookies = "") {
+  async request(slug) {
     var baseUrl = this.getBaseUrl();
     var url = baseUrl + slug;
     var headers = this.getHeaders(url);
-    if (cookies.length > 0) {
-      headers["Cookie"] = cookies;
-    }
+
     var res = await this.client.get(url, headers);
     if (res.statusCode == 200) {
       return new Document(res.body);
@@ -75,6 +75,7 @@ class DefaultExtension extends MProvider {
       }
       return q;
     }
+    var baseUrl = this.getBaseUrl();
     var slug = "/search?";
     slug += `sortby=${sort}`;
     slug += addSlug("word", query);
@@ -84,8 +85,7 @@ class DefaultExtension extends MProvider {
     slug += addSlug("chapters", chapterCount);
     slug += `&page=${page}`;
 
-    var cookies = "nsfw=" + this.getPreference("mangapark_browsing_mode");
-    var doc = await this.request(slug, cookies);
+    var doc = await this.request(slug);
 
     var list = [];
     var hasNextPage = false;
@@ -94,7 +94,7 @@ class DefaultExtension extends MProvider {
       var link = item.selectFirst("a").getHref;
       var imgSection = item.selectFirst("img");
       var name = imgSection.attr("title");
-      var imageUrl = imgSection.getSrc;
+      var imageUrl = baseUrl + imgSection.getSrc;
       list.push({ link, name, imageUrl });
     });
 
@@ -154,7 +154,55 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    function statusCode(status) {
+      return (
+        {
+          Ongoing: 0,
+          Complete: 1,
+          Hiatus: 2,
+          Canceled: 3,
+        }[status] ?? 5
+      );
+    }
+    var baseUrl = this.getBaseUrl();
+    url = url.replace(baseUrl, "");
+    var link = baseUrl + url;
+
+    var doc = await this.request(url);
+    var name = doc
+      .selectFirst(".text-lg.font-bold")
+      .selectFirst("a")
+      .text.trim();
+    var imageUrl =
+      baseUrl + doc.selectFirst(".w-full.not-prose.shadow-md").getSrc;
+    var description = doc.selectFirst(".limit-html-p").text.trim();
+    var statusText = doc.selectFirst(".font-bold.uppercase.text-success").text;
+    var status = statusCode(statusText);
+    var genre = [];
+    doc
+      .selectFirst(".flex.items-center.flex-wrap")
+      .select("span")
+      .forEach((span) => genre.push(span.text.trim()));
+
+    var chapters = [];
+    doc.select(".px-2.py-2.flex.flex-wrap").forEach((item) => {
+      var chapSection = item.selectFirst("div").selectFirst("a");
+      var chapLink = chapSection.getHref;
+      var chapTitle = chapSection.text.trim();
+      var dateUpload = item.selectFirst("time").attr("data-time");
+
+      chapters.push({ url: chapLink, name: chapTitle, dateUpload });
+    });
+
+    return {
+      name,
+      imageUrl,
+      description,
+      link,
+      status,
+      genre,
+      chapters,
+    };
   }
 
   async getPageList(url) {
