@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.8",
+    "version": "1.0.0",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -47,12 +47,12 @@ class DefaultExtension extends MProvider {
     return this.getPreference("mangapark_override_base_url");
   }
 
-  async request(slug,cookies=null) {
+  async request(slug, cookies = null) {
     var baseUrl = this.getBaseUrl();
     var url = baseUrl + slug;
     var headers = this.getHeaders(url);
     if (cookies) {
-      headers['Cookie']+=`;${cookies}`
+      headers["Cookie"] += `;${cookies}`;
     }
 
     var res = await this.client.get(url, headers);
@@ -209,9 +209,9 @@ class DefaultExtension extends MProvider {
   }
 
   async getPageList(url) {
-
-    var cookies = "wd=1521x748;"
-    var doc = await this.request(url,cookies);
+    var imgServer = "imgser=" + this.getPreference("mangapark_image_server");
+    var cookies = `wd=1521x748;${imgServer};`;
+    var doc = await this.request(url, cookies);
 
     var images = [];
     doc
@@ -625,6 +625,38 @@ class DefaultExtension extends MProvider {
           valueIndex: 0,
           entries: ["Don't show NFSW content", "Show NFSW content"],
           entryValues: ["0", "2"],
+        },
+      },
+      {
+        key: "mangapark_image_server",
+        listPreference: {
+          title: "Image server",
+          summary: "",
+          valueIndex: 0,
+          entries: [
+            "mpfip.org",
+            "mpizz.org",
+            "mpmok.org",
+            "mpqom.org",
+            "mpqsc.org",
+            "mprnm.org",
+            "mpubn.org",
+            "mpujj.org",
+            "mpvim.org",
+            "mpypl.org",
+          ],
+          entryValues: [
+            "mpfip.org",
+            "mpizz.org",
+            "mpmok.org",
+            "mpqom.org",
+            "mpqsc.org",
+            "mprnm.org",
+            "mpubn.org",
+            "mpujj.org",
+            "mpvim.org",
+            "mpypl.org",
+          ],
         },
       },
     ];
