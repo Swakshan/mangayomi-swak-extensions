@@ -1,5 +1,11 @@
 {
     "manga": {
+        "Mangapark": {
+            "name": "Mangapark",
+            "version": "1.0.0",
+            "langs": "en",
+            "lastUpd": 1749049993.036179
+        },
         "ReadComicOnline": {
             "name": "ReadComicOnline",
             "version": "0.2.5",
