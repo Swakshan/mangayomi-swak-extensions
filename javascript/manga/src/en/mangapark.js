@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.6",
+    "version": "0.0.8",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -47,10 +47,13 @@ class DefaultExtension extends MProvider {
     return this.getPreference("mangapark_override_base_url");
   }
 
-  async request(slug) {
+  async request(slug,cookies=null) {
     var baseUrl = this.getBaseUrl();
     var url = baseUrl + slug;
     var headers = this.getHeaders(url);
+    if (cookies) {
+      headers['Cookie']+=`;${cookies}`
+    }
 
     var res = await this.client.get(url, headers);
     if (res.statusCode == 200) {
@@ -206,7 +209,17 @@ class DefaultExtension extends MProvider {
   }
 
   async getPageList(url) {
-    throw new Error("getPageList not implemented");
+
+    var cookies = "wd=1521x748;"
+    var doc = await this.request(url,cookies);
+
+    var images = [];
+    doc
+      .selectFirst(".grid.gap-0")
+      .select("img")
+      .forEach((img) => images.push(img.getSrc));
+
+    return images;
   }
 
   getFilterList() {
