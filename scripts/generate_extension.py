@@ -1,6 +1,6 @@
 from common import readFile, writeFile, generateHash, getParentPath
 from model import ItemType, Source
-import json
+import json, os
 
 
 def createFunction(isAsync: bool, funcName: str, args: list, code=""):
@@ -61,7 +61,10 @@ apiUrl = input("API url: ")
 typeSource = input("Source type (s/m/t): ")
 iconUrl = "https://www.google.com/s2/favicons?sz=256&domain=" + baseUrl
 isManga = input("Is manga (0/1): ")
-itemType = input("Type (0/1/2): ")
+if isManga == "1":
+    itemType = "m"
+else:
+    itemType = input("Type (m/a/n): ")
 
 name = name.title()
 langs = lang.split(",")
@@ -71,7 +74,11 @@ typeSource = (
     "single" if typeSource == "s" else "multi" if typeSource == "m" else "torrent"
 )
 isManga = True if int(isManga) else False
-itemType = ItemType(int(itemType))
+itemType = (
+    0 if itemType == "m" else 1 if itemType == "a" else 2 if itemType == "n" else 0
+)
+
+itemType = ItemType(itemType)
 
 ext = Source(
     name=name,
@@ -104,5 +111,9 @@ jsonExt = json.dumps(jsonExt)
 code = builder(jsonExt, itemType)
 
 filePath = getParentPath() / "javascript" / pkgPath
+dirname = os.path.dirname(filePath)
+if not os.path.exists(dirname):
+    os.makedirs(dirname)
+
 writeFile(filePath, code)
 print(f"DONE: {filePath}")
