@@ -1,16 +1,16 @@
 {
     "manga": {
+        "ReadComicOnline": {
+            "name": "ReadComicOnline",
+            "version": "0.2.6",
+            "langs": "en",
+            "lastUpd": 1749100065.307924
+        },
         "Mangapark": {
             "name": "Mangapark",
             "version": "1.0.0",
             "langs": "en",
             "lastUpd": 1749049993.036179
-        },
-        "ReadComicOnline": {
-            "name": "ReadComicOnline",
-            "version": "0.2.5",
-            "langs": "en",
-            "lastUpd": 1748159698.481894
         },
         "Mangapill": {
             "name": "Mangapill",

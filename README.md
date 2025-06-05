@@ -10,8 +10,8 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| ReadComicOnline | 0.2.6 | en | 2025/06/05 10:37 IST |
 | Mangapark | 1.0.0 | en | 2025/06/04 20:43 IST |
-| ReadComicOnline | 0.2.5 | en | 2025/05/25 13:24 IST |
 | Mangapill | 1.0.3 | en | 2025/05/20 16:17 IST |
 | Weeb Central | 0.1.0 | en | 2025/03/15 03:44 IST |
 

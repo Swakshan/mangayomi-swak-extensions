@@ -56,7 +56,7 @@
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/manga/src/en/readcomiconline.js",
         "apiUrl": "",
-        "version": "0.2.5",
+        "version": "0.2.6",
         "isManga": true,
         "itemType": 0,
         "isFullData": false,
