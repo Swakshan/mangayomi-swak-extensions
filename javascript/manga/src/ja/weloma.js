@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -121,7 +121,92 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    function statusCode(status) {
+      return (
+        {
+          "On going": 0,
+          "Completed": 1,
+          "Dropped": 3,
+        }[status] ?? 5
+      );
+    }
+    function uploadTime(time) {
+      var ts = 0;
+      var timeSplit = time.split(" ");
+      var unit = parseInt(timeSplit[0]);
+      var unitName = timeSplit[1];
+      switch (unitName) {
+        case "seconds": {
+          ts += unit;
+          break;
+        }
+        case "minutes": {
+          ts += unit * 60;
+          break;
+        }
+        case "hours": {
+          ts += unit * (60 * 60);
+          break;
+        }
+        case "days": {
+          ts += unit * (24 * 60 * 60);
+          break;
+        }
+        case "weeks": {
+          ts += unit * (7 * 24 * 60 * 60);
+          break;
+        }
+        case "months": {
+          ts += unit * (30 * 24 * 60 * 60);
+          break;
+        }
+        case "years": {
+          ts += unit * (12 * 30 * 24 * 60 * 60);
+          break;
+        }
+      }
+      return parseInt(new Date().valueOf()) - ts * 1000;
+    }
+    var baseUrl = this.source.baseUrl;
+    var slug = url.replace(baseUrl, "");
+    var link = baseUrl + url;
+
+    var doc = await this.request(slug);
+
+    var mangaInfo = doc.selectFirst(".manga-info");
+    var name = mangaInfo.selectFirst("h3").text;
+    var imageUrl = doc.selectFirst("img.thumbnail").getSrc;
+    var description = doc.selectFirst(".summary-content").text.trim();
+    var infoList = mangaInfo.select("li");
+    var genre = [];
+    infoList[2].select("a").forEach((a) => genre.push(a.text.trim()));
+    var statusText = infoList[3].selectFirst("a").text;
+    var status = statusCode(statusText);
+    var chapters = [];
+    doc
+      .selectFirst(".list-chapters")
+      .select("a")
+      .forEach((item) => {
+        var chapName = item.selectFirst(".chapter-name").text;
+        var chapLink = item.getHref;
+        var dateUpload = item.selectFirst(".chapter-time").text;
+
+        chapters.push({
+          name: chapName,
+          url: chapLink,
+          dateUpload: uploadTime(dateUpload),
+        });
+      });
+
+    return {
+      name,
+      imageUrl,
+      description,
+      link,
+      status,
+      genre,
+      chapters,
+    };
   }
 
   async getPageList(url) {
