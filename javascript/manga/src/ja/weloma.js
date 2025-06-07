@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "0.0.7",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -194,7 +194,7 @@ class DefaultExtension extends MProvider {
         chapters.push({
           name: chapName,
           url: chapLink,
-          dateUpload: uploadTime(dateUpload),
+          dateUpload: ""+uploadTime(dateUpload),
         });
       });
 
@@ -209,8 +209,33 @@ class DefaultExtension extends MProvider {
     };
   }
 
+  decodeBase64(b64Text) {
+    var g = {},
+      b = 65,
+      d = 0,
+      a,
+      c = 0,
+      h,
+      e = "",
+      k = String.fromCharCode,
+      l = b64Text.length;
+    for (a = ""; 91 > b; ) a += k(b++);
+    a += a.toLowerCase() + "0123456789+/";
+    for (b = 0; 64 > b; b++) g[a.charAt(b)] = b;
+    for (a = 0; a < l; a++)
+      for (b = g[b64Text.charAt(a)], d = (d << 6) + b, c += 6; 8 <= c; )
+        ((h = (d >>> (c -= 8)) & 255) || a < l - 2) && (e += k(h));
+    return e;
+  }
+
   async getPageList(url) {
-    throw new Error("getPageList not implemented");
+    var urls = [];
+    var body = await this.request(url);
+    body.select(".chapter-img").forEach((item) => {
+      var imgB64 = item.attr("data-img");
+      urls.push(this.decodeBase64(imgB64));
+    });
+    return urls;
   }
 
   getFilterList() {
