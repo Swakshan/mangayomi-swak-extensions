@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -80,7 +80,7 @@ class DefaultExtension extends MProvider {
       list.push({ name, link, imageUrl });
     });
 
-    lastPage = doc
+    var lastPage = doc
       .selectFirst("ul.pagination.pagination-v4")
       .select("a")
       .slice(-1)[0];
@@ -98,7 +98,26 @@ class DefaultExtension extends MProvider {
   }
 
   async search(query, page, filters) {
-    throw new Error("search not implemented");
+    function checkBox(state) {
+      var rd = [];
+      state.forEach((item) => {
+        if (item.state) {
+          rd.push(item.value);
+        }
+      });
+      return rd;
+    }
+    function selectFiler(filter) {
+      return filter.values[filter.state].value;
+    }
+
+    var isFiltersAvailable = !filters || filters.length != 0;
+    var sort = isFiltersAvailable ? selectFiler(filters[0]) : "name";
+    var genres = isFiltersAvailable ? checkBox(filters[1].state) : [];
+    var status = isFiltersAvailable ? selectFiler(filters[2]) : "";
+    var sortOrder = isFiltersAvailable ? selectFiler(filters[3]) : "ASC";
+
+    return await this.searchPage(query, sort, sortOrder, genres, status, page);
   }
 
   async getDetail(url) {
@@ -110,7 +129,126 @@ class DefaultExtension extends MProvider {
   }
 
   getFilterList() {
-    throw new Error("getFilterList not implemented");
+    function formateState(type_name, items, values) {
+      var state = [];
+      for (var i = 0; i < items.length; i++) {
+        state.push({ type_name: type_name, name: items[i], value: values[i] });
+      }
+      return state;
+    }
+
+    var filters = [];
+    var items = [];
+    var values = [];
+
+    // Sort
+    items = ["Alphabetical order", "Most views", "Last updated"];
+    values = ["name", "views", "last_update"];
+    filters.push({
+      type_name: "SelectFilter",
+      name: "Sort",
+      state: 0,
+      values: formateState("SelectOption", items, values),
+    });
+
+    // Genres
+    items = [
+      "Action",
+      "Adult",
+      "Adventure",
+      "Comedy",
+      "Drama",
+      "Ecchi",
+      "Fantasy",
+      "Gender Bender",
+      "Harem",
+      "Historical",
+      "Horror",
+      "Martial Art",
+      "Mature",
+      "Mecha",
+      "Mystery",
+      "Psychological",
+      "Romance",
+      "School Life",
+      "Sci-fi",
+      "Seinen",
+      "Shoujo",
+      "Shojou Ai",
+      "Shounen",
+      "Shounen Ai",
+      "Slice of Life",
+      "Sports",
+      "Supernatural",
+      "Tragedy",
+      "Yuri",
+      "Josei",
+      "Smut",
+      "One Shot",
+      "Shotacon",
+    ];
+    values = [
+      "action",
+      "adult",
+      "adventure",
+      "comedy",
+      "drama",
+      "ecchi",
+      "fantasy",
+      "gender-bender",
+      "harem",
+      "historical",
+      "horror",
+      "martial-art",
+      "mature",
+      "mecha",
+      "mystery",
+      "psychological",
+      "romance",
+      "school-life",
+      "sci-fi",
+      "seinen",
+      "shoujo",
+      "shojou-ai",
+      "shounen",
+      "shounen-ai",
+      "slice-of-life",
+      "sports",
+      "supernatural",
+      "tragedy",
+      "yuri",
+      "josei",
+      "smut",
+      "one-shot",
+      "shotacon",
+    ];
+    filters.push({
+      type_name: "GroupFilter",
+      name: "Genres",
+      state: formateState("CheckBox", items, values),
+    });
+
+    // Status
+    items = ["Any", "Completed", "Ongoing", "dropped"];
+    values = ["", "2", "1", "3"];
+    filters.push({
+      type_name: "SelectFilter",
+      name: "Status",
+      state: 0,
+      values: formateState("SelectOption", items, values),
+    });
+
+    // Sort order
+    items = ["Ascending", "Descending"];
+    values = ["ASC", "DESC"];
+    filters.push({
+      type_name: "SelectFilter",
+      name: "Sort order",
+      state: 0,
+      values: formateState("SelectOption", items, values),
+    });
+
+    return filters;
   }
 
   getSourcePreferences() {
