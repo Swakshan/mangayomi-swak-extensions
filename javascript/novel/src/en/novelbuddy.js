@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "isManga": false,
     "itemType": 2,
     "isFullData": false,
@@ -82,9 +82,9 @@ class DefaultExtension extends MProvider {
       list.push({ name, link, imageUrl });
     });
 
-    var lastPage = doc.selectFirst(".paginator");
-    if (lastPage != null) {
-      lastPage = lastPage.select("a").slice(-1)[0];
+    var lastPage = doc.selectFirst(".paginator").select("a");
+    if (lastPage.length) {
+      lastPage = lastPage.slice(-1)[0];
       hasNextPage = !lastPage.className.includes("active");
     }
 
@@ -161,11 +161,11 @@ class DefaultExtension extends MProvider {
       .text.trim();
 
     var chapters = [];
-    var html = doc.html
-    var sKey = "bookId = "
-    var start = html.indexOf(sKey) + sKey.length
-    var end = html.indexOf(";", start)
-    var bookId = html.substring(start, end).trim()
+    var html = doc.html;
+    var sKey = "bookId = ";
+    var start = html.indexOf(sKey) + sKey.length;
+    var end = html.indexOf(";", start);
+    var bookId = html.substring(start, end).trim();
     var chapDoc = await this.request(
       `/api/manga/${bookId}/chapters?source=detail`
     );
@@ -195,18 +195,18 @@ class DefaultExtension extends MProvider {
     };
   }
 
-  async getHtmlContent(name,url) {
+  async getHtmlContent(name, url) {
     var doc = await this.request(url);
     return this.cleanHtmlContent(doc);
   }
 
   async cleanHtmlContent(html) {
-    var para = html.selectFirst(".content-inner").select("p")
+    var para = html.selectFirst(".content-inner").select("p");
     var title = para[0].text.trim();
-    var content = ""
-    para.slice(1,).forEach((item) => {
-      content+= item.text.trim() + " <br>";
-    })
+    var content = "";
+    para.slice(1).forEach((item) => {
+      content += item.text.trim() + " <br>";
+    });
     return `<h2>${title}</h2><hr><br>${content}`;
   }
 
