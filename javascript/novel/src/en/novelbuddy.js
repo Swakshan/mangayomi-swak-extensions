@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.1",
+    "version": "0.0.5",
     "isManga": false,
     "itemType": 2,
     "isFullData": false,
@@ -122,7 +122,77 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    function statusCode(status) {
+      return (
+        {
+          "OnGoing": 0,
+          "Completed": 1,
+        }[status] ?? 5
+      );
+    }
+    var baseUrl = this.source.baseUrl;
+    var slug = url.replace(baseUrl, "");
+    var link = baseUrl + url;
+
+    var doc = await this.request(slug);
+
+    var detail = doc.selectFirst(".detail");
+    var name = detail.selectFirst("h1").text;
+    var imageUrl =
+      "https:" +
+      doc.selectFirst(".img-cover").selectFirst("img").attr("data-src");
+    var meta = detail.selectFirst(".meta");
+    var genre = [];
+    var status = 5;
+    meta.select("p").forEach((item) => {
+      var title = item.selectFirst("strong").text;
+      if (title.includes("Genres")) {
+        item
+          .select("a")
+          .forEach((a) => genre.push(a.text.replace(",", "").trim()));
+      } else if (title.includes("Status")) {
+        var statusText = item.selectFirst("a").text.trim();
+        status = statusCode(statusText);
+      }
+    });
+    var description = doc
+      .selectFirst(".section-body.summary")
+      .selectFirst("p")
+      .text.trim();
+
+    var chapters = [];
+    var html = doc.html
+    var sKey = "bookId = "
+    var start = html.indexOf(sKey) + sKey.length
+    var end = html.indexOf(";", start)
+    var bookId = html.substring(start, end).trim()
+    var chapDoc = await this.request(
+      `/api/manga/${bookId}/chapters?source=detail`
+    );
+    chapDoc
+      .selectFirst("#chapter-list")
+      .select("li")
+      .forEach((item) => {
+        var chapLink = item.selectFirst("a").getHref;
+        var chapName = item.selectFirst("strong").text.trim();
+        var dateString = item.selectFirst("time").text.trim();
+        var dateUpload = new Date(dateString).valueOf().toString();
+        chapters.push({
+          name: chapName,
+          url: chapLink,
+          dateUpload,
+        });
+      });
+
+    return {
+      name,
+      imageUrl,
+      description,
+      link,
+      status,
+      genre,
+      chapters,
+    };
   }
 
   async getHtmlContent(url) {
