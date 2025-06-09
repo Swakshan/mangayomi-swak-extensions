@@ -41,7 +41,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| Novelbuddy | 0.0.8 | en | 2025/06/09 22:48 IST |
+| Novelbuddy | 0.0.9 | en | 2025/06/09 23:24 IST |
 
 </details>
 
