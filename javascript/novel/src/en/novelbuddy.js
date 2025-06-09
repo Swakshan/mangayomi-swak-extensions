@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "0.0.8",
     "isManga": false,
     "itemType": 2,
     "isFullData": false,
@@ -195,12 +195,19 @@ class DefaultExtension extends MProvider {
     };
   }
 
-  async getHtmlContent(url) {
-    throw new Error("getHtmlContent not implemented");
+  async getHtmlContent(name,url) {
+    var doc = await this.request(url);
+    return this.cleanHtmlContent(doc);
   }
 
   async cleanHtmlContent(html) {
-    throw new Error("cleanHtmlContent not implemented");
+    var para = html.selectFirst(".content-inner").select("p")
+    var title = para[0].text.trim();
+    var content = ""
+    para.slice(1,).forEach((item) => {
+      content+= item.text.trim() + " <br>";
+    })
+    return `<h2>${title}</h2><hr><br>${content}`;
   }
 
   getFilterList() {
