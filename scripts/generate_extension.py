@@ -41,7 +41,7 @@ def builder(source: dict, itemType: ItemType):
     elif itemType == ItemType.manga:
         lines.append(createFunction(True, "getPageList", ["url"]))
     elif itemType == ItemType.novel:
-        lines.append(createFunction(True, "getHtmlContent", ["url"]))
+        lines.append(createFunction(True, "getHtmlContent", ["name","url"]))
         lines.append(createFunction(True, "cleanHtmlContent", ["html"]))
 
     lines.append(createFunction(False, "getFilterList", []))
