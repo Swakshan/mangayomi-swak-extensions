@@ -129,5 +129,12 @@
             "lastUpd": 1743963060
         }
     },
-    "novel": {}
+    "novel": {
+        "Novelbuddy": {
+            "name": "Novelbuddy",
+            "version": "0.0.8",
+            "langs": "en",
+            "lastUpd": 1749489534.59139
+        }
+    }
 }
