@@ -32,17 +32,17 @@
         }
     },
     "anime": {
+        "XPrime": {
+            "name": "XPrime",
+            "version": "1.1.0",
+            "langs": "all",
+            "lastUpd": 1749657213.109532
+        },
         "Streamblasters": {
             "name": "Streamblasters",
             "version": "1.0.0",
             "langs": "all",
             "lastUpd": 1748666820.889896
-        },
-        "XPrime": {
-            "name": "XPrime",
-            "version": "1.0.8",
-            "langs": "all",
-            "lastUpd": 1748589719.975875
         },
         "Autoembed": {
             "name": "Autoembed",
