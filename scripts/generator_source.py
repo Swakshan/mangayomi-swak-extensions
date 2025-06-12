@@ -2,25 +2,8 @@ from pathlib import Path
 import os, shutil, json, re
 from glob import glob
 from pprint import pp
-from common import readFile, readJsonFile, writeJsonFile, getParentPath
+from common import readFile, readJsonFile, writeJsonFile, getParentPath,extensionInfo
 from model import Source, ItemType
-
-
-def extensionInfo(filepath):
-    def fix_json(json_str):
-        # Remove trailing commas before closing } or ]
-        json_str = re.sub(r",\s*([}\]])", r"\1", json_str)
-        return json.loads(json_str)
-
-    data = readFile(filepath)
-    s = "const mangayomiSources = "
-    e = ";"
-
-    start = data.find(s) + len(s)
-    end = data.find(e)
-    cont = data[start:end]
-    return fix_json(data[start:end])[0]
-
 
 def formatExtenstionInfo(info):
     exids = info["ids"] if "ids" in info else info["id"] if "id" in info else None

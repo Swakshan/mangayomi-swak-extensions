@@ -1,5 +1,20 @@
 from pathlib import Path
-import json
+import json, re
+
+def extensionInfo(filepath):
+    def fix_json(json_str):
+        # Remove trailing commas before closing } or ]
+        json_str = re.sub(r",\s*([}\]])", r"\1", json_str)
+        return json.loads(json_str)
+
+    data = readFile(filepath)
+    s = "const mangayomiSources = "
+    e = ";"
+
+    start = data.find(s) + len(s)
+    end = data.find(e)
+    cont = data[start:end]
+    return fix_json(data[start:end])[0]
 
 def readFile(fileName):
     f = open(fileName, 'r')
