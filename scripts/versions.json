@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Dramacool": {
+            "name": "Dramacool",
+            "version": "1.1.0",
+            "langs": "all",
+            "lastUpd": 1749795088.253707
+        },
         "XPrime": {
             "name": "XPrime",
             "version": "1.1.0",
@@ -56,6 +62,12 @@
             "langs": "en",
             "lastUpd": 1747987051.04447
         },
+        "Gojo": {
+            "name": "Gojo",
+            "version": "0.0.6",
+            "langs": "en",
+            "lastUpd": 1747738043.896285
+        },
         "Sudatchi": {
             "name": "Sudatchi",
             "version": "1.1.1",
@@ -68,10 +80,10 @@
             "langs": "en",
             "lastUpd": 1747738043.896285
         },
-        "Animeonsen": {
-            "name": "Animeonsen",
-            "version": "1.0.1",
-            "langs": "en, ja",
+        "AnimeZ": {
+            "name": "AnimeZ",
+            "version": "1.0.2",
+            "langs": "en",
             "lastUpd": 1747738043.896285
         },
         "AnimeParadise": {
@@ -80,16 +92,10 @@
             "langs": "en",
             "lastUpd": 1747738043.896285
         },
-        "Gojo": {
-            "name": "Gojo",
-            "version": "0.0.6",
-            "langs": "en",
-            "lastUpd": 1747738043.896285
-        },
-        "AnimeZ": {
-            "name": "AnimeZ",
-            "version": "1.0.2",
-            "langs": "en",
+        "Animeonsen": {
+            "name": "Animeonsen",
+            "version": "1.0.1",
+            "langs": "en, ja",
             "lastUpd": 1747738043.896285
         },
         "Soaper": {
@@ -121,12 +127,6 @@
             "version": "0.2.4",
             "langs": "en",
             "lastUpd": 1745214060
-        },
-        "Dramacool": {
-            "name": "Dramacool",
-            "version": "1.0.0",
-            "langs": "all",
-            "lastUpd": 1743963060
         }
     },
     "novel": {
