@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://animekai.to/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.3.0",
+    "version": "0.3.1",
     "pkgPath": "anime/src/en/animekai.js",
   },
 ];
@@ -163,9 +163,10 @@ class DefaultExtension extends MProvider {
         }[status] ?? 5
       );
     }
+    var baseUrl = this.getBaseUrl();
 
-    var slug = url;
-    var link = this.getBaseUrl() + slug;
+    var slug = url.replace(baseUrl, "");
+    var link = baseUrl + slug;
     var body = await this.getPage(slug);
 
     var mainSection = body.selectFirst(".watch-section");
