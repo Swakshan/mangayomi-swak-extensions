@@ -9,9 +9,9 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://animekai.to/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.2.4",
-    "pkgPath": "anime/src/en/animekai.js"
-  }
+    "version": "0.3.0",
+    "pkgPath": "anime/src/en/animekai.js",
+  },
 ];
 
 // Authors: - Swakshan
@@ -728,159 +728,33 @@ class DefaultExtension extends MProvider {
   }
 
   //----------------AnimeKai Decoders----------------
-  // Credits :- https://github.com/amarullz/kaicodex/
+  // Credits :- https://github.com/phisher98/cloudstream-extensions-phisher/
 
-  base64UrlDecode(input) {
-    let base64 = input.replace(/-/g, "+").replace(/_/g, "/");
-
-    while (base64.length % 4 !== 0) {
-      base64 += "=";
+  async patternExecutor(key, type, data) {
+    var api = "https://gvm-kai001.amarullz.com/";
+    var url = `${api}?f=${type}`;
+    if (key == "kai") {
+      var url = `${url}&d=${data}`;
+      var res = await this.client.get(url);
+      return res.body;
+    } else {
+      var res = await this.client.post(url, {}, data);
+      return res.body;
     }
-
-    const base64abc =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    const outputBytes = [];
-
-    for (let i = 0; i < base64.length; i += 4) {
-      const c1 = base64abc.indexOf(base64[i]);
-      const c2 = base64abc.indexOf(base64[i + 1]);
-      const c3 = base64abc.indexOf(base64[i + 2]);
-      const c4 = base64abc.indexOf(base64[i + 3]);
-
-      const triplet = (c1 << 18) | (c2 << 12) | ((c3 & 63) << 6) | (c4 & 63);
-
-      outputBytes.push((triplet >> 16) & 0xff);
-      if (base64[i + 2] !== "=") outputBytes.push((triplet >> 8) & 0xff);
-      if (base64[i + 3] !== "=") outputBytes.push(triplet & 0xff);
-    }
-
-    // Convert bytes to ISO-8859-1 string
-    return String.fromCharCode(...outputBytes);
-  }
-
-  base64UrlEncode(str) {
-    // Convert to ISO-8859-1 byte array
-    const bytes = [];
-    for (let i = 0; i < str.length; i++) {
-      bytes.push(str.charCodeAt(i) & 0xff);
-    }
-
-    // Base64 alphabet
-    const base64abc =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-    // Manual base64 encoding
-    let base64 = "";
-    for (let i = 0; i < bytes.length; i += 3) {
-      const b1 = bytes[i];
-      const b2 = bytes[i + 1] ?? 0;
-      const b3 = bytes[i + 2] ?? 0;
-
-      const triplet = (b1 << 16) | (b2 << 8) | b3;
-
-      base64 += base64abc[(triplet >> 18) & 0x3f];
-      base64 += base64abc[(triplet >> 12) & 0x3f];
-      base64 += i + 1 < bytes.length ? base64abc[(triplet >> 6) & 0x3f] : "=";
-      base64 += i + 2 < bytes.length ? base64abc[triplet & 0x3f] : "=";
-    }
-
-    // URL-safe Base64
-    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-  }
-
-  transform(key, text) {
-    const v = Array.from({ length: 256 }, (_, i) => i);
-    let c = 0;
-    const f = [];
-
-    for (let w = 0; w < 256; w++) {
-      c = (c + v[w] + key.charCodeAt(w % key.length)) % 256;
-      [v[w], v[c]] = [v[c], v[w]];
-    }
-
-    let a = 0,
-      w = 0,
-      sum = 0;
-    while (a < text.length) {
-      w = (w + 1) % 256;
-      sum = (sum + v[w]) % 256;
-      [v[w], v[sum]] = [v[sum], v[w]];
-      f.push(
-        String.fromCharCode(text.charCodeAt(a) ^ v[(v[w] + v[sum]) % 256])
-      );
-      a++;
-    }
-    return f.join("");
-  }
-
-  reverseString(input) {
-    return input.split("").reverse().join("");
-  }
-
-  substitute(input, keys, values) {
-    const map = {};
-    for (let i = 0; i < keys.length; i++) {
-      map[keys[i]] = values[i] || keys[i];
-    }
-    return input
-      .split("")
-      .map((char) => map[char] || char)
-      .join("");
-  }
-
-  async getDecoderPattern() {
-    const preferences = new SharedPreferences();
-    let pattern = preferences.getString("anime_kai_decoder_pattern", "");
-    var pattern_ts = parseInt(
-      preferences.getString("anime_kai_decoder_pattern_ts", "0")
-    );
-    var now_ts = parseInt(new Date().getTime() / 1000);
-
-    // pattern is checked from API every 30 minutes
-    if (now_ts - pattern_ts > 30 * 60) {
-      var res = await this.client.get(
-        "https://raw.githubusercontent.com/amarullz/kaicodex/refs/heads/main/generated/kai_codex.json"
-      );
-      pattern = res.body;
-      preferences.setString("anime_kai_decoder_pattern", pattern);
-      preferences.setString("anime_kai_decoder_pattern_ts", `${now_ts}`);
-    }
-
-    return JSON.parse(pattern);
-  }
-
-  async patternExecutor(key, type, id) {
-    var result = id;
-    var pattern = await this.getDecoderPattern();
-    var logic = pattern[key][type];
-    logic.forEach((step) => {
-      var method = step[0];
-      if (method == "urlencode") result = encodeURIComponent(result);
-      else if (method == "urldecode") result = decodeURIComponent(result);
-      else if (method == "rc4") result = this.transform(step[1], result);
-      else if (method == "reverse") result = this.reverseString(result);
-      else if (method == "substitute")
-        result = this.substitute(result, step[1], step[2]);
-      else if (method == "safeb64_decode")
-        result = this.base64UrlDecode(result);
-      else if (method == "safeb64_encode")
-        result = this.base64UrlEncode(result);
-    });
-    return result;
   }
 
   async kaiEncrypt(id) {
-    var token = await this.patternExecutor("kai", "encrypt", id);
+    var token = await this.patternExecutor("kai", "e", id);
     return token;
   }
 
   async kaiDecrypt(id) {
-    var token = await this.patternExecutor("kai", "decrypt", id);
+    var token = await this.patternExecutor("kai", "d", id);
     return token;
   }
 
   async megaDecrypt(data) {
-    var streamData = await this.patternExecutor("megaup", "decrypt", data);
+    var streamData = await this.patternExecutor("megaup", "m", data);
     return JSON.parse(streamData);
   }
 }
