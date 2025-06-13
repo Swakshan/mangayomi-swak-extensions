@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "AnimeKai": {
+            "name": "AnimeKai",
+            "version": "0.3.0",
+            "langs": "en",
+            "lastUpd": 1749827515.363753
+        },
         "Dramacool": {
             "name": "Dramacool",
             "version": "1.1.0",
@@ -121,12 +127,6 @@
             "version": "1.4.5",
             "langs": "en",
             "lastUpd": 1745762580
-        },
-        "AnimeKai": {
-            "name": "AnimeKai",
-            "version": "0.2.4",
-            "langs": "en",
-            "lastUpd": 1745214060
         }
     },
     "novel": {

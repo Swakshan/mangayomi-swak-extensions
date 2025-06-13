@@ -20,6 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| AnimeKai | 0.3.0 | en | 2025/06/13 20:41 IST |
 | Dramacool | 1.1.0 | all | 2025/06/13 11:41 IST |
 | XPrime | 1.1.0 | all | 2025/06/11 21:23 IST |
 | Streamblasters | 1.0.0 | all | 2025/05/31 10:17 IST |
@@ -35,7 +36,6 @@ This repository contains the available javascript extension catalogues for the M
 | Aniwave | 0.0.7 | en | 2025/05/09 00:11 IST |
 | KissKH | 0.1.6 | all | 2025/05/02 22:47 IST |
 | Aniplay | 1.4.5 | en | 2025/04/27 19:33 IST |
-| AnimeKai | 0.2.4 | en | 2025/04/21 11:11 IST |
 
 ## Novel
 
