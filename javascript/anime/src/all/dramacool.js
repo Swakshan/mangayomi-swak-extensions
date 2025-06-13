@@ -9,9 +9,9 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://dramacool.com.tr",
     "typeSource": "multi",
     "itemType": 1,
-    "version": "1.0.0",
-    "pkgPath": "anime/src/all/dramacool.js"
-  }
+    "version": "1.1.0",
+    "pkgPath": "anime/src/all/dramacool.js",
+  },
 ];
 
 // Authors: - Swakshan
@@ -212,10 +212,18 @@ class DefaultExtension extends MProvider {
     return e;
   }
 
+  getUnPackJs(doc) {
+    var skey = "eval(function(p,a,c,k,e,d)";
+    var eKey = "</script>";
+    var start = doc.indexOf(skey);
+    var end = doc.indexOf(eKey, start);
+    var js = doc.substring(start, end);
+    return unpackJs(js);
+  }
+
   async extractDramacoolEmbed(doc) {
     var streams = [];
-    var script = doc.select("script").at(-2);
-    var unpack = unpackJs(script.text);
+    var unpack = this.getUnPackJs(doc);
 
     var skey = 'hls2":"';
     var eKey = '"};jwplayer';
@@ -227,7 +235,6 @@ class DefaultExtension extends MProvider {
       url: track,
       originalUrl: track,
       quality: "Dramacool - Auto",
-      headers: this.getHeaders("https://dramacool.men/"),
     });
 
     streams = await this.splitStreams(streams, "Dramacool");
@@ -237,55 +244,34 @@ class DefaultExtension extends MProvider {
 
   async extractAsianLoadEmbed(doc) {
     var streams = [];
-    var script = doc.select("script").at(-2);
-    var unpack = script.text;
+    var unpack = this.getUnPackJs(doc);
 
-    // tracks
-    var skey = "|image|";
-    var eKey = "|";
+    // Download track
+    var skey = 'window.open(window.atob("';
+    var eKey = '"),"_blank")';
     var start = unpack.indexOf(skey) + skey.length;
     var end = unpack.indexOf(eKey, start);
     var track = unpack.substring(start, end);
-    var streamUrl = this.decodeBase64(track);
+    var downUrl = this.decodeBase64(track);
 
-    // subs
-    eKey = "|default|";
-    var end = unpack.indexOf(eKey);
-    var subs = [];
-    if (end != -1) {
-      skey = "|type|";
-      var start = unpack.indexOf(skey) + skey.length;
-      var subTracks = unpack.substring(start, end).split("|");
-      subs.push({
-        file: this.decodeBase64(subTracks[1]),
-        label: subTracks[0],
-      });
-    }
+    // Tracks
+    var streamUrl = downUrl
+      .replace(".mp4", "/master.m3u8")
+      .replace("dl2.", "sv4.");
 
     streams.push({
       url: streamUrl,
       originalUrl: streamUrl,
       quality: "Asianload - Auto",
-      subtitles: subs,
-      headers: this.getHeaders("https://asianload.cfd/"),
-    });
-
-    // Download url
-    skey = "|_blank|";
-    eKey = "|";
-    start = unpack.indexOf(skey) + skey.length;
-    end = unpack.indexOf(eKey, start);
-    track = unpack.substring(start, end);
-    var downUrl = this.decodeBase64(track);
-
-    streams.push({
-      url: downUrl,
-      originalUrl: downUrl,
-      quality: "Asianload - Direct download",
-      headers: this.getHeaders("https://asianload.cfd/"),
     });
 
     streams = await this.splitStreams(streams, "Asianload");
+
+     streams.push({
+      url: downUrl,
+      originalUrl: downUrl,
+      quality: "Asianload - Download",
+    });
 
     return streams;
   }
@@ -321,7 +307,7 @@ class DefaultExtension extends MProvider {
     var streams = [];
 
     res = await new Client().get(iframe);
-    var doc = new Document(res.body);
+    var doc = res.body;
 
     if (iframe.includes("//dramacool")) {
       streams = await this.extractDramacoolEmbed(doc);
