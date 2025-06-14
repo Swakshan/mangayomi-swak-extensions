@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://animekai.to/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.3.2",
+    "version": "0.3.3",
     "pkgPath": "anime/src/en/animekai.js",
   },
 ];
@@ -48,7 +48,7 @@ class DefaultExtension extends MProvider {
     type = [],
     genre = [],
     status = [],
-    sort = "",
+    sort = "most_relevance",
     season = [],
     year = [],
     rating = [],
@@ -471,7 +471,7 @@ class DefaultExtension extends MProvider {
 
     // Sort
     items = [
-      "All",
+      "Most relevance",
       "Updated date",
       "Released date",
       "End date",
@@ -486,7 +486,7 @@ class DefaultExtension extends MProvider {
     ];
 
     values = [
-      "",
+      "most_relevance",
       "updated_date",
       "released_date",
       "end_date",
