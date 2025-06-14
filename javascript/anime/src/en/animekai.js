@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://animekai.to/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.3.1",
+    "version": "0.3.2",
     "pkgPath": "anime/src/en/animekai.js",
   },
 ];
@@ -176,14 +176,16 @@ class DefaultExtension extends MProvider {
       .selectFirst("img").getSrc;
 
     var namePref = this.getPreference("animekai_title_lang");
-    var nameSection = mainSection.selectFirst("div.title");
+    var nameSection = mainSection.selectFirst("h1.title");
     var name = namePref.includes("jp")
       ? nameSection.attr(namePref)
       : nameSection.text;
 
     var description = mainSection.selectFirst("div.desc").text;
 
-    var detailSection = mainSection.select("div.detail > div");
+    var detailSection = mainSection
+      .selectFirst("div.detail")
+      .select("div > div");
 
     var genre = [];
     var status = 5;
