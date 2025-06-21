@@ -9,9 +9,9 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://animeparadise.moe",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.0.2",
-    "pkgPath": "anime/src/en/animeparadise.js"
-  }
+    "version": "0.1.0",
+    "pkgPath": "anime/src/en/animeparadise.js",
+  },
 ];
 
 class DefaultExtension extends MProvider {
@@ -137,9 +137,8 @@ class DefaultExtension extends MProvider {
 
   // Extracts the streams url for different resolutions from a hls stream.
   async extractStreams(url) {
-    const response = await new Client().get(url);
-    const body = response.body;
-    const lines = body.split("\n");
+    var proxyUrl = "https://stream.animeparadise.moe/";
+    url = proxyUrl + "m3u8?url=" + url;
     var streams = [
       {
         url: url,
@@ -147,18 +146,22 @@ class DefaultExtension extends MProvider {
         quality: `Auto`,
       },
     ];
+    const response = await new Client().get(url);
+    if (response.statusCode == 200) {
+      const body = response.body;
+      const lines = body.split("\n");
 
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i].startsWith("#EXT-X-STREAM-INF:")) {
-        var resolution = lines[i].match(/RESOLUTION=(\d+x\d+)/)[1];
-        var m3u8Url = lines[i + 1].trim();
-        m3u8Url = url.replace("master.m3u8", m3u8Url);
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].startsWith("#EXT-X-STREAM-INF:")) {
+          var resolution = lines[i].match(/RESOLUTION=(\d+x\d+)/)[1];
+          var m3u8Url = proxyUrl + lines[i + 1].trim();
 
-        streams.push({
-          url: m3u8Url,
-          originalUrl: m3u8Url,
-          quality: resolution,
-        });
+          streams.push({
+            url: m3u8Url,
+            originalUrl: m3u8Url,
+            quality: resolution,
+          });
+        }
       }
     }
     return streams;
