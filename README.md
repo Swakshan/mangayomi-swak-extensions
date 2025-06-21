@@ -10,8 +10,8 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| ReadComicOnline | 0.2.7 | en | 2025/06/21 18:06 IST |
 | WeLoMa | 0.0.8 | ja | 2025/06/07 22:02 IST |
-| ReadComicOnline | 0.2.6 | en | 2025/06/05 10:37 IST |
 | Mangapark | 1.0.0 | en | 2025/06/04 20:43 IST |
 | Mangapill | 1.0.3 | en | 2025/05/20 16:17 IST |
 | Weeb Central | 0.1.0 | en | 2025/03/15 03:44 IST |
@@ -20,6 +20,8 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| Aniplay | 1.5.0 | en | 2025/06/21 18:06 IST |
+| AnimeParadise | 0.1.0 | en | 2025/06/21 18:06 IST |
 | AnimeZZ | 1.1.1 | en | 2025/06/21 16:47 IST |
 | AnimeKai | 0.3.3 | en | 2025/06/14 11:43 IST |
 | Dramacool | 1.1.0 | all | 2025/06/13 11:41 IST |
@@ -30,12 +32,10 @@ This repository contains the available javascript extension catalogues for the M
 | Gojo | 0.0.6 | en | 2025/05/20 16:17 IST |
 | Sudatchi | 1.1.1 | en | 2025/05/20 16:17 IST |
 | AnimeGG | 1.0.3 | en | 2025/05/20 16:17 IST |
-| AnimeParadise | 0.0.2 | en | 2025/05/20 16:17 IST |
 | Animeonsen | 1.0.1 | en, ja | 2025/05/20 16:17 IST |
 | Soaper | 1.0.5 | all | 2025/05/20 16:17 IST |
 | Aniwave | 0.0.7 | en | 2025/05/09 00:11 IST |
 | KissKH | 0.1.6 | all | 2025/05/02 22:47 IST |
-| Aniplay | 1.4.5 | en | 2025/04/27 19:33 IST |
 
 ## Novel
 

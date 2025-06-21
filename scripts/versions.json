@@ -1,16 +1,16 @@
 {
     "manga": {
+        "ReadComicOnline": {
+            "name": "ReadComicOnline",
+            "version": "0.2.7",
+            "langs": "en",
+            "lastUpd": 1750509383.278437
+        },
         "WeLoMa": {
             "name": "WeLoMa",
             "version": "0.0.8",
             "langs": "ja",
             "lastUpd": 1749313966.44208
-        },
-        "ReadComicOnline": {
-            "name": "ReadComicOnline",
-            "version": "0.2.6",
-            "langs": "en",
-            "lastUpd": 1749100065.307924
         },
         "Mangapark": {
             "name": "Mangapark",
@@ -32,6 +32,18 @@
         }
     },
     "anime": {
+        "Aniplay": {
+            "name": "Aniplay",
+            "version": "1.5.0",
+            "langs": "en",
+            "lastUpd": 1750509383.278437
+        },
+        "AnimeParadise": {
+            "name": "AnimeParadise",
+            "version": "0.1.0",
+            "langs": "en",
+            "lastUpd": 1750509383.278437
+        },
         "AnimeZZ": {
             "name": "AnimeZZ",
             "version": "1.1.1",
@@ -92,12 +104,6 @@
             "langs": "en",
             "lastUpd": 1747738043.896285
         },
-        "AnimeParadise": {
-            "name": "AnimeParadise",
-            "version": "0.0.2",
-            "langs": "en",
-            "lastUpd": 1747738043.896285
-        },
         "Animeonsen": {
             "name": "Animeonsen",
             "version": "1.0.1",
@@ -121,12 +127,6 @@
             "version": "0.1.6",
             "langs": "all",
             "lastUpd": 1746206220
-        },
-        "Aniplay": {
-            "name": "Aniplay",
-            "version": "1.4.5",
-            "langs": "en",
-            "lastUpd": 1745762580
         }
     },
     "novel": {
