@@ -20,6 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| AnimeZZ | 1.1.1 | en | 2025/06/21 16:47 IST |
 | AnimeKai | 0.3.3 | en | 2025/06/14 11:43 IST |
 | Dramacool | 1.1.0 | all | 2025/06/13 11:41 IST |
 | XPrime | 1.1.0 | all | 2025/06/11 21:23 IST |
@@ -29,7 +30,6 @@ This repository contains the available javascript extension catalogues for the M
 | Gojo | 0.0.6 | en | 2025/05/20 16:17 IST |
 | Sudatchi | 1.1.1 | en | 2025/05/20 16:17 IST |
 | AnimeGG | 1.0.3 | en | 2025/05/20 16:17 IST |
-| AnimeZ | 1.0.2 | en | 2025/05/20 16:17 IST |
 | AnimeParadise | 0.0.2 | en | 2025/05/20 16:17 IST |
 | Animeonsen | 1.0.1 | en, ja | 2025/05/20 16:17 IST |
 | Soaper | 1.0.5 | all | 2025/05/20 16:17 IST |

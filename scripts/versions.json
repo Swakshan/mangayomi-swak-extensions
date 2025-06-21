@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "AnimeZZ": {
+            "name": "AnimeZZ",
+            "version": "1.1.1",
+            "langs": "en",
+            "lastUpd": 1750504671.044623
+        },
         "AnimeKai": {
             "name": "AnimeKai",
             "version": "0.3.3",
@@ -83,12 +89,6 @@
         "AnimeGG": {
             "name": "AnimeGG",
             "version": "1.0.3",
-            "langs": "en",
-            "lastUpd": 1747738043.896285
-        },
-        "AnimeZ": {
-            "name": "AnimeZ",
-            "version": "1.0.2",
             "langs": "en",
             "lastUpd": 1747738043.896285
         },

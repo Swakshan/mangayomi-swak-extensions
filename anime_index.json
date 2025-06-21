@@ -23,7 +23,7 @@
     },
     {
         "name": "Gojo",
-        "id": 3681403189,
+        "id": 1018827104,
         "baseUrl": "https://gojo.wtf",
         "lang": "en",
         "typeSource": "multi",
@@ -45,7 +45,7 @@
     },
     {
         "name": "Sudatchi",
-        "id": 280460183,
+        "id": 398530136,
         "baseUrl": "https://sudatchi.com",
         "lang": "en",
         "typeSource": "single",
@@ -110,19 +110,19 @@
         "notes": ""
     },
     {
-        "name": "AnimeZ",
-        "id": 2897653102,
-        "baseUrl": "https://animez.org",
+        "name": "AnimeZZ",
+        "id": 492689523,
+        "baseUrl": "https://animeyy.com",
         "lang": "en",
         "typeSource": "multi",
-        "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://animez.org/",
+        "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://animeyy.com",
         "dateFormat": "",
         "dateFormatLocale": "",
         "isNsfw": false,
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/en/animez.js",
         "apiUrl": "",
-        "version": "1.0.2",
+        "version": "1.1.1",
         "isManga": false,
         "itemType": 1,
         "isFullData": false,
@@ -133,7 +133,7 @@
     },
     {
         "name": "AnimeParadise",
-        "id": 1293752835,
+        "id": 419768715,
         "baseUrl": "https://animeparadise.moe",
         "lang": "en",
         "typeSource": "single",
@@ -177,7 +177,7 @@
     },
     {
         "name": "Animeonsen",
-        "id": 4009881905,
+        "id": 1004796349,
         "baseUrl": "https://www.animeonsen.xyz",
         "lang": "en",
         "typeSource": "single",
@@ -199,7 +199,7 @@
     },
     {
         "name": "Animeonsen",
-        "id": 864791523,
+        "id": 1004796349,
         "baseUrl": "https://www.animeonsen.xyz",
         "lang": "ja",
         "typeSource": "single",
@@ -331,7 +331,7 @@
     },
     {
         "name": "Autoembed",
-        "id": 1691844320,
+        "id": 536971840,
         "baseUrl": "https://watch.autoembed.cc",
         "lang": "all",
         "typeSource": "multi",
