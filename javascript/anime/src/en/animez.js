@@ -1,15 +1,15 @@
 const mangayomiSources = [
   {
-    "name": "AnimeZ",
+    "name": "AnimeZZ",
     "id": 492689523,
     "lang": "en",
-    "baseUrl": "https://animez.org",
+    "baseUrl": "https://animeyy.com",
     "apiUrl": "",
     "iconUrl":
-      "https://www.google.com/s2/favicons?sz=256&domain=https://animez.org/",
+      "https://www.google.com/s2/favicons?sz=256&domain=https://animeyy.com",
     "typeSource": "multi",
     "itemType": 1,
-    "version": "1.0.2",
+    "version": "1.1.0",
     "pkgPath": "anime/src/en/animez.js",
   },
 ];
@@ -20,9 +20,13 @@ class DefaultExtension extends MProvider {
     this.client = new Client();
   }
 
-  getHeaders(url) {
+  getBaseUrl() {
+    return "https://animeyy.com";
+  }
+
+  getHeaders() {
     return {
-      "Referer": this.source.baseUrl,
+      "Referer": this.getBaseUrl(),
     };
   }
 
@@ -31,7 +35,7 @@ class DefaultExtension extends MProvider {
   }
 
   async request(slug) {
-    var url = this.source.baseUrl + slug;
+    var url = this.getBaseUrl() + slug;
     var res = await this.client.get(url, this.getHeaders());
     return new Document(res.body);
   }
@@ -44,8 +48,7 @@ class DefaultExtension extends MProvider {
     animes.forEach((anime) => {
       var link = anime.selectFirst("a").getHref;
       var name = anime.selectFirst("h2.Title").text;
-      var imageUrl =
-        this.source.baseUrl + "/" + anime.selectFirst("img").getSrc;
+      var imageUrl = this.getBaseUrl() + "/" + anime.selectFirst("img").getSrc;
 
       list.push({ name, link, imageUrl });
     });
@@ -123,7 +126,7 @@ class DefaultExtension extends MProvider {
     return await this.page(slug);
   }
   async getDetail(url) {
-    var baseUrl = this.source.baseUrl;
+    var baseUrl = this.getBaseUrl();
     if (url.includes(baseUrl)) url = url.replace(baseUrl, "");
     var link = +url;
     var body = await this.request(url);
@@ -239,7 +242,7 @@ class DefaultExtension extends MProvider {
       });
     }
 
-    return sortStreams(streams);
+    return this.sortStreams(streams);
   }
 
   getSourcePreferences() {
