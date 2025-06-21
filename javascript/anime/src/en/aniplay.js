@@ -9,11 +9,11 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.4.5",
+    "version": "1.5.0",
     "dateFormat": "",
     "dateFormatLocale": "",
-    "pkgPath": "anime/src/en/aniplay.js"
-  }
+    "pkgPath": "anime/src/en/aniplay.js",
+  },
 ];
 
 // Authors: - Swakshan
@@ -313,15 +313,35 @@ class DefaultExtension extends MProvider {
   async aniplayRequest(slug, body) {
     var baseUrl = this.getBaseUrl();
 
-    var next_action_overrides = await this.extractKeys(baseUrl);
-
     var next_action = "";
-    if (slug.indexOf("info/") > -1) {
-      next_action = next_action_overrides["getEpisodes"];
-    } else if (slug.indexOf("watch/") > -1) {
-      next_action = next_action_overrides["getSources"];
+
+    if (baseUrl.includes("aniplaynow")) {
+      var hdr = { "Referer": baseUrl };
+      var anilistId = body[0];
+      if (slug.includes("info/")) {
+        next_action = `episodes?id=${anilistId}&releasing=false&refresh=false`;
+      } else if (slug.includes("watch/")) {
+        var provider = body[1];
+        var epId = body[2];
+        var epNum = body[3];
+        var subType = body[4];
+        next_action = `sources?id=${anilistId}&provider=${provider}&epId=${epId}&epNum=${epNum}&subType=${subType}&cache=true`;
+      }
+      var api = `${baseUrl}/api/anime/${next_action}`;
+      var response = await this.client.get(api, hdr);
+      if (response.statusCode != 200) {
+        throw new Error("Error: " + response.statusText);
+      }
+      return JSON.parse(response.body);
     }
 
+    var next_action_overrides = await this.extractKeys(baseUrl);
+
+    if (slug.includes("info/")) {
+      next_action = next_action_overrides["getEpisodes"];
+    } else if (slug.includes("watch/")) {
+      next_action = next_action_overrides["getSources"];
+    }
     var url = `${baseUrl}/anime/${slug}`;
     var headers = {
       referer: baseUrl,
@@ -350,13 +370,15 @@ class DefaultExtension extends MProvider {
     if (result.length < 1) {
       throw new Error("Error: No data found for the given URL");
     }
-
+    if (result.hasOwnProperty("episodes")) {
+      result = result["episodes"];
+    }
     var chapters = [];
     var chaps = {};
     for (var item of result) {
       var providerId = item["providerId"];
       //  Hika has bunch of embeds, not stream url, so avoiding it for now
-      if (providerId == "hika") continue;
+      if (providerId == "koto") continue;
       var episodes = item["episodes"];
 
       for (var episode of episodes) {
