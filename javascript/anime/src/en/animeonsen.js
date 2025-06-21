@@ -1,5 +1,6 @@
 const mangayomiSources = [{
     "name": "Animeonsen",
+    "id": 1004796349,
     "langs": ["en", "ja"],
     "baseUrl": "https://www.animeonsen.xyz",
     "apiUrl": "https://api.animeonsen.xyz",

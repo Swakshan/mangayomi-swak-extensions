@@ -1,6 +1,7 @@
 const mangayomiSources = [
   {
     "name": "Sudatchi",
+    "id": 398530136,
     "lang": "en",
     "baseUrl": "https://sudatchi.com",
     "apiUrl": "",

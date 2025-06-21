@@ -1,6 +1,7 @@
 const mangayomiSources = [
   {
     "name": "Mangapill",
+    "id": 960321322,
     "lang": "en",
     "baseUrl": "https://mangapill.com",
     "apiUrl": "",
@@ -11,8 +12,8 @@ const mangayomiSources = [
     "version": "1.0.3",
     "dateFormat": "",
     "dateFormatLocale": "",
-    "pkgPath": "manga/src/en/mangapill.js"
-  }
+    "pkgPath": "manga/src/en/mangapill.js",
+  },
 ];
 
 class DefaultExtension extends MProvider {

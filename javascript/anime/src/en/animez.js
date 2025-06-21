@@ -1,6 +1,7 @@
 const mangayomiSources = [
   {
     "name": "AnimeZ",
+    "id": 492689523,
     "lang": "en",
     "baseUrl": "https://animez.org",
     "apiUrl": "",
@@ -9,8 +10,8 @@ const mangayomiSources = [
     "typeSource": "multi",
     "itemType": 1,
     "version": "1.0.2",
-    "pkgPath": "anime/src/en/animez.js"
-  }
+    "pkgPath": "anime/src/en/animez.js",
+  },
 ];
 
 class DefaultExtension extends MProvider {

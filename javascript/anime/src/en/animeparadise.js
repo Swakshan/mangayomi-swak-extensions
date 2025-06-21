@@ -1,6 +1,7 @@
 const mangayomiSources = [
   {
     "name": "AnimeParadise",
+    "id": 419768715,
     "lang": "en",
     "baseUrl": "https://animeparadise.moe",
     "apiUrl": "https://api.animeparadise.moe",

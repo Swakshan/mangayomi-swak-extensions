@@ -1,6 +1,7 @@
 const mangayomiSources = [
   {
     "name": "Autoembed",
+    "id": 536971840,
     "lang": "all",
     "baseUrl": "https://watch.autoembed.cc",
     "apiUrl": "https://tom.autoembed.cc",
