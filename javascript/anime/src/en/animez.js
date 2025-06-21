@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://animeyy.com",
     "typeSource": "multi",
     "itemType": 1,
-    "version": "1.1.0",
+    "version": "1.1.1",
     "pkgPath": "anime/src/en/animez.js",
   },
 ];
@@ -229,16 +229,20 @@ class DefaultExtension extends MProvider {
   async getVideoList(url) {
     var linkSlugs = url.split("||");
     var streams = [];
+    var hdr = this.getHeaders();
     for (var slug of linkSlugs) {
       var body = await this.request(slug);
       var iframeSrc = body.selectFirst("iframe").getSrc;
-      var streamLink = iframeSrc.replace("/embed/", "/anime/");
+      var streamLink = iframeSrc
+        .replace("/embed/", "/anime/")
+        .replace("\n", "");
       var audio = slug.indexOf("dub-") > -1 ? "Dub" : "Sub";
 
       streams.push({
         url: streamLink,
         originalUrl: streamLink,
         quality: audio,
+        headers: hdr,
       });
     }
 
