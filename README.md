@@ -20,7 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| Aniplay | 1.5.0 | en | 2025/06/21 18:06 IST |
+| Aniplay | 1.5.2 | en | 2025/06/25 00:19 IST |
 | AnimeParadise | 0.1.0 | en | 2025/06/21 18:06 IST |
 | AnimeZZ | 1.1.1 | en | 2025/06/21 16:47 IST |
 | AnimeKai | 0.3.3 | en | 2025/06/14 11:43 IST |
