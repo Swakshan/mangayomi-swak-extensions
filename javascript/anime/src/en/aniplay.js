@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.5.0",
+    "version": "1.5.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -22,6 +22,12 @@ class DefaultExtension extends MProvider {
   constructor() {
     super();
     this.client = new Client();
+  }
+
+  getHeaders(url) {
+    return {
+      "Referer": url,
+    };
   }
 
   getPreference(key) {
@@ -312,11 +318,11 @@ class DefaultExtension extends MProvider {
 
   async aniplayRequest(slug, body) {
     var baseUrl = this.getBaseUrl();
+    var hdr = this.getHeaders(baseUrl);
 
     var next_action = "";
 
     if (baseUrl.includes("aniplaynow")) {
-      var hdr = { "Referer": baseUrl };
       var anilistId = body[0];
       if (slug.includes("info/")) {
         next_action = `episodes?id=${anilistId}&releasing=false&refresh=false`;
@@ -343,13 +349,10 @@ class DefaultExtension extends MProvider {
       next_action = next_action_overrides["getSources"];
     }
     var url = `${baseUrl}/anime/${slug}`;
-    var headers = {
-      referer: baseUrl,
-      "next-action": next_action,
-      "Content-Type": "application/json",
-    };
+    hdr["next-action"] = next_action;
+    hdr["content-type"] = "application/json";
 
-    var response = await this.client.post(url, headers, body);
+    var response = await this.client.post(url, hdr, body);
 
     if (response.statusCode != 200) {
       throw new Error("Error: " + response.statusText);
@@ -377,8 +380,7 @@ class DefaultExtension extends MProvider {
     var chaps = {};
     for (var item of result) {
       var providerId = item["providerId"];
-      //  Hika has bunch of embeds, not stream url, so avoiding it for now
-      if (providerId == "koto") continue;
+
       var episodes = item["episodes"];
 
       for (var episode of episodes) {
@@ -443,25 +445,18 @@ class DefaultExtension extends MProvider {
 
   // For anime episode video list
   async getVideoList(url) {
-    var providerInfos = JSON.parse(url);
+    var pref_provider = this.getPreference("aniplay_pref_provider_5");
 
-    var pref_provider = this.getPreference("aniplay_pref_provider_4");
+    // All providers available.
+    var providerInfos = JSON.parse(url);
     var providers = Object.keys(providerInfos);
 
-    if (pref_provider == "any") {
+    if (providerInfos.hasOwnProperty(pref_provider)) {
+      providers = [pref_provider];
+    } else if (pref_provider == "any") {
       //any = randomly choose one
       var randomIndex = Math.floor(Math.random() * providers.length);
       providers = [providers[randomIndex]];
-    } else if (pref_provider == "pahe") {
-      //pahe = if "pahe" is available then chose it
-      if (providerInfos.hasOwnProperty("pahe")) {
-        providers = ["pahe"];
-      }
-    } else if (pref_provider == "yuki") {
-      //yuki = if "yuki" is available then chose it
-      if (providerInfos.hasOwnProperty("yuki")) {
-        providers = ["yuki"];
-      }
     }
 
     var finalStreams = [];
@@ -485,21 +480,27 @@ class DefaultExtension extends MProvider {
       var slug = `watch/${anilistId}`;
 
       for (var audio of audios) {
-        var body = [anilistId, providerId, id, number, audio];
-
-        var result = await this.aniplayRequest(slug, body);
-        if (result === null) {
-          continue;
-        }
-
-        if (providerId == "yuki") {
-          // Yuki always has softsubs aka subtitles are seperate.
-          streams = await this.getYukiStreams(result, "soft" + audio);
-        } else if (providerId == "pahe") {
-          // Pahe always has hardsubs aka subtitles printed on video.
-          streams = await this.getPaheStreams(result, "hard" + audio);
+        if (providerId == "koto") {
+          // Koto always has softsubs aka subtitles are seperate.
+          var slug = `${id}/${audio}`
+          streams = await this.getKotoStreams(slug, "soft" + audio);
         } else {
-          continue;
+          var body = [anilistId, providerId, id, number, audio];
+
+          var result = await this.aniplayRequest(slug, body);
+          if (result === null) {
+            continue;
+          }
+
+          if (providerId == "yuki") {
+            // Yuki always has softsubs aka subtitles are seperate.
+            streams = await this.getYukiStreams(result, "soft" + audio);
+          } else if (providerId == "pahe") {
+            // Pahe always has hardsubs aka subtitles printed on video.
+            streams = await this.getPaheStreams(result, "hard" + audio);
+          } else {
+            continue;
+          }
         }
 
         if (this.getPreference("aniplay_proxy"))
@@ -538,13 +539,13 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "aniplay_pref_provider_4",
+        key: "aniplay_pref_provider_5",
         listPreference: {
           title: "Preferred provider",
           summary: "",
           valueIndex: 1,
-          entries: ["Any", "All", "Yuki", "Pahe"],
-          entryValues: ["any", "all", "yuki", "pahe"],
+          entries: ["Any", "All", "Yuki", "Pahe", "Koto"],
+          entryValues: ["any", "all", "yuki", "pahe", "koto"],
         },
       },
       {
@@ -668,7 +669,7 @@ class DefaultExtension extends MProvider {
       if (lines[i].startsWith("#EXT-X-STREAM-INF:")) {
         var resolution = lines[i].match(/RESOLUTION=(\d+x\d+)/)[1];
         var m3u8Url = lines[i + 1].trim();
-        if (providerId === "yuki") {
+        if (providerId === "yuki" || providerId === "koto") {
           var orginalUrl = url;
           m3u8Url = orginalUrl.replace("master.m3u8", m3u8Url);
         }
@@ -707,6 +708,43 @@ class DefaultExtension extends MProvider {
     var m3u8Url = result.sources[0].url;
     var hdr = result.headers;
     return await this.extractStreams(m3u8Url, audio, "pahe", hdr);
+  }
+
+  async getKotoStreams(slug, audio) {
+    var embedUrl = `https://megaplay.buzz/stream/s-2/${slug}`;
+    var hdr = this.getHeaders(embedUrl);
+    var res = await this.client.get(embedUrl, hdr);
+    if (res.statusCode != 200) {
+      throw new Error("Koto: Could not find embed");
+    }
+    var doc = new Document(res.body);
+    var megaplayPlayer = doc.selectFirst("#megaplay-player");
+    if (megaplayPlayer == null) {
+      throw new Error("Koto: Could not find media ID");
+    }
+    var mediaId = megaplayPlayer.attr("data-id");
+
+    var api = `https://megaplay.buzz/stream/getSources?id=${mediaId}`;
+    hdr['X-Requested-With'] = 'XMLHttpRequest';
+    res = await this.client.get(api, hdr);
+    if (res.statusCode != 200) {
+      throw new Error("Koto: Could not find stream");
+    }
+    delete hdr["X-Requested-With"];
+    var result = JSON.parse(res.body);
+    var m3u8Url = result.sources.file;
+    var streams = await this.extractStreams(m3u8Url, audio, "koto", hdr);
+
+    var subtitles = [];
+    if (result.hasOwnProperty("tracks")) {
+      result.tracks.forEach((sub) => {
+        sub["headers"] = hdr;
+        subtitles.push(sub);
+      });
+    }
+    streams[0].subtitles = subtitles;
+
+    return streams;
   }
 
   //------------ Extract keys ---------------
