@@ -132,6 +132,28 @@
         "notes": ""
     },
     {
+        "name": "Anicrush",
+        "id": 1497004903,
+        "baseUrl": "https://anicrush.to",
+        "lang": "en",
+        "typeSource": "single",
+        "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://anicrush.to/",
+        "dateFormat": "",
+        "dateFormatLocale": "",
+        "isNsfw": false,
+        "hasCloudflare": true,
+        "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/en/anicrush.js",
+        "apiUrl": "https://api.anicrush.to",
+        "version": "0.0.5",
+        "isManga": false,
+        "itemType": 1,
+        "isFullData": false,
+        "appMinVerReq": "0.5.0",
+        "additionalParams": "",
+        "sourceCodeLanguage": 1,
+        "notes": ""
+    },
+    {
         "name": "AnimeParadise",
         "id": 419768715,
         "baseUrl": "https://animeparadise.moe",

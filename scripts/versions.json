@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Anicrush": {
+            "name": "Anicrush",
+            "version": "0.0.5",
+            "langs": "en",
+            "lastUpd": 1751042518.408327
+        },
         "Aniplay": {
             "name": "Aniplay",
             "version": "1.5.2",
