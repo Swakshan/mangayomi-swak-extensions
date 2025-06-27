@@ -10,7 +10,7 @@ const mangayomiSources = [
     "typeSource": "single",
     "isManga": true,
     "itemType": 0,
-    "version": "0.2.7",
+    "version": "0.2.8",
     "pkgPath": "manga/src/en/readcomiconline.js",
   },
 ];
@@ -451,7 +451,7 @@ class DefaultExtension extends MProvider {
   decodeImageUrl(obfuscatedUrl, customDomain) {
     var decodedUrl = "";
     obfuscatedUrl = obfuscatedUrl
-      .replace(/Vz__x2OdwP_/g, "d")
+      .replace(/Ut__wWzBoh_/g, "d")
       .replace(/b/g, "b")
       .replace(/h/g, "h");
 
