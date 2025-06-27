@@ -4,7 +4,7 @@ const mangayomiSources = [
     "id": 1497004903,
     "baseUrl": "https://anicrush.to",
     "lang": "en",
-    "typeSource": "multi",
+    "typeSource": "single",
     "iconUrl":
       "https://www.google.com/s2/favicons?sz=256&domain=https://anicrush.to/",
     "dateFormat": "",
@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://api.anicrush.to",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -27,7 +27,6 @@ const mangayomiSources = [
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   getPreference(key) {
@@ -39,11 +38,13 @@ class DefaultExtension extends MProvider {
       "x-site": "anicrush",
       "Referer": url,
       "Origin": url,
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.48 Safari/537.36",
     };
   }
 
   async request(url) {
-    var res = await this.client.get(url, this.getHeaders(url));
+    var res = await new Client().get(url, this.getHeaders(url));
     return JSON.parse(res.body);
   }
 
@@ -197,7 +198,69 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    var baseUrl = this.source.baseUrl;
+    if (url.includes(baseUrl)) url = url.split(".")[2];
+    var animeId = url;
+    var slug = `movie/getById/${animeId}`;
+    var body = await this.aniRequest(slug);
+    var result = body.result;
+    var link = `${baseUrl}/detail/${result.slug}.${animeId}`;
+    var description = result.overview;
+    var type = result.type;
+    var airing_status = result.airing_status;
+    var imageUrl = this.getPosterUrl(result.poster_path);
+    var chapters = [];
+
+    // 1 ==  Completed and 2 == Airing
+    if (airing_status < 3) {
+      var latest_episode_sub = result.latest_episode_sub;
+      var latest_episode_dub = result.latest_episode_dub;
+      
+      if (type == "Movie") {
+        var scanlator = "";
+        var epNum = 1;
+        var hasDub = epNum <= latest_episode_dub;
+        if (epNum <= latest_episode_sub) scanlator += "SUB";
+        if (hasDub) scanlator += ", DUB";
+        var epData = `${animeId}||${epNum}`;
+        chapters.push({
+          name: `Movie`,
+          url: epData,
+          scanlator,
+        });
+      } else {
+        var animeEpTitlePref = parseInt(
+          this.getPreference("anicrush_episode_title_lang")
+        );
+        var epSlug = `episode/list?_movieId=${animeId}`;
+        body = await this.aniRequest(epSlug);
+        result = body.result;
+        Object.keys(result).forEach((range) => {
+          result[range].forEach((chapterData) => {
+            var title = chapterData.name;
+            title =
+              animeEpTitlePref == 0 &&
+              chapterData.hasOwnProperty("name_english")
+                ? chapterData.name_english
+                : title;
+            var epNum = chapterData.number;
+            var scanlator = "";
+            var hasDub = epNum <= latest_episode_dub;
+            if (chapterData.is_filler) scanlator += "FILLER,";
+            if (epNum <= latest_episode_sub) scanlator += "SUB";
+            if (hasDub) scanlator += ", DUB";
+            var epData = `${animeId}||${epNum}`;
+            chapters.push({
+              name: `E${epNum}: ${title}`,
+              url: epData,
+              scanlator,
+            });
+          });
+        });
+      }
+      chapters.reverse();
+    }
+    return { link,imageUrl, description, chapters };
   }
 
   async getVideoList(url) {
