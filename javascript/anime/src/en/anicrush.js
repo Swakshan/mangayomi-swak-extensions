@@ -10,10 +10,10 @@ const mangayomiSources = [
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
-    "hasCloudflare": false,
+    "hasCloudflare": true,
     "sourceCodeUrl": "",
     "apiUrl": "https://api.anicrush.to",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -45,6 +45,7 @@ class DefaultExtension extends MProvider {
 
   async request(url) {
     var res = await new Client().get(url, this.getHeaders(url));
+    if (res.statusCode != 200) return false;
     return JSON.parse(res.body);
   }
 
@@ -215,14 +216,14 @@ class DefaultExtension extends MProvider {
     if (airing_status < 3) {
       var latest_episode_sub = result.latest_episode_sub;
       var latest_episode_dub = result.latest_episode_dub;
-      
+
       if (type == "Movie") {
         var scanlator = "";
         var epNum = 1;
         var hasDub = epNum <= latest_episode_dub;
         if (epNum <= latest_episode_sub) scanlator += "SUB";
         if (hasDub) scanlator += ", DUB";
-        var epData = `${animeId}||${epNum}`;
+        var epData = `${animeId}||${epNum}||${hasDub}`;
         chapters.push({
           name: `Movie`,
           url: epData,
@@ -249,7 +250,7 @@ class DefaultExtension extends MProvider {
             if (chapterData.is_filler) scanlator += "FILLER,";
             if (epNum <= latest_episode_sub) scanlator += "SUB";
             if (hasDub) scanlator += ", DUB";
-            var epData = `${animeId}||${epNum}`;
+            var epData = `${animeId}||${epNum}||${hasDub}`;
             chapters.push({
               name: `E${epNum}: ${title}`,
               url: epData,
@@ -260,11 +261,34 @@ class DefaultExtension extends MProvider {
       }
       chapters.reverse();
     }
-    return { link,imageUrl, description, chapters };
+    return { link, imageUrl, description, chapters };
   }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    var sp = url.split("||");
+    var animeId = sp[0];
+    var epNum = sp[1];
+    var hasDub = sp[2].toLowerCase() === "true";
+
+    var prefServers = this.getPreference("anicrush_pref_stream_server");
+    // If no server is chosen, use the default server 1
+    if (prefServers.length < 1) prefServers.push("1");
+
+    var prefAudio = this.getPreference("anicrush_pref_stream_subdub_type");
+    // If no dubtype is chosen, use the default dubtype sub
+    if (prefAudio.length < 1) prefAudio.push("sub");
+    var streams = [];
+    for (var server of prefServers) {
+      for (var audio of prefAudio) {
+        var slug = `episode/sources?_movieId=${animeId}&ep=${epNum}&sv=${server}&sc=${audio}`;
+        var body = await this.aniRequest(slug);
+        if (!body) continue;
+        var embedUrl = body.result.link;
+        var stream = await this.megaDecrypt(embedUrl, server, audio);
+        streams = [...stream, ...streams];
+      }
+    }
+    return streams.reverse();
   }
 
   getFilterList() {
@@ -527,6 +551,79 @@ class DefaultExtension extends MProvider {
           entries: ["English", "Romaji"],
           entryValues: ["0", "1"],
         },
+      },
+      {
+        key: "anicrush_pref_stream_server",
+        multiSelectListPreference: {
+          title: "Preferred server",
+          summary: "Choose the server/s you want to extract streams from",
+          values: ["4"],
+          entries: ["Southcloud-1", "Southcloud-2", "Southcloud-3"],
+          entryValues: ["4", "1", "6"],
+        },
+      },
+      {
+        key: "anicrush_pref_stream_subdub_type",
+        multiSelectListPreference: {
+          title: "Preferred stream sub/dub type",
+          summary: "",
+          values: ["sub", "dub"],
+          entries: ["Sub", "Dub"],
+          entryValues: ["sub", "dub"],
+        },
+      },
+    ];
+  }
+
+  //----------------Megacloud Decoders----------------
+  // Credits :- https://github.com/itzzzme/megacloud-keys/
+
+  async getKey() {
+    const preferences = new SharedPreferences();
+    let KEY = preferences.getString("megacloud_key", "");
+    var KEYS_TS = parseInt(preferences.getString("megacloud_key_ts", "0"));
+    var now_ts = parseInt(new Date().getTime() / 1000);
+
+    // Checks for keys every 20 minutes
+    if (now_ts - KEYS_TS < 20 * 60 && KEY != "") {
+      return KEY;
+    }
+    KEY = (
+      await new Client().get(
+        "https://raw.githubusercontent.com/itzzzme/megacloud-keys/refs/heads/main/key.txt"
+      )
+    ).body;
+    preferences.setString("megacloud_key", KEY);
+    preferences.setString("megacloud_key_ts", ""+now_ts);
+    return KEY;
+  }
+
+  async megaDecrypt(url, serverId, audio) {
+    function serverName(code) {
+      return {
+        "4": "Southcloud-1",
+        "1": "Southcloud-2",
+        "6": "Southcloud-3",
+      }[code];
+    }
+    var host = "https://megacloud.blog/"
+    const key = await this.getKey();
+    var code = url.split("/")[6].split("?")[0];
+    var api = `${host}embed-2/v2/e-1/getSources?id=${code}`;
+    var result = await this.request(api);
+    var subs = result.tracks;
+    var encryptedUrl = result.sources;
+    var streamData = JSON.parse(decryptAESCryptoJS(encryptedUrl, key));
+    var streamUrl = streamData[0].file
+    var hdr = this.getHeaders(host)
+    delete hdr['x-site']
+    return [
+      {
+        url: streamUrl,
+        originalUrl: streamUrl,
+        quality: `Auto - ${serverName(serverId)} : ${audio.toUpperCase()}`,
+        headers: hdr,
+        subtitles: subs,
       },
     ];
   }
