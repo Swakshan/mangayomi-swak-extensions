@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -121,9 +121,10 @@ class DefaultExtension extends MProvider {
       .selectFirst(".wp-content")
       .select("iframe")
       .forEach((item) => {
-        var name = `Player ${++count}`;
         var url = item.getSrc;
-
+        var urlSp = url.split("/");
+        var hostName = urlSp[2];
+        var name = `Player ${++count} - ${hostName}`;
         chapters.push({ name, url });
       });
     return { link, chapters };
