@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -43,12 +43,12 @@ class DefaultExtension extends MProvider {
   }
 
   async request(url) {
-    return await this.client.get(url);
+    return (await this.client.get(url)).body;
   }
 
   async requestDoc(slug) {
     var res = await this.request(slug);
-    return new Document(res.body);
+    return new Document(res);
   }
 
   sanitizeTitle(title) {
@@ -128,9 +128,47 @@ class DefaultExtension extends MProvider {
       });
     return { link, chapters };
   }
+  getUnPackJs(doc) {
+    var skey = "eval(function(p,a,c,k,e,d)";
+    var eKey = "</script>";
+    var start = doc.indexOf(skey);
+    var end = doc.indexOf(eKey, start);
+    var js = doc.substring(start, end);
+    return unpackJs(js);
+  }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    if (url.includes("youtube.com"))
+      throw new Error("Youtube embed are yet to be handled");
+    else if (url.includes("tapepops"))
+      throw new Error("Tapepops embed are yet to be handled");
+
+    var res = await this.request(url);
+
+    var unpack = this.getUnPackJs(res);
+
+    var skey = '"hls2":"';
+    var eKey = '"}';
+    var start = unpack.indexOf(skey) + skey.length;
+    var end = unpack.indexOf(eKey, start);
+    var stream = unpack.substring(start, end);
+    if (stream.length == 0)
+      throw new Error("Stream not found. Try different player");
+
+    var doc = new Document(res);
+    var title = doc.selectFirst("meta").attr("content");
+    if (title.length == 0) {
+      title = "Auto";
+    }
+
+    return [
+      {
+        url: stream,
+        originalUrl: stream,
+        quality: title,
+        headers: { "Referer": url },
+      },
+    ];
   }
 
   getFilterList() {
