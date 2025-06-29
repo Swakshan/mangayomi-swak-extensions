@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Tamilarasan": {
+            "name": "Tamilarasan",
+            "version": "0.0.6",
+            "langs": "all",
+            "lastUpd": 1751216173.527032
+        },
         "Anicrush": {
             "name": "Anicrush",
             "version": "0.0.5",
