@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -56,7 +56,7 @@ class DefaultExtension extends MProvider {
       .replace(" Full Movie Watch Online Free", "")
       .replace(" Web Series Watch Online", "")
       .replace(" Web Series Online", "")
-      .replace(" Movie Watch Online","")
+      .replace(" Movie Watch Online", "")
       .trim();
   }
   async getHomePage(page) {
@@ -113,7 +113,20 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    var link = url;
+    var doc = await this.requestDoc(url);
+    var chapters = [];
+    var count = 0;
+    doc
+      .selectFirst(".wp-content")
+      .select("iframe")
+      .forEach((item) => {
+        var name = `Player ${++count}`;
+        var url = item.getSrc;
+
+        chapters.push({ name, url });
+      });
+    return { link, chapters };
   }
 
   async getVideoList(url) {
