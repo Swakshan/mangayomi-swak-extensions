@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -51,11 +51,19 @@ class DefaultExtension extends MProvider {
     return new Document(res.body);
   }
 
+  sanitizeTitle(title) {
+    return title
+      .replace(" Full Movie Watch Online Free", "")
+      .replace(" Web Series Watch Online", "")
+      .replace(" Web Series Online", "")
+      .replace(" Movie Watch Online","")
+      .trim();
+  }
   async getHomePage(page) {
     var pref = this.getPreference("tamilarasan_home_section");
     var slug = pref != "tvshows" ? `genre/${pref}` : pref;
     var doc = await this.requestDoc(
-      `${this.source.baseUrl}/${slug}/page/${page}/`
+      `${this.getBaseUrl()}/${slug}/page/${page}/`
     );
 
     var list = [];
@@ -66,12 +74,7 @@ class DefaultExtension extends MProvider {
       .forEach((item) => {
         var imageUrl = item.selectFirst("img").getSrc;
         var link = item.selectFirst("a").getHref;
-        var name = item
-          .selectFirst(".title")
-          .text.replace(" Full Movie Watch Online Free", "")
-          .replace(" Web Series Watch Online", "")
-          .replace(" Web Series Online", "")
-          .trim();
+        var name = this.sanitizeTitle(item.selectFirst(".title").text);
         list.push({ name, imageUrl, link });
       });
 
@@ -91,7 +94,22 @@ class DefaultExtension extends MProvider {
   }
 
   async search(query, page, filters) {
-    throw new Error("search not implemented");
+    var url = `${this.getBaseUrl()}/page/${page}/?s=${query}`;
+    var doc = await this.requestDoc(url);
+
+    var list = [];
+    var hasNextPage = false;
+    doc.select(".result-item").forEach((item) => {
+      var link = item.selectFirst("a").getHref;
+      var imageUrl = item.selectFirst("img").getSrc;
+      var name = this.sanitizeTitle(item.selectFirst(".title").text);
+      list.push({ name, imageUrl, link });
+    });
+    var lastPage = doc
+      .selectFirst("div.pagination > span")
+      .text.split(" of ")[1];
+    hasNextPage = page != parseInt(lastPage);
+    return { list, hasNextPage };
   }
 
   async getDetail(url) {
