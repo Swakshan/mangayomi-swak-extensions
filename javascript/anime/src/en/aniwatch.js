@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "1.0.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -269,7 +269,7 @@ class DefaultExtension extends MProvider {
       var stream = await this.megaDecrypt(embedUrl, serverName, audioType);
       streams = [...stream, ...streams];
     }
-    return streams;
+    return this.sortStreams(streams);
   }
 
   getFilterList() {
@@ -590,8 +590,82 @@ class DefaultExtension extends MProvider {
           entryValues: ["sub", "dub"],
         },
       },
+      {
+        key: "aniwatch_pref_extract_streams",
+        switchPreferenceCompat: {
+          title: "Split stream into different quality streams",
+          summary: "Split stream Auto into 360p/720p/1080p",
+          value: true,
+        },
+      },
+      {
+        key: "aniwatch_pref_video_resolution",
+        listPreference: {
+          title: "Preferred video resolution",
+          summary: "",
+          valueIndex: 0,
+          entries: ["Auto", "1080p", "720p", "480p", "360p"],
+          entryValues: ["auto", "1080", "720", "480", "360"],
+        },
+      },
     ];
   }
+
+  // ----------- Stream manipulations -------
+  // Sorts streams based on user preference.
+  sortStreams(streams) {
+    var sortedStreams = [];
+    var copyStreams = streams.slice();
+
+    var pref = this.getPreference("aniwatch_pref_video_resolution");
+    for (var stream of streams) {
+      if (stream.quality.indexOf(pref) > -1) {
+        sortedStreams.push(stream);
+        var index = copyStreams.indexOf(stream);
+        if (index > -1) {
+          copyStreams.splice(index, 1);
+        }
+      }
+    }
+    return [...sortedStreams, ...copyStreams];
+  }
+
+  // Extracts the streams url for different resolutions from the hls stream.
+  async extractStreams(url, serverName, audio, hdr) {
+    audio = audio.toUpperCase();
+    var streams = [
+      {
+        url: url,
+        originalUrl: url,
+        quality: `Auto - ${serverName} : ${audio}`,
+        headers: hdr,
+      },
+    ];
+    var doExtract = this.getPreference("aniwatch_pref_extract_streams");
+    if (!doExtract) {
+      return streams;
+    }
+
+    const response = await this.client.get(url, hdr);
+    const body = response.body;
+    const lines = body.split("\n");
+
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith("#EXT-X-STREAM-INF:")) {
+        var resolution = lines[i].match(/RESOLUTION=(\d+x\d+)/)[1];
+        var indexUrl = lines[i + 1].trim();
+        var m3u8Url = url.replace("master.m3u8", indexUrl);
+        streams.push({
+          url: m3u8Url,
+          originalUrl: m3u8Url,
+          quality: `${resolution} - ${serverName} : ${audio}`,
+          headers: hdr,
+        });
+      }
+    }
+    return streams;
+  }
+
   //----------------Megacloud Decoders----------------
   // Credits :- https://github.com/itzzzme/megacloud-keys/
 
@@ -627,14 +701,9 @@ class DefaultExtension extends MProvider {
     var encryptedUrl = result.sources;
     var streamData = JSON.parse(decryptAESCryptoJS(encryptedUrl, key));
     var streamUrl = streamData[0].file;
-    return [
-      {
-        url: streamUrl,
-        originalUrl: streamUrl,
-        quality: `Auto - ${serverName} : ${audio.toUpperCase()}`,
-        headers: hdr,
-        subtitles: subs,
-      },
-    ];
+    var streams = await this.extractStreams(streamUrl, serverName, audio, hdr);
+    streams[0].subtitle = subs;
+
+    return streams;
   }
 }
