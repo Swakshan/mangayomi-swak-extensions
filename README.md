@@ -20,6 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| Aniwatch | 1.0.0 | en | 2025/06/30 23:06 IST |
 | Tamilarasan | 0.0.6 | all | 2025/06/29 22:26 IST |
 | Anicrush | 0.0.5 | en | 2025/06/27 22:11 IST |
 | Aniplay | 1.5.2 | en | 2025/06/25 00:19 IST |

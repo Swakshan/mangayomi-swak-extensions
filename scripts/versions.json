@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Aniwatch": {
+            "name": "Aniwatch",
+            "version": "1.0.0",
+            "langs": "en",
+            "lastUpd": 1751305007.371692
+        },
         "Tamilarasan": {
             "name": "Tamilarasan",
             "version": "0.0.6",

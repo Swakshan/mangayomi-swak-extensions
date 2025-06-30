@@ -176,6 +176,28 @@
         "notes": ""
     },
     {
+        "name": "Aniwatch",
+        "id": 1514967419,
+        "baseUrl": "https://aniwatchtv.to",
+        "lang": "en",
+        "typeSource": "single",
+        "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://aniwatchtv.to/",
+        "dateFormat": "",
+        "dateFormatLocale": "",
+        "isNsfw": false,
+        "hasCloudflare": false,
+        "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/en/aniwatch.js",
+        "apiUrl": "",
+        "version": "1.0.0",
+        "isManga": false,
+        "itemType": 1,
+        "isFullData": false,
+        "appMinVerReq": "0.5.0",
+        "additionalParams": "",
+        "sourceCodeLanguage": 1,
+        "notes": ""
+    },
+    {
         "name": "AnimeKai",
         "id": 274675053,
         "baseUrl": "https://animekai.to",
