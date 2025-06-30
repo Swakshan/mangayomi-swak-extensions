@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -41,6 +41,13 @@ class DefaultExtension extends MProvider {
   async request(slug) {
     var url = `${this.source.baseUrl}${slug}`;
     return await this.client.get(url);
+  }
+
+  async apiRequest(slug) {
+    slug = `/ajax/v2/episode/${slug}`;
+    var body = await this.request(slug);
+    if (body.statusCode != 200) return null;
+    return JSON.parse(body.body);
   }
 
   async searchPage({
@@ -207,10 +214,9 @@ class DefaultExtension extends MProvider {
 
     var chapters = [];
     var epTitlePref = this.getPreference("aniwatch_pref_ep_title");
-    var epslug = `/ajax/v2/episode/list/${animeId}`;
-    body = await this.request(epslug);
-    if (body.statusCode === 200) {
-      var res = JSON.parse(body.body);
+
+    var res = await this.apiRequest(`list/${animeId}`);
+    if (res) {
       doc = new Document(res.html.replace("\n", ""));
       doc.select("a.ssl-item.ep-item").forEach((item) => {
         var epId = item.attr("data-id");
@@ -229,7 +235,41 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    var epId = url;
+    var streams = [];
+
+    var slug = `servers?episodeId=${epId}`;
+    var res = await this.apiRequest(slug);
+    if (!res) throw new Error("Servers not found...");
+    var doc = new Document(res.html.replace("\n", ""));
+
+    var prefServers = this.getPreference("aniwatch_pref_stream_server");
+    // If no server is chosen, use the default server 1
+    if (prefServers.length < 1) prefServers.push("1");
+
+    var prefAudio = this.getPreference("aniwatch_pref_stream_subdub_type");
+    // If no dubtype is chosen, use the default dubtype sub
+    if (prefAudio.length < 1) prefAudio.push("sub");
+
+    for (var serverItem of doc.select(".server-item")) {
+      var serverName = serverItem.selectFirst("a").text.trim();
+
+      var audioType = serverItem.attr("data-type");
+      if (audioType && !prefAudio.includes(audioType)) continue;
+
+      var serverId = serverItem.attr("data-server-id");
+      if (serverId && !prefServers.includes(serverId)) continue;
+
+      var dataId = serverItem.attr("data-id");
+      // if (dataId) continue;
+
+      res = await this.apiRequest(`sources?id=${dataId}`);
+      if (!res) continue;
+      var embedUrl = res.link;
+      var stream = await this.megaDecrypt(embedUrl, serverName, audioType);
+      streams = [...stream, ...streams];
+    }
+    return streams;
   }
 
   getFilterList() {
@@ -529,6 +569,71 @@ class DefaultExtension extends MProvider {
           entries: ["Romaji", "English"],
           entryValues: ["data-jname", "title"],
         },
+      },
+      {
+        key: "aniwatch_pref_stream_server",
+        multiSelectListPreference: {
+          title: "Preferred server",
+          summary: "Choose the server/s you want to extract streams from",
+          values: ["4", "1"],
+          entries: ["VidSrc", "MegaCloud", "T-Cloud"],
+          entryValues: ["4", "1", "6"],
+        },
+      },
+      {
+        key: "aniwatch_pref_stream_subdub_type",
+        multiSelectListPreference: {
+          title: "Preferred stream sub/dub type",
+          summary: "",
+          values: ["sub", "dub"],
+          entries: ["Sub", "Dub"],
+          entryValues: ["sub", "dub"],
+        },
+      },
+    ];
+  }
+  //----------------Megacloud Decoders----------------
+  // Credits :- https://github.com/itzzzme/megacloud-keys/
+
+  async getKey() {
+    const preferences = new SharedPreferences();
+    let KEY = preferences.getString("megacloud_key", "");
+    var KEYS_TS = parseInt(preferences.getString("megacloud_key_ts", "0"));
+    var now_ts = parseInt(new Date().getTime() / 1000);
+
+    // Checks for keys every 20 minutes
+    if (now_ts - KEYS_TS < 20 * 60 && KEY != "") {
+      return KEY;
+    }
+    KEY = (
+      await new Client().get(
+        "https://raw.githubusercontent.com/itzzzme/megacloud-keys/refs/heads/main/key.txt"
+      )
+    ).body;
+    preferences.setString("megacloud_key", KEY);
+    preferences.setString("megacloud_key_ts", "" + now_ts);
+    return KEY;
+  }
+
+  async megaDecrypt(url, serverName, audio) {
+    var host = "https://megacloud.blog/";
+    var hdr = { "Referer": host };
+    const key = await this.getKey();
+    var code = url.split("/")[6].split("?")[0];
+    var api = `${host}embed-2/v2/e-1/getSources?id=${code}`;
+    var result = JSON.parse((await this.client.get(api, hdr)).body);
+    var tracks = result.tracks;
+    var subs = tracks.filter((item) => item.kind != "thumbnails");
+    var encryptedUrl = result.sources;
+    var streamData = JSON.parse(decryptAESCryptoJS(encryptedUrl, key));
+    var streamUrl = streamData[0].file;
+    return [
+      {
+        url: streamUrl,
+        originalUrl: streamUrl,
+        quality: `Auto - ${serverName} : ${audio.toUpperCase()}`,
+        headers: hdr,
+        subtitles: subs,
       },
     ];
   }
