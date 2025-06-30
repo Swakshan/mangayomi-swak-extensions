@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -39,7 +39,7 @@ class DefaultExtension extends MProvider {
   }
 
   async request(slug) {
-    var url = `${this.source.baseUrl}/${slug}`;
+    var url = `${this.source.baseUrl}${slug}`;
     return await this.client.get(url);
   }
 
@@ -84,7 +84,7 @@ class DefaultExtension extends MProvider {
     slug += bundleSlug("em", eMonth);
     slug += bundleSlug("ed", eDay);
 
-    var body = await this.request(slug);
+    var body = await this.request(`/${slug}`);
     var doc = new Document(body.body);
 
     var list = [];
@@ -171,7 +171,61 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    function statusCode(status) {
+      status = status.toLowerCase();
+      return (
+        {
+          "currently airing": 0,
+          "finished airing": 1,
+          "not yet aired": 4,
+        }[status] ?? 5
+      );
+    }
+    var baseUrl = this.source.baseUrl;
+    if (url.includes(baseUrl)) url = url.replace(baseUrl, "");
+    var link = baseUrl + url;
+    var body = await this.request(url);
+    var doc = new Document(body.body);
+    var animeId = doc.selectFirst("#wrapper").attr("data-id");
+
+    var description = "";
+    var status = "";
+    var genre = [];
+    doc
+      .selectFirst(".anisc-info")
+      .select(".item")
+      .forEach((item) => {
+        var heading = item.selectFirst("span").text.trim();
+        if (heading.includes("Overview")) {
+          description = item.selectFirst(".text").text.trim();
+        } else if (heading.includes("Status")) {
+          status = statusCode(item.selectFirst(".name").text.trim());
+        } else if (heading.includes("Genres")) {
+          item.select("a").forEach((a) => genre.push(a.text.trim()));
+        }
+      });
+
+    var chapters = [];
+    var epTitlePref = this.getPreference("aniwatch_pref_ep_title");
+    var epslug = `/ajax/v2/episode/list/${animeId}`;
+    body = await this.request(epslug);
+    if (body.statusCode === 200) {
+      var res = JSON.parse(body.body);
+      doc = new Document(res.html.replace("\n", ""));
+      doc.select("a.ssl-item.ep-item").forEach((item) => {
+        var epId = item.attr("data-id");
+        var epNum = item.attr("data-number");
+        var eDynamicName = item.selectFirst(".e-dynamic-name");
+        var title = eDynamicName.attr(epTitlePref);
+        var name = `E${epNum}: ${title}`;
+        chapters.push({
+          name,
+          url: epId,
+        });
+      });
+    }
+    chapters.reverse();
+    return { link, description, status, genre, chapters };
   }
 
   async getVideoList(url) {
@@ -460,6 +514,16 @@ class DefaultExtension extends MProvider {
         key: "aniwatch_pref_title",
         listPreference: {
           title: "Preferred Title",
+          summary: "",
+          valueIndex: 0,
+          entries: ["Romaji", "English"],
+          entryValues: ["data-jname", "title"],
+        },
+      },
+      {
+        key: "aniwatch_pref_ep_title",
+        listPreference: {
+          title: "Preferred Episode title",
           summary: "",
           valueIndex: 0,
           entries: ["Romaji", "English"],
