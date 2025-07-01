@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.6.1",
+    "version": "1.6.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -503,7 +503,7 @@ class DefaultExtension extends MProvider {
         }
 
         if (this.getPreference("aniplay_proxy"))
-          streams = this.streamProxy(providerId, streams);
+          streams = this.addStreamProxy(streams);
         var sortedStreams = this.sortStreams(streams);
         finalStreams = [...sortedStreams, ...finalStreams];
       }
@@ -592,11 +592,11 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "aniplay_stream_proxy",
+        key: "aniplay_stream_proxy_1",
         editTextPreference: {
           title: "Override stream proxy url",
-          summary: "https://prox.aniplaynow.live",
-          value: "https://prox.aniplaynow.live",
+          summary: "https://paheproxy.aniplaynow.live",
+          value: "https://paheproxy.aniplaynow.live",
           dialogTitle: "Override stream proxy url",
           dialogMessage: "",
         },
@@ -618,26 +618,22 @@ class DefaultExtension extends MProvider {
         if (index > -1) {
           copyStreams.splice(index, 1);
         }
-        break;
       }
     }
     return [...sortedStreams, ...copyStreams];
   }
 
   // Adds proxy to streams
-  streamProxy(providerId, streams) {
-    var proxyBaseUrl = this.getPreference("aniplay_stream_proxy");
-    var slug = "/fetch?url=";
-    var ref = "&ref=";
-    if (providerId == "yuki") {
-      ref += "https://hianime.to";
-    } else if (providerId == "pahe") {
-      ref += "https://kwik.si";
-    }
+  addStreamProxy(streams) {
+    var proxyUrl = this.getPreference("aniplay_stream_proxy_1") + "/fetch?url=";
 
     streams.forEach((stream) => {
-      stream.url = proxyBaseUrl + slug + stream.url + ref;
-      stream.originalUrl = proxyBaseUrl + slug + stream.originalUrl + ref;
+      var streamUrl = stream.url;
+      var ref = stream.headers["Referer"];
+      var proxyStreamUrl = proxyUrl + streamUrl + "&ref=" + ref;
+
+      stream.url = proxyStreamUrl;
+      stream.originalUrl = proxyStreamUrl;
     });
 
     return streams;
