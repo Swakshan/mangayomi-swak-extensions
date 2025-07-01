@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.6.2",
+    "version": "1.6.3",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -642,12 +642,12 @@ class DefaultExtension extends MProvider {
   // Extracts the streams url for different resolutions from a hls stream.
   async extractStreams(url, audio, providerId, hdr = {}) {
     audio = audio.toUpperCase();
-    providerId = providerId.toUpperCase();
+    var providerTag = providerId.toUpperCase();
     var streams = [
       {
         url: url,
         originalUrl: url,
-        quality: `Auto - ${providerId} : ${audio}`,
+        quality: `Auto - ${providerTag} : ${audio}`,
         headers: hdr,
       },
     ];
@@ -672,7 +672,7 @@ class DefaultExtension extends MProvider {
         streams.push({
           url: m3u8Url,
           originalUrl: m3u8Url,
-          quality: `${resolution} - ${providerId} : ${audio}`,
+          quality: `${resolution} - ${providerTag} : ${audio}`,
           headers: hdr,
         });
       }
