@@ -100,7 +100,7 @@
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/en/aniplay.js",
         "apiUrl": "https://aniplaynow.live",
-        "version": "1.5.2",
+        "version": "1.6.3",
         "isManga": false,
         "itemType": 1,
         "isFullData": false,

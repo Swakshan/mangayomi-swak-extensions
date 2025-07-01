@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Aniplay": {
+            "name": "Aniplay",
+            "version": "1.6.3",
+            "langs": "en",
+            "lastUpd": 1751376253.576167
+        },
         "Aniwatch": {
             "name": "Aniwatch",
             "version": "1.0.0",
@@ -49,12 +55,6 @@
             "version": "0.0.5",
             "langs": "en",
             "lastUpd": 1751042518.408327
-        },
-        "Aniplay": {
-            "name": "Aniplay",
-            "version": "1.5.2",
-            "langs": "en",
-            "lastUpd": 1750790967.382213
         },
         "AnimeParadise": {
             "name": "AnimeParadise",
