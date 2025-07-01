@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.5.2",
+    "version": "1.6.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -445,24 +445,23 @@ class DefaultExtension extends MProvider {
 
   // For anime episode video list
   async getVideoList(url) {
-    var pref_provider = this.getPreference("aniplay_pref_provider_5");
+    var pref_provider = this.getPreference("aniplay_pref_providers");
+    // if there are no providers selected, use pahe as default provider.
+    if (pref_provider.length < 1) pref_provider.push("pahe");
 
     // All providers available.
     var providerInfos = JSON.parse(url);
     var providers = Object.keys(providerInfos);
 
-    if (providerInfos.hasOwnProperty(pref_provider)) {
-      providers = [pref_provider];
-    } else if (pref_provider == "any") {
-      //any = randomly choose one
-      var randomIndex = Math.floor(Math.random() * providers.length);
-      providers = [providers[randomIndex]];
-    }
-
     var finalStreams = [];
     var user_audio_type = this.getPreference("aniplay_pref_audio_type_1");
+    // if there are no preference then add sub
+    if (user_audio_type.length < 1) user_audio_type.push("sub");
 
     for (var provider of providers) {
+      // If the given provider is not selected, skip it.
+      if (!pref_provider.includes(provider)) continue;
+
       var streams = [];
       var providerInfo = providerInfos[provider];
 
@@ -471,18 +470,14 @@ class DefaultExtension extends MProvider {
       var id = providerInfo.id;
       var number = providerInfo.number;
       var hasDub = providerInfo.hasDub;
-      var audios = [];
 
-      // if there "sub" is prefered or there are no preference then add sub
-      if (user_audio_type.includes("sub") || user_audio_type.length < 1)
-        audios.push("sub");
-      if (hasDub && user_audio_type.includes("dub")) audios.push("dub");
+      if (!hasDub && user_audio_type.includes("dub")) user_audio_type.splice(1);
       var slug = `watch/${anilistId}`;
 
-      for (var audio of audios) {
+      for (var audio of user_audio_type) {
         if (providerId == "koto") {
           // Koto always has softsubs aka subtitles are seperate.
-          var slug = `${id}/${audio}`
+          var slug = `${id}/${audio}`;
           streams = await this.getKotoStreams(slug, "soft" + audio);
         } else {
           var body = [anilistId, providerId, id, number, audio];
@@ -496,7 +491,7 @@ class DefaultExtension extends MProvider {
             // Yuki always has softsubs aka subtitles are seperate.
             streams = await this.getYukiStreams(result, "soft" + audio);
           } else if (providerId == "pahe") {
-            // Pahe always has hardsubs aka subtitles printed on video.
+            // Pahe & Maze always has hardsubs aka subtitles printed on video.
             streams = await this.getPaheStreams(result, "hard" + audio);
           } else {
             continue;
@@ -539,13 +534,13 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "aniplay_pref_provider_5",
-        listPreference: {
-          title: "Preferred provider",
-          summary: "",
-          valueIndex: 1,
-          entries: ["Any", "All", "Yuki", "Pahe", "Koto"],
-          entryValues: ["any", "all", "yuki", "pahe", "koto"],
+        key: "aniplay_pref_providers",
+        multiSelectListPreference: {
+          title: "Preferred server",
+          summary: "Choose the server/s you want to extract streams from",
+          values: ["yuki", "pahe", "koto"],
+          entries: ["Yuki", "Pahe", "Koto"],
+          entryValues: ["yuki", "pahe", "koto"],
         },
       },
       {
@@ -656,7 +651,7 @@ class DefaultExtension extends MProvider {
       },
     ];
     var doExtract = this.getPreference("aniplay_pref_extract_streams");
-    // Pahe only has auto
+    // Pahe & Maze only has auto
     if (providerId === "pahe" || !doExtract) {
       return streams;
     }
@@ -725,7 +720,7 @@ class DefaultExtension extends MProvider {
     var mediaId = megaplayPlayer.attr("data-id");
 
     var api = `https://megaplay.buzz/stream/getSources?id=${mediaId}`;
-    hdr['X-Requested-With'] = 'XMLHttpRequest';
+    hdr["X-Requested-With"] = "XMLHttpRequest";
     res = await this.client.get(api, hdr);
     if (res.statusCode != 200) {
       throw new Error("Koto: Could not find stream");
