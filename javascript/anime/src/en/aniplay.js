@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.6.0",
+    "version": "1.6.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -490,9 +490,13 @@ class DefaultExtension extends MProvider {
           if (providerId == "yuki") {
             // Yuki always has softsubs aka subtitles are seperate.
             streams = await this.getYukiStreams(result, "soft" + audio);
-          } else if (providerId == "pahe") {
+          } else if (providerId == "pahe" || providerId == "maze") {
             // Pahe & Maze always has hardsubs aka subtitles printed on video.
-            streams = await this.getPaheStreams(result, "hard" + audio);
+            streams = await this.getPaheMazeStreams(
+              providerId,
+              result,
+              "hard" + audio
+            );
           } else {
             continue;
           }
@@ -538,9 +542,9 @@ class DefaultExtension extends MProvider {
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
-          values: ["yuki", "pahe", "koto"],
-          entries: ["Yuki", "Pahe", "Koto"],
-          entryValues: ["yuki", "pahe", "koto"],
+          values: ["maze", "yuki", "pahe", "koto"],
+          entries: ["Maze", "Yuki", "Pahe", "Koto"],
+          entryValues: ["maze", "yuki", "pahe", "koto"],
         },
       },
       {
@@ -642,6 +646,7 @@ class DefaultExtension extends MProvider {
   // Extracts the streams url for different resolutions from a hls stream.
   async extractStreams(url, audio, providerId, hdr = {}) {
     audio = audio.toUpperCase();
+    providerId = providerId.toUpperCase();
     var streams = [
       {
         url: url,
@@ -652,7 +657,7 @@ class DefaultExtension extends MProvider {
     ];
     var doExtract = this.getPreference("aniplay_pref_extract_streams");
     // Pahe & Maze only has auto
-    if (providerId === "pahe" || !doExtract) {
+    if (providerId === "pahe" || providerId === "maze" || !doExtract) {
       return streams;
     }
 
@@ -699,10 +704,10 @@ class DefaultExtension extends MProvider {
     return streams;
   }
 
-  async getPaheStreams(result, audio) {
+  async getPaheMazeStreams(providerId, result, audio) {
     var m3u8Url = result.sources[0].url;
     var hdr = result.headers;
-    return await this.extractStreams(m3u8Url, audio, "pahe", hdr);
+    return await this.extractStreams(m3u8Url, audio, providerId, hdr);
   }
 
   async getKotoStreams(slug, audio) {
