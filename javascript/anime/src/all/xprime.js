@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "1.1.1",
+    "version": "2.0.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -43,22 +43,21 @@ class DefaultExtension extends MProvider {
   }
 
   async tmdbRequest(slug) {
-    var api = `https://94c8cb9f702d-tmdb-addon.baby-beamup.club/${slug}`;
+    var api = `https://tmdb.hexa.watch/api/tmdb/${slug}&include_adult=false&include_video=false&language=en-us&api_key=84259f99204eeb7d45c7e3d8e36c6123`;
     var response = await new Client().get(api);
     var body = JSON.parse(response.body);
     return body;
   }
 
-  async getSearchItems(body) {
+  async getSearchItems(body, media_type) {
     var items = [];
-    var results = body.metas;
-    for (let i in results) {
-      var result = results[i];
+    var results = body.results;
+    for (let result of results) {
       var id = result.id;
-      var media_type = result.type;
+      media_type = media_type || result.media_type;
       items.push({
-        name: result.name,
-        imageUrl: result.poster,
+        name: result.name || result.title,
+        imageUrl: "https://image.tmdb.org/t/p/w1280/" + result.poster_path,
         link: `${media_type}||${id}`,
         description: result.description,
         genre: result.genre,
@@ -66,42 +65,50 @@ class DefaultExtension extends MProvider {
     }
     return items;
   }
-  async getSearchInfo(slug) {
-    var body = await this.tmdbRequest(`catalog/movie/${slug}`);
-    var popMovie = await this.getSearchItems(body);
-
-    body = await this.tmdbRequest(`catalog/series/${slug}`);
-    var popSeries = await this.getSearchItems(body);
-
-    var fullList = [];
-
+  async getHomeInfo(category, page = 1) {
+    var media_type = ["movie"];
     var priority = this.getPreference("xprime_pref_content_priority");
     if (priority === "series") {
-      fullList = [...popSeries, ...popMovie];
+      media_type.unshift("tv");
     } else {
-      fullList = [...popMovie, ...popSeries];
+      media_type.push("tv");
     }
-    var hasNextPage = slug.indexOf("search=") > -1 ? false : true;
+    var list = [];
+    var hasNextPage = false;
+
+    for (let mt of media_type) {
+      if (mt == "tv" && category == "now_playing") category = "airing_today";
+      else if (mt == "movie" && category == "airing_today")
+        category = "now_playing";
+      var body = await this.tmdbRequest(`${mt}/${category}?page=${page}`);
+      var mediaList = await this.getSearchItems(body, mt);
+      list = [...list, ...mediaList];
+      hasNextPage = hasNextPage || body.total_pages > page;
+    }
+
     return {
-      list: fullList,
+      list,
       hasNextPage,
     };
   }
 
   async getPopular(page) {
-    var skip = (page - 1) * 20;
-    return await this.getSearchInfo(`tmdb.popular/skip=${skip}.json`);
+    return await this.getHomeInfo("popular", page);
   }
 
   async getLatestUpdates(page) {
-    var trend_window = this.getPreference("xprime_pref_latest_time_window");
-    var skip = (page - 1) * 20;
-    return await this.getSearchInfo(
-      `tmdb.trending/genre=${trend_window}&skip=${skip}.json`
-    );
+    return await this.getHomeInfo("now_playing", page);
   }
   async search(query, page, filters) {
-    return await this.getSearchInfo(`tmdb.popular/search=${query}.json`);
+    var body = await this.tmdbRequest(
+      `search/multi?query=${query}&page=${page}`
+    );
+    var list = await this.getSearchItems(body, null);
+    var hasNextPage = body.total_pages > page;
+    return {
+      list,
+      hasNextPage,
+    };
   }
 
   async getDetail(url) {
@@ -263,16 +270,6 @@ class DefaultExtension extends MProvider {
 
   getSourcePreferences() {
     return [
-      {
-        key: "xprime_pref_latest_time_window",
-        listPreference: {
-          title: "Preferred latest trend time window",
-          summary: "",
-          valueIndex: 0,
-          entries: ["Day", "Week"],
-          entryValues: ["day", "week"],
-        },
-      },
       {
         key: "xprime_pref_content_priority",
         listPreference: {
