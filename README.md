@@ -20,7 +20,8 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| Aniplay | 1.6.3 | en | 2025/07/01 18:54 IST |
+| Aniplay | 1.6.4 | en | 2025/07/04 16:09 IST |
+| XPrime | 2.0.2 | all | 2025/07/04 16:09 IST |
 | Aniwatch | 1.0.0 | en | 2025/06/30 23:06 IST |
 | Tamilarasan | 0.0.6 | all | 2025/06/29 22:26 IST |
 | Anicrush | 0.0.5 | en | 2025/06/27 22:11 IST |
@@ -28,7 +29,6 @@ This repository contains the available javascript extension catalogues for the M
 | AnimeZZ | 1.1.1 | en | 2025/06/21 16:47 IST |
 | AnimeKai | 0.3.3 | en | 2025/06/14 11:43 IST |
 | Dramacool | 1.1.0 | all | 2025/06/13 11:41 IST |
-| XPrime | 1.1.0 | all | 2025/06/11 21:23 IST |
 | Streamblasters | 1.0.0 | all | 2025/05/31 10:17 IST |
 | Autoembed | 1.3.3 | all | 2025/05/24 19:22 IST |
 | KickAssAnime | 0.0.7 | en | 2025/05/23 13:27 IST |
