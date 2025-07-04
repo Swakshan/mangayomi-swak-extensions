@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -207,6 +207,11 @@ class DefaultExtension extends MProvider {
       }
     } else {
       if (release < dateNow) {
+        var vidDetails = await this.serverRequest(
+          `release?name=${name}&year=${year}`
+        );
+        var scanlator = vidDetails ? vidDetails.label : null;
+
         status = 1;
         var eplink = {
           name: name,
@@ -218,6 +223,7 @@ class DefaultExtension extends MProvider {
           name: "Movie",
           url: JSON.stringify(eplink),
           dateUpload: release.toString(),
+          scanlator,
         });
       } else {
         status = 4;
@@ -327,9 +333,9 @@ class DefaultExtension extends MProvider {
 
   // -------- Servers --------
 
-  async serverRequest(slug, hdr) {
+  async serverRequest(slug) {
     var api = this.source.apiUrl + "/" + slug;
-    var req = await this.client.get(api, hdr);
+    var req = await this.client.get(api);
     if (req.statusCode == 200) {
       return JSON.parse(req.body);
     } else {
