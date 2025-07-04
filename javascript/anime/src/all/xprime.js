@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -562,6 +562,8 @@ class DefaultExtension extends MProvider {
     if (s != "0") api = `${api}&season=${s}&episode=${e}`;
 
     var response = await new Client().get(api, hdr);
+    if (response.statusCode != 200) return [];
+
     var body = JSON.parse(response.body);
 
     var subs = [];
