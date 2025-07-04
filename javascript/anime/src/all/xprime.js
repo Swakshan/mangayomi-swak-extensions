@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -77,6 +77,7 @@ class DefaultExtension extends MProvider {
     var hasNextPage = false;
 
     for (let mt of media_type) {
+      // For latest TV  its "airing today" & for Movies its "now playing".
       if (mt == "tv" && category == "now_playing") category = "airing_today";
       else if (mt == "movie" && category == "airing_today")
         category = "now_playing";
@@ -122,6 +123,15 @@ class DefaultExtension extends MProvider {
       );
     }
 
+    function chunkArray(array) {
+      const result = [];
+      var size = 20;
+      for (let i = 0; i < array.length; i += size) {
+        result.push(array.slice(i, i + size));
+      }
+      return result;
+    }
+
     var baseUrl = this.source.baseUrl;
     var linkSlug = `${baseUrl}/title/`;
 
@@ -129,67 +139,71 @@ class DefaultExtension extends MProvider {
       url = url.replace(linkSlug, "");
       var id = url.replace("t", "");
       if (url.includes("t")) {
-        url = `series||tmdb:${id}`;
+        url = `tv||${id}`;
       } else {
-        url = `movie||tmdb:${id}`;
+        url = `movie||${id}`;
       }
     }
 
     var parts = url.split("||");
     var media_type = parts[0];
     var id = parts[1];
-    var body = await this.tmdbRequest(`meta/${media_type}/${id}.json`);
-    var result = body.meta;
+    var apiSlug = `${media_type}/${id}`;
+    var result = await this.tmdbRequest(
+      `${apiSlug}?append_to_response=external_ids`
+    );
 
-    var tmdb_id = id.substring(5);
-    var imdb_id = result.imdb_id;
+    var name = result.name || result.title;
+    var tmdb_id = result.id;
+    var imdb_id = result.external_ids.imdb_id;
     var linkCode = tmdb_id;
 
     var dateNow = Date.now().valueOf();
-    var release = result.released
-      ? new Date(result.released).valueOf()
-      : dateNow;
+    var release_date = result.release_date || result.first_air_date;
+    var release = release_date ? new Date(release_date).valueOf() : dateNow;
     var status = 5;
+    var description = result.overview;
+    var genre = result.genres.map((g) => g.name);
 
+    var year = release_date.split("-")[0];
     var chapters = [];
 
-    var name = result.name;
-    var imageUrl = result.poster;
-
-    var description = result.description;
-    var genre = result.genre;
-    var year = result.year.split("-")[0];
-
-    if (media_type == "series") {
+    if (media_type == "tv") {
       status = statusCode(result.status);
       linkCode = `t${tmdb_id}`;
-      var videos = result.videos;
-      for (var i in videos) {
-        var video = videos[i];
-        var seasonNum = video.season;
+      var seasonListBatch = chunkArray(
+        result.seasons.map((s) => `season/${s.season_number}`)
+      );
 
-        if (!seasonNum) continue;
+      for (let batch of seasonListBatch) {
+        var seasonList = batch.join(",");
+        var apiEpSlug = `${apiSlug}?append_to_response=${seasonList}`;
+        result = await this.tmdbRequest(apiEpSlug);
+        batch.forEach((season) => {
+          var seasonData = result[season];
+          seasonData.episodes.forEach((episode) => {
+            release = episode.air_date
+              ? new Date(episode.air_date).valueOf()
+              : dateNow;
+            var seasonNum = episode.season_number;
+            var epNum = episode.episode_number;
 
-        release = video.released ? new Date(video.released).valueOf() : dateNow;
-
-        if (release < dateNow) {
-          var episodeNum = video.episode;
-          var epName = `S${seasonNum}:E${episodeNum} - ${video.name}`;
-          var eplink = {
-            name: name,
-            season: seasonNum,
-            episode: episodeNum,
-            year: year,
-            tmdb: tmdb_id,
-            imdb: imdb_id,
-          };
-
-          chapters.push({
-            name: epName,
-            url: JSON.stringify(eplink),
-            dateUpload: release.toString(),
+            var epName = `S${seasonNum}:E${epNum} ${episode.name}`;
+            var eplink = {
+              name: name,
+              season: seasonNum,
+              episode: epNum,
+              year: year,
+              tmdb: tmdb_id,
+              imdb: imdb_id,
+            };
+            chapters.push({
+              name: epName,
+              url: JSON.stringify(eplink),
+              dateUpload: release.toString(),
+            });
           });
-        }
+        });
       }
     } else {
       if (release < dateNow) {
@@ -214,7 +228,7 @@ class DefaultExtension extends MProvider {
 
     var link = `${linkSlug}${linkCode}`;
 
-    return { name, imageUrl, status, description, genre, link, chapters };
+    return { name, status, description, genre, link, chapters };
   }
 
   async getVideoList(url) {
@@ -243,6 +257,8 @@ class DefaultExtension extends MProvider {
         serverData = await this.volkswagen(data);
       } else if (server == "fendi") {
         serverData = await this.fendi(data);
+      } else {
+        continue;
       }
 
       streams = [...streams, ...serverData.streamUrls];
@@ -285,7 +301,7 @@ class DefaultExtension extends MProvider {
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
-          values: ["primebox", "primenet", "rage"],
+          values: ["primebox", "primenet"],
           entries: [
             "Primebox",
             "Primenet",
