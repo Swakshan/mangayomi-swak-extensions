@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -43,7 +43,8 @@ class DefaultExtension extends MProvider {
   }
 
   async tmdbRequest(slug) {
-    var api = `https://tmdb.hexa.watch/api/tmdb/${slug}&include_adult=false&include_video=false&language=en-us&api_key=84259f99204eeb7d45c7e3d8e36c6123`;
+    var nfsw = this.getPreference("xprime_pref_nfsw_content")
+    var api = `https://tmdb.hexa.watch/api/tmdb/${slug}&include_adult=${nfsw}&include_video=false&language=en-us&api_key=84259f99204eeb7d45c7e3d8e36c6123`;
     var response = await new Client().get(api);
     var body = JSON.parse(response.body);
     return body;
@@ -292,6 +293,14 @@ class DefaultExtension extends MProvider {
 
   getSourcePreferences() {
     return [
+      {
+        key: "xprime_pref_nfsw_content",
+        switchPreferenceCompat: {
+          title: "Show NFSW contents",
+          summary: "",
+          value: true,
+        },
+      },
       {
         key: "xprime_pref_content_priority",
         listPreference: {
