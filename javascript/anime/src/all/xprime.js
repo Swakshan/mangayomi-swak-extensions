@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.0.4",
+    "version": "2.1.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -43,7 +43,7 @@ class DefaultExtension extends MProvider {
   }
 
   async tmdbRequest(slug) {
-    var nfsw = this.getPreference("xprime_pref_nfsw_content")
+    var nfsw = this.getPreference("xprime_pref_nfsw_content");
     var api = `https://tmdb.hexa.watch/api/tmdb/${slug}&include_adult=${nfsw}&include_video=false&language=en-us&api_key=84259f99204eeb7d45c7e3d8e36c6123`;
     var response = await new Client().get(api);
     var body = JSON.parse(response.body);
@@ -272,6 +272,11 @@ class DefaultExtension extends MProvider {
       subtitles = [...subtitles, ...serverData.subtitles];
     }
 
+    if (this.getPreference("xprime_pref_download_server")) {
+      var streamUrls = await this.downloadServer(data);
+      streams = [...streams, ...streamUrls];
+    }
+
     if (streams.length < 1)
       throw new Error("No streams found from any selected servers");
 
@@ -337,6 +342,14 @@ class DefaultExtension extends MProvider {
           ],
         },
       },
+      {
+        key: "xprime_pref_download_server",
+        switchPreferenceCompat: {
+          title: "Include download server",
+          summary: "",
+          value: true,
+        },
+      },
     ];
   }
 
@@ -350,6 +363,30 @@ class DefaultExtension extends MProvider {
     } else {
       return null;
     }
+  }
+
+  async downloadServer(data) {
+    var slug = "servers/downloader";
+    slug += "?name=" + data.name;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    } else {
+      slug += ` ${data.year}`;
+    }
+    var streamUrls = [];
+    var body = await this.serverRequest(slug);
+    body.results.forEach((item) => {
+      var stream = item.download_url;
+      var title = item.title;
+      var size = item.size;
+      streamUrls.push({
+        url: stream,
+        originalUrl: stream,
+        quality: `${title} (${size})`,
+      });
+    });
+    return streamUrls;
   }
 
   async primebox(data) {
@@ -552,12 +589,12 @@ class DefaultExtension extends MProvider {
         });
       }
       if (body.hasOwnProperty("subtitles")) {
-        for (var sub of body.subtitles) {
+        subtitles.forEach((sub) => {
           subtitles.push({
             file: sub.name,
             label: sub.url,
           });
-        }
+        });
       }
     }
     return { streamUrls, subtitles };
@@ -576,12 +613,12 @@ class DefaultExtension extends MProvider {
     var body = JSON.parse(response.body);
 
     var subs = [];
-    for (var sub of body) {
+    body.forEach((sub) => {
       subs.push({
         file: sub.url,
         label: sub.display,
       });
-    }
+    });
 
     return subs;
   }
