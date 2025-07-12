@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -376,16 +376,18 @@ class DefaultExtension extends MProvider {
     }
     var streamUrls = [];
     var body = await this.serverRequest(slug);
-    body.results.forEach((item) => {
-      var stream = item.download_url;
-      var title = item.title;
-      var size = item.size;
-      streamUrls.push({
-        url: stream,
-        originalUrl: stream,
-        quality: `${title} (${size})`,
+    if (body) {
+      body.results.forEach((item) => {
+        var stream = item.download_url;
+        var title = item.title;
+        var size = item.size;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `${title} (${size})`,
+        });
       });
-    });
+    }
     return streamUrls;
   }
 
