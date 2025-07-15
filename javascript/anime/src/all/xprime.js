@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -239,7 +239,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    var prefServer = this.getPreference("xprime_pref_stream_server_3");
+    var prefServer = this.getPreference("xprime_pref_stream_server_4");
     if (prefServer.length < 1) prefServer = ["primebox"];
 
     var streams = [];
@@ -250,9 +250,7 @@ class DefaultExtension extends MProvider {
 
     for (var server of prefServer) {
       var serverData = {};
-      if (server == "primebox") {
-        serverData = await this.primebox(data);
-      } else if (server == "primenet") {
+     if (server == "primenet") {
         serverData = await this.primenet(data);
       } else if (server == "phoenix") {
         serverData = await this.phoenix(data);
@@ -317,13 +315,12 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "xprime_pref_stream_server_3",
+        key: "xprime_pref_stream_server_4",
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
-          values: ["primebox", "primenet"],
+          values: ["primenet", "Phoenix", "Kraken", "Harbour"],
           entries: [
-            "Primebox",
             "Primenet",
             "Phoenix",
             "Kraken",
@@ -332,7 +329,6 @@ class DefaultExtension extends MProvider {
             "Fendi - FRA",
           ],
           entryValues: [
-            "primebox",
             "primenet",
             "phoenix",
             "kraken",
@@ -391,7 +387,7 @@ class DefaultExtension extends MProvider {
     return streamUrls;
   }
 
-  async primebox(data) {
+  /*async primebox(data) {
     var serverName = "primebox";
     var hdr = data.hdr;
 
@@ -425,7 +421,7 @@ class DefaultExtension extends MProvider {
       }
     }
     return { streamUrls, subtitles };
-  }
+  }*/
 
   async primenet(data) {
     var serverName = "primenet";
