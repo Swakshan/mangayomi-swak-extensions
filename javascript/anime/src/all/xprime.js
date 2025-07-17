@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.1.2",
+    "version": "2.1.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -239,7 +239,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    var prefServer = this.getPreference("xprime_pref_stream_server_4");
+    var prefServer = this.getPreference("xprime_pref_stream_server_5");
     if (prefServer.length < 1) prefServer = ["primebox"];
 
     var streams = [];
@@ -250,8 +250,10 @@ class DefaultExtension extends MProvider {
 
     for (var server of prefServer) {
       var serverData = {};
-     if (server == "primenet") {
+      if (server == "primenet") {
         serverData = await this.primenet(data);
+      } else if (server == "fox") {
+        serverData = await this.fox(data);
       } else if (server == "phoenix") {
         serverData = await this.phoenix(data);
       } else if (server == "kraken") {
@@ -315,12 +317,13 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "xprime_pref_stream_server_4",
+        key: "xprime_pref_stream_server_5",
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
-          values: ["primenet", "Phoenix", "Kraken", "Harbour"],
+          values: ["primenet", "phoenix", "fox"],
           entries: [
+            "Fox",
             "Primenet",
             "Phoenix",
             "Kraken",
@@ -329,6 +332,7 @@ class DefaultExtension extends MProvider {
             "Fendi - FRA",
           ],
           entryValues: [
+            "fox",
             "primenet",
             "phoenix",
             "kraken",
@@ -422,6 +426,37 @@ class DefaultExtension extends MProvider {
     }
     return { streamUrls, subtitles };
   }*/
+
+  async fox(data) {
+    var serverName = "fox";
+
+    var slug = serverName;
+    slug += "?name=" + data.name;
+    slug += "&id=" + data.tmdb;
+    if (data.hasOwnProperty("season")) {
+      slug += "&season=" + data.season;
+      slug += "&episode=" + data.episode;
+    }
+
+    var streamUrls = [];
+    var subtitles = [];
+    var body = await this.serverRequest(slug);
+    if (body) {
+      if (body.hasOwnProperty("url")) {
+        var stream = body.url;
+        streamUrls.push({
+          url: stream,
+          originalUrl: stream,
+          quality: `Auto : ${serverName}`,
+          headers: data.hdr,
+        });
+      }
+      if (body.hasOwnProperty("subtitles")) {
+        subtitles = body.subtitles ?? subtitles;
+      }
+    }
+    return { streamUrls, subtitles: subtitles };
+  }
 
   async primenet(data) {
     var serverName = "primenet";
