@@ -320,7 +320,7 @@
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/all/xprime.js",
         "apiUrl": "https://backend.xprime.tv",
-        "version": "2.1.2",
+        "version": "2.1.3",
         "isManga": false,
         "itemType": 1,
         "isFullData": false,
