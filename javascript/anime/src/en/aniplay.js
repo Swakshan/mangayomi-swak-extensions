@@ -445,7 +445,7 @@ class DefaultExtension extends MProvider {
 
   // For anime episode video list
   async getVideoList(url) {
-    var pref_provider = this.getPreference("aniplay_pref_providers");
+    var pref_provider = this.getPreference("aniplay_pref_providers_1");
     // if there are no providers selected, use pahe as default provider.
     if (pref_provider.length < 1) pref_provider.push("pahe");
 
@@ -497,6 +497,9 @@ class DefaultExtension extends MProvider {
               result,
               "hard" + audio
             );
+          } else if (providerId == "owl") {
+            // Owl always has hardsubs
+            streams = await this.getOwlStreams(result, "hard" + audio);
           } else {
             continue;
           }
@@ -538,13 +541,13 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "aniplay_pref_providers",
+        key: "aniplay_pref_providers_1",
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
           values: ["maze", "yuki", "pahe", "koto"],
-          entries: ["Maze", "Yuki", "Pahe", "Koto"],
-          entryValues: ["maze", "yuki", "pahe", "koto"],
+          entries: ["Maze", "Yuki", "Pahe", "Koto", "Owl"],
+          entryValues: ["maze", "yuki", "pahe", "koto", "owl"],
         },
       },
       {
@@ -684,6 +687,24 @@ class DefaultExtension extends MProvider {
     var m3u8Url = result.sources[0].file;
     var streams = await this.extractStreams(m3u8Url, audio, "yuki");
     streams[0].subtitles = result.subtitles.filter((sub) => sub.kind.indexOf("thumbnail") < 0);
+    return streams;
+  }
+
+  async getOwlStreams(result, audio) {
+    var providerTag = "OWL";
+    var m3u8Url = result.sources[0].url;
+    var quality = result.sources[0].quality;
+    var hdr = result.headers || {};
+
+    var streams = [
+      {
+        url: m3u8Url,
+        originalUrl: m3u8Url,
+        quality: `${quality} - ${providerTag} : ${audio}`,
+        headers: hdr,
+      },
+    ];
+
     return streams;
   }
 
