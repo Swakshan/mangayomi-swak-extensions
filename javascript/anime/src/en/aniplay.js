@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.6.4",
+    "version": "1.6.5",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -478,7 +478,7 @@ class DefaultExtension extends MProvider {
         if (providerId == "koto") {
           // Koto always has softsubs aka subtitles are seperate.
           var slug = `${id}/${audio}`;
-          streams = await this.getKotoStreams(slug, "soft" + audio);
+          streams = await this.getKotoStreams(providerId, slug, "soft" + audio);
         } else {
           var body = [anilistId, providerId, id, number, audio];
 
@@ -489,7 +489,11 @@ class DefaultExtension extends MProvider {
 
           if (providerId == "yuki") {
             // Yuki always has softsubs aka subtitles are seperate.
-            streams = await this.getYukiStreams(result, "soft" + audio);
+            streams = await this.getYukiStreams(
+              providerId,
+              result,
+              "soft" + audio
+            );
           } else if (providerId == "pahe" || providerId == "maze") {
             // Pahe & Maze always has hardsubs aka subtitles printed on video.
             streams = await this.getPaheMazeStreams(
@@ -499,7 +503,11 @@ class DefaultExtension extends MProvider {
             );
           } else if (providerId == "owl") {
             // Owl always has hardsubs
-            streams = await this.getOwlStreams(result, "hard" + audio);
+            streams = await this.getOwlStreams(
+              providerId,
+              result,
+              "hard" + audio
+            );
           } else {
             continue;
           }
@@ -683,15 +691,15 @@ class DefaultExtension extends MProvider {
     return streams;
   }
 
-  async getYukiStreams(result, audio) {
+  async getYukiStreams(providerId,result, audio) {
     var m3u8Url = result.sources[0].file;
-    var streams = await this.extractStreams(m3u8Url, audio, "yuki");
+    var streams = await this.extractStreams(m3u8Url, audio, providerId);
     streams[0].subtitles = result.subtitles.filter((sub) => sub.kind.indexOf("thumbnail") < 0);
     return streams;
   }
 
-  async getOwlStreams(result, audio) {
-    var providerTag = "OWL";
+  async getOwlStreams(providerId, result, audio) {
+    var providerTag = providerId.toUpperCase();
     var m3u8Url = result.sources[0].url;
     var quality = result.sources[0].quality;
     var hdr = result.headers || {};
@@ -714,7 +722,7 @@ class DefaultExtension extends MProvider {
     return await this.extractStreams(m3u8Url, audio, providerId, hdr);
   }
 
-  async getKotoStreams(slug, audio) {
+  async getKotoStreams(providerId, slug, audio) {
     var embedUrl = `https://megaplay.buzz/stream/s-2/${slug}`;
     var hdr = this.getHeaders(embedUrl);
     var res = await this.client.get(embedUrl, hdr);
@@ -737,7 +745,7 @@ class DefaultExtension extends MProvider {
     delete hdr["X-Requested-With"];
     var result = JSON.parse(res.body);
     var m3u8Url = result.sources.file;
-    var streams = await this.extractStreams(m3u8Url, audio, "koto", hdr);
+    var streams = await this.extractStreams(m3u8Url, audio, providerId, hdr);
 
     var subtitles = [];
     if (result.hasOwnProperty("tracks")) {
