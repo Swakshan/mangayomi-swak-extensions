@@ -32,17 +32,17 @@
         }
     },
     "anime": {
+        "Aniplay": {
+            "name": "Aniplay",
+            "version": "1.6.5",
+            "langs": "en",
+            "lastUpd": 1752902665.802341
+        },
         "XPrime": {
             "name": "XPrime",
             "version": "2.1.3",
             "langs": "all",
             "lastUpd": 1752774920.402271
-        },
-        "Aniplay": {
-            "name": "Aniplay",
-            "version": "1.6.4",
-            "langs": "en",
-            "lastUpd": 1751625568.474225
         },
         "Aniwatch": {
             "name": "Aniwatch",
