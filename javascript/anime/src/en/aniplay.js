@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.6.7",
+    "version": "1.7.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -410,11 +410,27 @@ class DefaultExtension extends MProvider {
         chaps[number] = chap;
       }
     }
-    var markFillers = this.getPreference("aniplay_pref_mark_filler");
 
+    var format = animeData.format;
+    var markFillers = this.getPreference("aniplay_pref_mark_filler");
+    var addEpInfo = {};
+    if (format != "MOVIE") {
+      var addInfoApi = `https://api.ani.zip/mappings?anilist_id=${anilistId}`;
+      var infoReq = await this.client.get(addInfoApi);
+      if (infoReq.statusCode != 200) {
+        console.log("Failed to fetch additional information");
+      }
+      var addChapInfo = JSON.parse(infoReq.body);
+      addEpInfo = addChapInfo.episodes || {};
+    }
+
+    var prefEpTitle = this.getPreference("aniplay_pref_ep_title");
     for (var episodeNum in chaps) {
       var chap = chaps[episodeNum];
-      var title = chap.title;
+      var addInfo =addEpInfo[episodeNum] || {};
+      var titleInfo = addInfo['title'] || {};
+
+      var title = titleInfo[prefEpTitle] || titleInfo['en'] || chap.title;
       var dateUpload = chap.updatedAt;
       var scanlator = "SUB";
       if (chap.hasDub) {
@@ -433,8 +449,6 @@ class DefaultExtension extends MProvider {
         scanlator,
       });
     }
-
-    var format = animeData.format;
     if (format === "MOVIE") chapters[0].name = "Movie";
 
     var baseUrl = this.getBaseUrl();
@@ -553,6 +567,16 @@ class DefaultExtension extends MProvider {
           valueIndex: 0,
           entries: ["Romaji", "English", "Native"],
           entryValues: ["romaji", "english", "native"],
+        },
+      },
+      {
+        key: "aniplay_pref_ep_title",
+        listPreference: {
+          title: "Preferred episode title language",
+          summary: "",
+          valueIndex: 1,
+          entries: ["Romaji", "English", "Japenese"],
+          entryValues: ["x-jat", "en", "ja"],
         },
       },
       {
@@ -737,10 +761,12 @@ class DefaultExtension extends MProvider {
     var subs = [];
     result.subtitles
       .filter((sub) => sub.label != "thumbnails")
-      .forEach((sub) => subs.push({
-        "file": sub.url,
-        "label":sub.label
-      }));
+      .forEach((sub) =>
+        subs.push({
+          "file": sub.url,
+          "label": sub.label,
+        })
+      );
     streams[0].subtitles = subs;
     return streams;
   }
