@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.6.6",
+    "version": "1.6.7",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -445,7 +445,7 @@ class DefaultExtension extends MProvider {
 
   // For anime episode video list
   async getVideoList(url) {
-    var pref_provider = this.getPreference("aniplay_pref_providers_1");
+    var pref_provider = this.getPreference("aniplay_pref_providers_2");
     // if there are no providers selected, use pahe as default provider.
     if (pref_provider.length < 1) pref_provider.push("pahe");
 
@@ -508,6 +508,13 @@ class DefaultExtension extends MProvider {
               result,
               "hard" + audio
             );
+          } else if (providerId == "akane") {
+            // Owl always has hardsubs
+            streams = await this.getAkaneStreams(
+              providerId,
+              result,
+              "soft" + audio
+            );
           } else {
             continue;
           }
@@ -549,13 +556,13 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "aniplay_pref_providers_1",
+        key: "aniplay_pref_providers_2",
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
-          values: ["maze", "yuki", "pahe", "koto"],
-          entries: ["Maze", "Yuki", "Pahe", "Koto", "Owl"],
-          entryValues: ["maze", "yuki", "pahe", "koto", "owl"],
+          values: ["maze", "yuki", "pahe", "koto", "owl", "akane"],
+          entries: ["Maze", "Yuki", "Pahe", "Koto", "Owl", "Akane"],
+          entryValues: ["maze", "yuki", "pahe", "koto", "owl", "akane"],
         },
       },
       {
@@ -691,10 +698,12 @@ class DefaultExtension extends MProvider {
     return streams;
   }
 
-  async getYukiStreams(providerId,result, audio) {
+  async getYukiStreams(providerId, result, audio) {
     var m3u8Url = result.sources[0].file;
     var streams = await this.extractStreams(m3u8Url, audio, providerId);
-    streams[0].subtitles = result.subtitles.filter((sub) => sub.label == "captions");
+    streams[0].subtitles = result.subtitles.filter(
+      (sub) => sub.kind == "captions"
+    );
     return streams;
   }
 
@@ -720,6 +729,20 @@ class DefaultExtension extends MProvider {
     var m3u8Url = result.sources[0].url;
     var hdr = result.headers;
     return await this.extractStreams(m3u8Url, audio, providerId, hdr);
+  }
+
+  async getAkaneStreams(providerId, result, audio) {
+    var m3u8Url = result.sources[0].url;
+    var streams = await this.extractStreams(m3u8Url, audio, providerId);
+    var subs = [];
+    result.subtitles
+      .filter((sub) => sub.label != "thumbnails")
+      .forEach((sub) => subs.push({
+        "file": sub.url,
+        "label":sub.label
+      }));
+    streams[0].subtitles = subs;
+    return streams;
   }
 
   async getKotoStreams(providerId, slug, audio) {
