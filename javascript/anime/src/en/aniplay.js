@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.7.0",
+    "version": "1.7.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -190,7 +190,7 @@ class DefaultExtension extends MProvider {
         case "HIATUS":
           return 2;
         case "NOT_YET_RELEASED":
-          return 3;
+          return 4;
         default:
           return 5;
       }
@@ -366,93 +366,97 @@ class DefaultExtension extends MProvider {
       anilistId = url.substring(url.lastIndexOf("info/") + 5);
     }
     var animeData = await this.getAnimeDetails(anilistId);
+    animeData.link = `${this.getBaseUrl()}/anime/${slug}`;
 
-    var slug = `info/${anilistId}`;
-    var body = [anilistId, true, false];
-    var result = await this.aniplayRequest(slug, body);
-    if (result.length < 1) {
-      throw new Error("Error: No data found for the given URL");
-    }
-    if (result.hasOwnProperty("episodes")) {
-      result = result["episodes"];
-    }
     var chapters = [];
-    var chaps = {};
-    for (var item of result) {
-      var providerId = item["providerId"];
-
-      var episodes = item["episodes"];
-
-      for (var episode of episodes) {
-        var id = episode.id;
-        var number = episode.number.toString();
-
-        var chap = chaps.hasOwnProperty(number) ? chaps[number] : {};
-
-        var updatedAt = episode.hasOwnProperty("updatedAt")
-          ? episode.updatedAt.toString()
-          : null;
-        var title = episode.hasOwnProperty("title") ? episode.title : "";
-        var isFiller = episode.hasOwnProperty("isFiller")
-          ? episode.isFiller
-          : false;
-        var hasDub = episode.hasOwnProperty("hasDub") ? episode.hasDub : false;
-
-        chap.title = title == "" ? chap.title : title;
-        chap.isFiller = isFiller || chap.isFiller;
-        chap.hasDub = hasDub || chap.hasDub;
-        chap.updatedAt = updatedAt ?? chap.updatedAt;
-
-        var prvds = chap.hasOwnProperty("prvds") ? chap["prvds"] : {};
-        prvds[providerId] = { anilistId, providerId, id, number, hasDub };
-        chap["prvds"] = prvds;
-
-        chaps[number] = chap;
+    var status = animeData.status;
+    if (status != 4) {
+      var slug = `info/${anilistId}`;
+      var body = [anilistId, true, false];
+      var result = await this.aniplayRequest(slug, body);
+      if (result.length < 1) {
+        throw new Error("Error: No data found for the given URL");
       }
+      if (result.hasOwnProperty("episodes")) {
+        result = result["episodes"];
+      }
+      var chaps = {};
+      for (var item of result) {
+        var providerId = item["providerId"];
+
+        var episodes = item["episodes"];
+
+        for (var episode of episodes) {
+          var id = episode.id;
+          var number = episode.number.toString();
+
+          var chap = chaps.hasOwnProperty(number) ? chaps[number] : {};
+
+          var updatedAt = episode.hasOwnProperty("updatedAt")
+            ? episode.updatedAt.toString()
+            : null;
+          var title = episode.hasOwnProperty("title") ? episode.title : "";
+          var isFiller = episode.hasOwnProperty("isFiller")
+            ? episode.isFiller
+            : false;
+          var hasDub = episode.hasOwnProperty("hasDub")
+            ? episode.hasDub
+            : false;
+
+          chap.title = title == "" ? chap.title : title;
+          chap.isFiller = isFiller || chap.isFiller;
+          chap.hasDub = hasDub || chap.hasDub;
+          chap.updatedAt = updatedAt ?? chap.updatedAt;
+
+          var prvds = chap.hasOwnProperty("prvds") ? chap["prvds"] : {};
+          prvds[providerId] = { anilistId, providerId, id, number, hasDub };
+          chap["prvds"] = prvds;
+
+          chaps[number] = chap;
+        }
+      }
+
+      var format = animeData.format;
+      var markFillers = this.getPreference("aniplay_pref_mark_filler");
+      var addEpInfo = {};
+      if (format != "MOVIE") {
+        var addInfoApi = `https://api.ani.zip/mappings?anilist_id=${anilistId}`;
+        var infoReq = await this.client.get(addInfoApi);
+        if (infoReq.statusCode != 200) {
+          console.log("Failed to fetch additional information");
+        }
+        var addChapInfo = JSON.parse(infoReq.body);
+        addEpInfo = addChapInfo.episodes || {};
+      }
+
+      var prefEpTitle = this.getPreference("aniplay_pref_ep_title");
+      for (var episodeNum in chaps) {
+        var chap = chaps[episodeNum];
+        var addInfo = addEpInfo[episodeNum] || {};
+        var titleInfo = addInfo["title"] || {};
+
+        var title = titleInfo[prefEpTitle] || titleInfo["en"] || chap.title;
+        var dateUpload = chap.updatedAt;
+        var scanlator = "SUB";
+        if (chap.hasDub) {
+          scanlator += ", DUB";
+        }
+        var isFillers = chap.isFiller;
+        if (markFillers && isFillers) {
+          scanlator = "FILLER, " + scanlator;
+        }
+        var epData = JSON.stringify(chap["prvds"]);
+
+        chapters.push({
+          name: `E${episodeNum}: ${title}`,
+          url: epData,
+          dateUpload,
+          scanlator,
+        });
+      }
+      if (format === "MOVIE") chapters[0].name = "Movie";
     }
 
-    var format = animeData.format;
-    var markFillers = this.getPreference("aniplay_pref_mark_filler");
-    var addEpInfo = {};
-    if (format != "MOVIE") {
-      var addInfoApi = `https://api.ani.zip/mappings?anilist_id=${anilistId}`;
-      var infoReq = await this.client.get(addInfoApi);
-      if (infoReq.statusCode != 200) {
-        console.log("Failed to fetch additional information");
-      }
-      var addChapInfo = JSON.parse(infoReq.body);
-      addEpInfo = addChapInfo.episodes || {};
-    }
-
-    var prefEpTitle = this.getPreference("aniplay_pref_ep_title");
-    for (var episodeNum in chaps) {
-      var chap = chaps[episodeNum];
-      var addInfo =addEpInfo[episodeNum] || {};
-      var titleInfo = addInfo['title'] || {};
-
-      var title = titleInfo[prefEpTitle] || titleInfo['en'] || chap.title;
-      var dateUpload = chap.updatedAt;
-      var scanlator = "SUB";
-      if (chap.hasDub) {
-        scanlator += ", DUB";
-      }
-      var isFillers = chap.isFiller;
-      if (markFillers && isFillers) {
-        scanlator = "FILLER, " + scanlator;
-      }
-      var epData = JSON.stringify(chap["prvds"]);
-
-      chapters.push({
-        name: `E${episodeNum}: ${title}`,
-        url: epData,
-        dateUpload,
-        scanlator,
-      });
-    }
-    if (format === "MOVIE") chapters[0].name = "Movie";
-
-    var baseUrl = this.getBaseUrl();
-    animeData.link = `${baseUrl}/anime/${slug}`;
     animeData.chapters = chapters.reverse();
     return animeData;
   }
