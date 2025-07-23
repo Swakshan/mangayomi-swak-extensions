@@ -264,6 +264,28 @@
         "notes": ""
     },
     {
+        "name": "SubsPlease",
+        "id": 2732508901,
+        "baseUrl": "https://subsplease.org",
+        "lang": "en",
+        "typeSource": "single",
+        "iconUrl": "https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/javascript/icon/en.subsplease.jpg",
+        "dateFormat": "",
+        "dateFormatLocale": "",
+        "isNsfw": false,
+        "hasCloudflare": false,
+        "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/en/subsplease.js",
+        "apiUrl": "https://subsplease.org/api",
+        "version": "0.0.5",
+        "isManga": false,
+        "itemType": 1,
+        "isFullData": false,
+        "appMinVerReq": "0.5.0",
+        "additionalParams": "",
+        "sourceCodeLanguage": 1,
+        "notes": ""
+    },
+    {
         "name": "Gojo",
         "id": 1018827104,
         "baseUrl": "https://gojo.wtf",

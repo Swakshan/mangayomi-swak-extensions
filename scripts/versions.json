@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "SubsPlease": {
+            "name": "SubsPlease",
+            "version": "0.0.5",
+            "langs": "en",
+            "lastUpd": 1753293069.296975
+        },
         "Aniplay": {
             "name": "Aniplay",
             "version": "1.7.2",
