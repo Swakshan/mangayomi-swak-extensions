@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.7.1",
+    "version": "1.7.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -686,20 +686,20 @@ class DefaultExtension extends MProvider {
   }
 
   // Extracts the streams url for different resolutions from a hls stream.
-  async extractStreams(url, audio, providerId, hdr = {}) {
+  async extractStreams(url, audio, providerId, hdr = {}, defQuality = "Auto") {
     audio = audio.toUpperCase();
     var providerTag = providerId.toUpperCase();
     var streams = [
       {
         url: url,
         originalUrl: url,
-        quality: `Auto - ${providerTag} : ${audio}`,
+        quality: `${defQuality} - ${providerTag} : ${audio}`,
         headers: hdr,
       },
     ];
     var doExtract = this.getPreference("aniplay_pref_extract_streams");
-    // Pahe & Maze only has auto
-    if (providerId === "pahe" || providerId === "maze" || !doExtract) {
+    // Pahe, Maze & Owl only has auto
+    if (providerId === "pahe" || providerId === "maze" ||  providerId === "owl" || !doExtract) {
       return streams;
     }
 
@@ -727,36 +727,34 @@ class DefaultExtension extends MProvider {
   }
 
   async getYukiStreams(providerId, result, audio) {
-    var m3u8Url = result.sources[0].file;
+    var sources = result.sources[0]
+    var m3u8Url = sources.file || sources.url; 
     var streams = await this.extractStreams(m3u8Url, audio, providerId);
-    streams[0].subtitles = result.subtitles.filter(
-      (sub) => sub.kind == "captions"
-    );
+   
+   var subs = [];
+  result.subtitles.filter(
+      (sub) => (sub.kind == "captions" || sub.label != "thumbnails")
+    ).forEach((sub) =>
+        subs.push({
+          "file": sub.url || sub.file,
+          "label": sub.label,
+        })
+      );
+       streams[0].subtitles = subs
     return streams;
   }
 
   async getOwlStreams(providerId, result, audio) {
-    var providerTag = providerId.toUpperCase();
     var m3u8Url = result.sources[0].url;
     var quality = result.sources[0].quality;
     var hdr = result.headers || {};
-
-    var streams = [
-      {
-        url: m3u8Url,
-        originalUrl: m3u8Url,
-        quality: `${quality} - ${providerTag} : ${audio}`,
-        headers: hdr,
-      },
-    ];
-
-    return streams;
+    return await this.extractStreams(m3u8Url, audio, providerId, quality,hdr);
   }
 
   async getPaheMazeStreams(providerId, result, audio) {
     var m3u8Url = result.sources[0].url;
     var hdr = result.headers;
-    return await this.extractStreams(m3u8Url, audio, providerId, hdr);
+    return await this.extractStreams(m3u8Url, audio, providerId);
   }
 
   async getAkaneStreams(providerId, result, audio) {
