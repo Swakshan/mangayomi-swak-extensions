@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.7.2",
+    "version": "1.7.3",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -366,7 +366,7 @@ class DefaultExtension extends MProvider {
       anilistId = url.substring(url.lastIndexOf("info/") + 5);
     }
     var animeData = await this.getAnimeDetails(anilistId);
-    animeData.link = `${this.getBaseUrl()}/anime/${slug}`;
+    animeData.link = `${this.getBaseUrl()}/anime/${anilistId}`;
 
     var chapters = [];
     var status = animeData.status;
