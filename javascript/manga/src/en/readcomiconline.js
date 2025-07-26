@@ -10,7 +10,7 @@ const mangayomiSources = [
     "typeSource": "single",
     "isManga": true,
     "itemType": 0,
-    "version": "0.2.8",
+    "version": "0.3.0",
     "pkgPath": "manga/src/en/readcomiconline.js",
   },
 ];
@@ -204,10 +204,17 @@ class DefaultExtension extends MProvider {
         baseUrlOverride = baseUrlOverride.substring(0, -1);
     }
 
-    var sKey = "var pth = ";
-    var eKey = "=";
+    var sKey = "l = l.replace(/";
+    var eKey = "/g";
     var s = html.indexOf(sKey) + sKey.length;
     var e = html.indexOf(eKey, s);
+    var replaceKey = html.substring(s, e).trim()
+    var replaceRegex = new RegExp(replaceKey, "g");
+
+    sKey = "var pth = ";
+    eKey = "=";
+    s = html.indexOf(sKey) + sKey.  length;
+    e = html.indexOf(eKey, s);
     var variableTag = html.substring(s, e).trim().split(" ")[1];
 
     eKey = "//beau";
@@ -220,6 +227,7 @@ class DefaultExtension extends MProvider {
           .replace(`${variableTag} = '`, "")
           .slice(0, -2);
         var decodedImageUrl = this.decodeImageUrl(
+          replaceRegex,
           encodedImageUrl,
           baseUrlOverride
         );
@@ -448,10 +456,10 @@ class DefaultExtension extends MProvider {
     );
   }
 
-  decodeImageUrl(obfuscatedUrl, customDomain) {
+  decodeImageUrl(replaceRegex,obfuscatedUrl, customDomain) {
     var decodedUrl = "";
     obfuscatedUrl = obfuscatedUrl
-      .replace(/Ut__wWzBoh_/g, "d")
+      .replace(replaceRegex, "d")
       .replace(/b/g, "b")
       .replace(/h/g, "h");
 
