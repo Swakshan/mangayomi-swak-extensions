@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://aniplaynow.live/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.7.4",
+    "version": "1.7.5",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/aniplay.js",
@@ -365,7 +365,7 @@ class DefaultExtension extends MProvider {
     if (url.includes("info/")) {
       anilistId = url.substring(url.lastIndexOf("info/") + 5);
     }
-    
+
     var slug = `info/${anilistId}`;
     var animeData = await this.getAnimeDetails(anilistId);
     animeData.link = `${this.getBaseUrl()}/anime/${slug}`;
@@ -464,7 +464,7 @@ class DefaultExtension extends MProvider {
 
   // For anime episode video list
   async getVideoList(url) {
-    var pref_provider = this.getPreference("aniplay_pref_providers_2");
+    var pref_provider = this.getPreference("aniplay_pref_providers_3");
     // if there are no providers selected, use pahe as default provider.
     if (pref_provider.length < 1) pref_provider.push("pahe");
 
@@ -520,15 +520,13 @@ class DefaultExtension extends MProvider {
               result,
               "hard" + audio
             );
-          } else if (providerId == "owl") {
-            // Owl always has hardsubs
-            streams = await this.getOwlStreams(
+          } else if (providerId == "zone") {
+            streams = await this.getZoneStreams(
               providerId,
               result,
-              "hard" + audio
+              "soft" + audio
             );
           } else if (providerId == "akane") {
-            // Owl always has hardsubs
             streams = await this.getAkaneStreams(
               providerId,
               result,
@@ -547,7 +545,7 @@ class DefaultExtension extends MProvider {
     }
 
     if (finalStreams.length < 1) {
-      throw new Error("Error: No data found for the given URL");
+      throw new Error("No streams found for the selected providers. Please try a different provider.");
     }
     return finalStreams;
   }
@@ -585,13 +583,13 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "aniplay_pref_providers_2",
+        key: "aniplay_pref_providers_3",
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
-          values: ["maze", "yuki", "pahe", "koto", "owl", "akane"],
-          entries: ["Maze", "Yuki", "Pahe", "Koto", "Owl", "Akane"],
-          entryValues: ["maze", "yuki", "pahe", "koto", "owl", "akane"],
+          values: ["maze", "yuki", "pahe", "koto", "zone", "akane"],
+          entries: ["Maze", "Yuki", "Pahe", "Koto", "Zone", "Akane"],
+          entryValues: ["maze", "yuki", "pahe", "koto", "zone", "akane"],
         },
       },
       {
@@ -698,21 +696,28 @@ class DefaultExtension extends MProvider {
         headers: hdr,
       },
     ];
-    var doExtract = this.getPreference("aniplay_pref_extract_streams");
+    // Always extract zone streams  
+    var doExtract = this.getPreference("aniplay_pref_extract_streams") || providerId === "zone";
     // Pahe, Maze & Owl only has auto
-    if (providerId === "pahe" || providerId === "maze" ||  providerId === "owl" || !doExtract) {
+    if (providerId === "pahe" || providerId === "maze" || !doExtract) {
       return streams;
     }
 
     const response = await this.client.get(url, hdr);
     const body = response.body;
     const lines = body.split("\n");
+    var audios = [];
 
     for (let i = 0; i < lines.length; i++) {
-      if (lines[i].startsWith("#EXT-X-STREAM-INF:")) {
-        var resolution = lines[i].match(/RESOLUTION=(\d+x\d+)/)[1];
+      var currentLine = lines[i]
+      if (currentLine.startsWith("#EXT-X-STREAM-INF:")) {
+        var resolution = currentLine.match(/RESOLUTION=(\d+x\d+)/)[1];
         var m3u8Url = lines[i + 1].trim();
-        if (providerId === "yuki" || providerId === "koto") {
+        if (
+          providerId === "yuki" ||
+          providerId === "koto" ||
+          providerId === "zone"
+        ) {
           var orginalUrl = url;
           m3u8Url = orginalUrl.replace("master.m3u8", m3u8Url);
         }
@@ -722,40 +727,67 @@ class DefaultExtension extends MProvider {
           quality: `${resolution} - ${providerTag} : ${audio}`,
           headers: hdr,
         });
+      } else if (currentLine.startsWith("#EXT-X-MEDIA:TYPE=AUDIO")) {
+        var attributesString = currentLine.split(",");
+        var attributeRegex = /([A-Z-]+)=("([^"]*)"|[^,]*)/g;
+        let match;
+        var trackInfo = {};
+        while ((match = attributeRegex.exec(attributesString)) !== null) {
+          var key = match[1];
+          var value = match[3] || match[2];
+          if (key === "NAME") {
+            trackInfo.label = value;
+          } else if (key === "URI") {
+            trackInfo.file = url.replace("master.m3u8", "") + value;
+          }
+        }
+        (trackInfo.headers = hdr), audios.push(trackInfo);
       }
     }
+    streams[0].audios = audios;
     return streams;
   }
 
   async getYukiStreams(providerId, result, audio) {
-    var sources = result.sources[0]
-    var m3u8Url = sources.file || sources.url; 
+    var sources = result.sources[0];
+    var m3u8Url = sources.file || sources.url;
     var streams = await this.extractStreams(m3u8Url, audio, providerId);
-   
-   var subs = [];
-  result.subtitles.filter(
-      (sub) => (sub.kind == "captions" || sub.label != "thumbnails")
-    ).forEach((sub) =>
+
+    var subs = [];
+    result.subtitles
+      .filter((sub) => sub.kind == "captions" || sub.label != "thumbnails")
+      .forEach((sub) =>
         subs.push({
           "file": sub.url || sub.file,
           "label": sub.label,
         })
       );
-       streams[0].subtitles = subs
+    streams[0].subtitles = subs;
     return streams;
   }
 
-  async getOwlStreams(providerId, result, audio) {
-    var m3u8Url = result.sources[0].url;
-    var quality = result.sources[0].quality;
+  async getZoneStreams(providerId, result, audio) {
+    var source = result.sources[0];
+    var m3u8Url = source.url;
+
     var hdr = result.headers || {};
-    return await this.extractStreams(m3u8Url, audio, providerId, quality,hdr);
+    var streams = await this.extractStreams(m3u8Url, audio, providerId, hdr);
+
+    var subs = [];
+    result.subtitles.forEach((sub) =>
+      subs.push({
+        "file": sub.url,
+        "label": sub.label,
+      })
+    );
+    streams[0].subtitles = subs;
+    return streams;
   }
 
   async getPaheMazeStreams(providerId, result, audio) {
     var m3u8Url = result.sources[0].url;
     var hdr = result.headers;
-    return await this.extractStreams(m3u8Url, audio, providerId);
+    return await this.extractStreams(m3u8Url, audio, providerId, hdr);
   }
 
   async getAkaneStreams(providerId, result, audio) {
