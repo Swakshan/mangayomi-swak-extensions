@@ -10,7 +10,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| ReadComicOnline | 0.2.8 | en | 2025/06/27 12:09 IST |
+| ReadComicOnline | 0.3.0 | en | 2025/07/26 16:15 IST |
 | WeLoMa | 0.0.8 | ja | 2025/06/07 22:02 IST |
 | Mangapark | 1.0.0 | en | 2025/06/04 20:43 IST |
 | Mangapill | 1.0.3 | en | 2025/05/20 16:17 IST |
@@ -20,9 +20,9 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| Aniplay | 1.7.4 | en | 2025/07/26 09:57 IST |
+| Aniplay | 1.7.5 | en | 2025/07/26 16:15 IST |
+| XPrime | 2.1.4 | all | 2025/07/26 16:15 IST |
 | SubsPlease | 0.0.5 | en | 2025/07/23 23:21 IST |
-| XPrime | 2.1.3 | all | 2025/07/17 23:25 IST |
 | Aniwatch | 1.0.0 | en | 2025/06/30 23:06 IST |
 | Tamilarasan | 0.0.6 | all | 2025/06/29 22:26 IST |
 | Anicrush | 0.0.5 | en | 2025/06/27 22:11 IST |

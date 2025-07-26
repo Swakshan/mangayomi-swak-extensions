@@ -2,9 +2,9 @@
     "manga": {
         "ReadComicOnline": {
             "name": "ReadComicOnline",
-            "version": "0.2.8",
+            "version": "0.3.0",
             "langs": "en",
-            "lastUpd": 1751006373.786841
+            "lastUpd": 1753526709.455681
         },
         "WeLoMa": {
             "name": "WeLoMa",
@@ -34,21 +34,21 @@
     "anime": {
         "Aniplay": {
             "name": "Aniplay",
-            "version": "1.7.4",
+            "version": "1.7.5",
             "langs": "en",
-            "lastUpd": 1753504076.062821
+            "lastUpd": 1753526709.455681
+        },
+        "XPrime": {
+            "name": "XPrime",
+            "version": "2.1.4",
+            "langs": "all",
+            "lastUpd": 1753526709.455681
         },
         "SubsPlease": {
             "name": "SubsPlease",
             "version": "0.0.5",
             "langs": "en",
             "lastUpd": 1753293069.296975
-        },
-        "XPrime": {
-            "name": "XPrime",
-            "version": "2.1.3",
-            "langs": "all",
-            "lastUpd": 1752774920.402271
         },
         "Aniwatch": {
             "name": "Aniwatch",
