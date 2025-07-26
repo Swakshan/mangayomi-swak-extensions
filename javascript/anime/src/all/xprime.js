@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.1.3",
+    "version": "2.1.4",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -239,7 +239,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    var prefServer = this.getPreference("xprime_pref_stream_server_5");
+    var prefServer = this.getPreference("xprime_pref_stream_server_6");
     if (prefServer.length < 1) prefServer = ["primebox"];
 
     var streams = [];
@@ -250,7 +250,9 @@ class DefaultExtension extends MProvider {
 
     for (var server of prefServer) {
       var serverData = {};
-      if (server == "primenet") {
+      if (server == "primebox") {
+        serverData = await this.primebox(data);
+      } else if (server == "primenet") {
         serverData = await this.primenet(data);
       } else if (server == "fox") {
         serverData = await this.fox(data);
@@ -317,12 +319,13 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "xprime_pref_stream_server_5",
+        key: "xprime_pref_stream_server_6",
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
-          values: ["primenet", "phoenix", "fox"],
+          values: ["primebox", "primenet", "phoenix", "fox"],
           entries: [
+            "Primebox",
             "Fox",
             "Primenet",
             "Phoenix",
@@ -332,6 +335,7 @@ class DefaultExtension extends MProvider {
             "Fendi - FRA",
           ],
           entryValues: [
+            "primebox",
             "fox",
             "primenet",
             "phoenix",
@@ -391,7 +395,7 @@ class DefaultExtension extends MProvider {
     return streamUrls;
   }
 
-  /*async primebox(data) {
+  async primebox(data) {
     var serverName = "primebox";
     var hdr = data.hdr;
 
@@ -425,7 +429,7 @@ class DefaultExtension extends MProvider {
       }
     }
     return { streamUrls, subtitles };
-  }*/
+  }
 
   async fox(data) {
     var serverName = "fox";
