@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Moviesda": {
+            "name": "Moviesda",
+            "version": "0.0.6",
+            "langs": "ta",
+            "lastUpd": 1755098050.407817
+        },
         "Aniplay": {
             "name": "Aniplay",
             "version": "1.7.5",
@@ -110,6 +116,12 @@
             "langs": "en",
             "lastUpd": 1747987051.04447
         },
+        "AnimeGG": {
+            "name": "AnimeGG",
+            "version": "1.0.3",
+            "langs": "en",
+            "lastUpd": 1747738043.896285
+        },
         "Sudatchi": {
             "name": "Sudatchi",
             "version": "1.1.1",
@@ -120,12 +132,6 @@
             "name": "Animeonsen",
             "version": "1.0.1",
             "langs": "en, ja",
-            "lastUpd": 1747738043.896285
-        },
-        "AnimeGG": {
-            "name": "AnimeGG",
-            "version": "1.0.3",
-            "langs": "en",
             "lastUpd": 1747738043.896285
         },
         "Gojo": {

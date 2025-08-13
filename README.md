@@ -20,6 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| Moviesda | 0.0.6 | ta | 2025/08/13 20:44 IST |
 | Aniplay | 1.7.5 | en | 2025/07/26 16:15 IST |
 | XPrime | 2.1.4 | all | 2025/07/26 16:15 IST |
 | SubsPlease | 0.0.5 | en | 2025/07/23 23:21 IST |
@@ -33,9 +34,9 @@ This repository contains the available javascript extension catalogues for the M
 | Streamblasters | 1.0.0 | all | 2025/05/31 10:17 IST |
 | Autoembed | 1.3.3 | all | 2025/05/24 19:22 IST |
 | KickAssAnime | 0.0.7 | en | 2025/05/23 13:27 IST |
+| AnimeGG | 1.0.3 | en | 2025/05/20 16:17 IST |
 | Sudatchi | 1.1.1 | en | 2025/05/20 16:17 IST |
 | Animeonsen | 1.0.1 | en, ja | 2025/05/20 16:17 IST |
-| AnimeGG | 1.0.3 | en | 2025/05/20 16:17 IST |
 | Gojo | 0.0.6 | en | 2025/05/20 16:17 IST |
 | Soaper | 1.0.5 | all | 2025/05/20 16:17 IST |
 | Aniwave | 0.0.7 | en | 2025/05/09 00:11 IST |
