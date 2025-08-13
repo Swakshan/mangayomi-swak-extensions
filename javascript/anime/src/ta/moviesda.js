@@ -6,14 +6,14 @@ const mangayomiSources = [
     "lang": "ta",
     "typeSource": "single",
     "iconUrl":
-      "https://www.google.com/s2/favicons?sz=256&domain=https://moviesda12.com/",
+      "https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/javascript/icon/ta.moviesda.jpg",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -96,6 +96,8 @@ class DefaultExtension extends MProvider {
   }
 
   async search(query, page, filters) {
+    if (!!query && query.length() > 0)
+      throw new Error("This website doesnt has search feature :(");
     throw new Error("search not implemented");
   }
 
@@ -208,8 +210,8 @@ class DefaultExtension extends MProvider {
     var streamUrl = doc.selectFirst(".dlink").selectFirst("a").getHref;
 
     var details = doc.select(".details");
-    var fileSize = details[1].text.trim().replace("File Size: ","");
-    var resolution = details[2].text.trim().replace("Video Size: ","");
+    var fileSize = details[1].text.trim().replace("File Size: ", "");
+    var resolution = details[2].text.trim().replace("Video Size: ", "");
     streams.push({
       url: streamUrl,
       originalUrl: streamUrl,
