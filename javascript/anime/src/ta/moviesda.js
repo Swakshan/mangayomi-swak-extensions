@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -50,7 +50,7 @@ class DefaultExtension extends MProvider {
   async request(slug) {
     var proxy =
       "https://translate.google.com/translate?sl=ta&tl=en&hl=en&client=webapp&u=";
-    var baseUrl = this.getBaseUrl();
+    var baseUrl = slug.includes("https://") ? "" : this.getBaseUrl();
     var req = await this.client.get(proxy + baseUrl + slug);
     return new Document(req.body);
   }
@@ -197,7 +197,35 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    var streams = [];
+    var doc = await this.request(url);
+    var dlink = doc.selectFirst(".dlink").selectFirst("a").getHref;
+    var fileId = dlink.substring(dlink.indexOf("/download/file/") + 15);
+
+    var finalPage = `https://download.moviespage.site/download/page/${fileId}`;
+    var req = await this.client.get(finalPage);
+    doc = new Document(req.body);
+    var streamUrl = doc.selectFirst(".dlink").selectFirst("a").getHref;
+
+    var details = doc.select(".details");
+    var fileSize = details[1].text.trim().replace("File Size: ","");
+    var resolution = details[2].text.trim().replace("Video Size: ","");
+    streams.push({
+      url: streamUrl,
+      originalUrl: streamUrl,
+      quality: `Download Server: ${resolution} - ${fileSize}`,
+    });
+
+    var embedUrl = `https://play.onestream.watch/stream/page/${fileId}`;
+    var req = await this.client.get(embedUrl);
+    doc = new Document(req.body);
+    streamUrl = doc.selectFirst("source").attr("src");
+    streams.push({
+      url: streamUrl,
+      originalUrl: streamUrl,
+      quality: `Watch Online Server: Media`,
+    });
+    return streams;
   }
 
   getFilterList() {
