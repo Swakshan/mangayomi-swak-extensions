@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.7",
+    "version": "1.0.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -101,7 +101,7 @@ class DefaultExtension extends MProvider {
     throw new Error("search not implemented");
   }
 
-  async formatChapters(doc, quality, releaseDate) {
+  async formatChapters(doc, movieName, quality, releaseDate) {
     // If series .mv-content is present
     var isSeries = !!doc.selectFirst(".mv-content").text;
     var items = doc.select(".f");
@@ -119,22 +119,35 @@ class DefaultExtension extends MProvider {
         item = innerDoc.selectFirst(".f");
       }
 
-      var listItems = item.select("li");
+      var contentData = {};
+      contentData["title"] = movieName;
+      contentData["link"] = contentLink;
 
-      contentName = isSeries
-        ? listItems[0].text
-            .replace("Moviesda.Mobi - ", "")
-            .replace(".mp4", "")
-            .contentName.substring(contentName.indexOf("Season "))
-        : contentName
-            .substring(contentName.indexOf(" (") + 2, contentName.length - 1)
-            .replace(" HD", ` ${quality}`);
+      var listItems = item.select("li");
+      if (isSeries) {
+        contentName = listItems[0].text;
+        const regex = /-\s*(.*?)\s+Season\s+(\d+)\s+\(Epi\s+(\d+)\)/i;
+        var match = contentName.match(regex);
+
+        if (match) {
+          var season = parseInt(match[2], 10).toString().padStart(2, "0");
+          var episode = parseInt(match[3], 10).toString().padStart(2, "0");
+
+          contentName = `S${season}E${episode}`;
+          contentData["season"] = season;
+          contentData["episode"] = episode;
+        }
+      } else {
+        contentName
+          .substring(contentName.indexOf(" (") + 2, contentName.length - 1)
+          .replace(" HD", ` ${quality}`);
+      }
 
       var fileSize = listItems[1].text.replace("File Size: ", "");
 
       chapters.push({
         name: contentName,
-        url: contentLink,
+        url: JSON.stringify(contentData),
         dateUpload: releaseDate.toString(),
         scanlator: `${quality}, ${fileSize}`,
       });
@@ -163,6 +176,7 @@ class DefaultExtension extends MProvider {
     var link = baseUrl + slug;
 
     var doc = await this.request(slug);
+    var movieName = "";
     var author = "";
     var artist = "";
     var releaseDate = "";
@@ -186,6 +200,8 @@ class DefaultExtension extends MProvider {
           releaseDate = new Date(span).valueOf();
         } else if (title.includes("Quality:")) {
           quality = span;
+        } else if (title.includes("Movie:")) {
+          movieName = span;
         }
       });
     var description =
@@ -199,12 +215,15 @@ class DefaultExtension extends MProvider {
     vidLink = this.removeProxy(vidLink);
     doc = await this.request(vidLink);
 
-    chapters = await this.formatChapters(doc, quality, releaseDate);
+    chapters = await this.formatChapters(doc, movieName, quality, releaseDate);
 
     return { link, author, description, artist, genre, status, chapters };
   }
 
   async getVideoList(url) {
+    var jsonData = JSON.parse(url);
+
+    url = jsonData["link"];
     var streams = [];
     var doc = await this.request(url);
     var dlink = doc.selectFirst(".dlink").selectFirst("a").getHref;
@@ -233,6 +252,20 @@ class DefaultExtension extends MProvider {
       originalUrl: streamUrl,
       quality: `Watch Online Server: Media`,
     });
+
+    if (this.getPreference("moviesda_fetch_subs")) {
+      var imdbId = await this.getImdbID(jsonData);
+      if (imdbId != "0") {
+        var s = "0";
+        var e = s;
+        if (jsonData.hasOwnProperty("season")) {
+          s = jsonData["season"];
+          e = jsonData["episode"];
+        }
+        var subs = await this.getSubtitleList(imdbId, s, e);
+        streams[0].subtitles = subs;
+      }
+    }
     return streams;
   }
 
@@ -241,6 +274,65 @@ class DefaultExtension extends MProvider {
   }
 
   getSourcePreferences() {
-    throw new Error("getSourcePreferences not implemented");
+    return [
+      {
+        key: "moviesda_fetch_subs",
+        switchPreferenceCompat: {
+          title: "Fetch subtitles",
+          summary: "",
+          value: true,
+        },
+      },
+    ];
   }
+
+  //---------Additional functions------------
+  async getImdbID(data) {
+    var imdbId = "0";
+    var category = data.hasOwnProperty("season") ? "tvSeries" : "movie";
+    var title = data["title"];
+    // Sometimes there wont be any title provided
+    if (title.length < 1) return imdbId;
+    var api = `https://v3.sg.media-imdb.com/suggestion/x/${title}.json?includeVideos=0`;
+    var res = await this.client.get(api);
+    if (res.statusCode != 200) {
+      return imdbId;
+    }
+    var jsonD = JSON.parse(res.body);
+    var imdbData = jsonD["d"];
+
+    for (var info of imdbData) {
+      // if qid is not present continue
+      if (!info.hasOwnProperty("qid")) continue;
+      var qid = info["qid"];
+      // if qid is not the category we want then continue
+      if (qid != category) continue;
+      imdbId = info["id"];
+    }
+    return imdbId;
+  }
+
+  async getSubtitleList(id, s, e) {
+    var api = `https://sub.wyzie.ru/search?id=${id}`;
+    var hdr = {};
+
+    if (s != "0") api = `${api}&season=${s}&episode=${e}`;
+
+    var response = await new Client().get(api, hdr);
+    if (response.statusCode != 200) return [];
+
+    var body = JSON.parse(response.body);
+
+    var subs = [];
+    body.forEach((sub) => {
+      subs.push({
+        file: sub.url,
+        label: sub.display,
+      });
+    });
+
+    return subs;
+  }
+
+  // End
 }
