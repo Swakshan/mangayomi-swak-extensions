@@ -20,7 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| Moviesda | 0.0.7 | ta | 2025/08/15 12:45 IST |
+| Moviesda | 1.0.0 | ta | 2025/08/15 22:33 IST |
 | Aniplay | 1.7.5 | en | 2025/07/26 16:15 IST |
 | XPrime | 2.1.4 | all | 2025/07/26 16:15 IST |
 | SubsPlease | 0.0.5 | en | 2025/07/23 23:21 IST |

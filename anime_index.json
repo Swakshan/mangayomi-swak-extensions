@@ -320,7 +320,7 @@
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/ta/moviesda.js",
         "apiUrl": "",
-        "version": "0.0.7",
+        "version": "1.0.0",
         "isManga": false,
         "itemType": 1,
         "isFullData": false,
