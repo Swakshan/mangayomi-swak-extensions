@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -101,7 +101,7 @@ class DefaultExtension extends MProvider {
     throw new Error("search not implemented");
   }
 
-  async formatChapters(doc, releaseDate) {
+  async formatChapters(doc, quality, releaseDate) {
     // If series .mv-content is present
     var isSeries = !!doc.selectFirst(".mv-content").text;
     var items = doc.select(".f");
@@ -122,18 +122,21 @@ class DefaultExtension extends MProvider {
       var listItems = item.select("li");
 
       contentName = isSeries
-        ? listItems[0].text.replace("Moviesda.Mobi - ", "").replace(".mp4", "")
-        : contentName;
-      var seasonIndx = contentName.indexOf("Season ");
-      contentName =
-        seasonIndx > 0 ? contentName.substring(seasonIndx) : contentName;
+        ? listItems[0].text
+            .replace("Moviesda.Mobi - ", "")
+            .replace(".mp4", "")
+            .contentName.substring(contentName.indexOf("Season "))
+        : contentName
+            .substring(contentName.indexOf(" (") + 2, contentName.length - 1)
+            .replace(" HD", ` ${quality}`);
 
       var fileSize = listItems[1].text.replace("File Size: ", "");
+
       chapters.push({
         name: contentName,
         url: contentLink,
         dateUpload: releaseDate.toString(),
-        scanlator: fileSize,
+        scanlator: `${quality}, ${fileSize}`,
       });
     }
 
@@ -165,6 +168,7 @@ class DefaultExtension extends MProvider {
     var releaseDate = "";
     var status = 1;
     var genre = [];
+    var quality = "";
 
     doc
       .selectFirst(".movie-info")
@@ -180,6 +184,8 @@ class DefaultExtension extends MProvider {
           genre = span.split(", ");
         } else if (title.includes("Last Updated:")) {
           releaseDate = new Date(span).valueOf();
+        } else if (title.includes("Quality:")) {
+          quality = span;
         }
       });
     var description =
@@ -193,7 +199,7 @@ class DefaultExtension extends MProvider {
     vidLink = this.removeProxy(vidLink);
     doc = await this.request(vidLink);
 
-    chapters = await this.formatChapters(doc, releaseDate);
+    chapters = await this.formatChapters(doc, quality, releaseDate);
 
     return { link, author, description, artist, genre, status, chapters };
   }
