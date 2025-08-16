@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -155,7 +155,7 @@ class DefaultExtension extends MProvider {
           contentData["episode"] = episode;
         }
       } else {
-        contentName
+       contentName = contentName
           .substring(contentName.indexOf(" (") + 2, contentName.length - 1)
           .replace(" HD", ` ${quality}`);
       }
@@ -270,7 +270,7 @@ class DefaultExtension extends MProvider {
       quality: `Watch Online Server: Media`,
     });
 
-    if (this.getPreference("moviesda_fetch_subs")) {
+    if (this.getPreference("moviesda_fetch_subtitle")) {
       var imdbId = await this.getImdbID(jsonData);
       if (imdbId != "0") {
         var s = "0";
@@ -458,11 +458,11 @@ class DefaultExtension extends MProvider {
   getSourcePreferences() {
     return [
       {
-        key: "moviesda_fetch_subs",
+        key: "moviesda_fetch_subtitle",
         switchPreferenceCompat: {
           title: "Fetch subtitles",
-          summary: "",
-          value: true,
+          summary: "Turning this on affects downloading. Use it only for streaming",
+          value: false,
         },
       },
     ];
