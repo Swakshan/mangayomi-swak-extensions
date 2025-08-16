@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -96,9 +96,26 @@ class DefaultExtension extends MProvider {
   }
 
   async search(query, page, filters) {
-    if (!!query && query.length() > 0)
-      throw new Error("This website doesnt has search feature :(");
-    throw new Error("search not implemented");
+    function getSelectFilter(filter) {
+      if (filter.type_name != "SelectFilter") return "";
+      var selectValue = filter.state;
+      var values = filter.values;
+      var selectValue = values[selectValue]["value"];
+      return selectValue;
+    }
+
+    var isFiltersAvailable = !filters || filters.length != 0;
+
+    if ((!!query && query.length > 0) || !isFiltersAvailable)
+      throw new Error(
+        "This website doesnt has search feature :(\nUse Filters instead"
+      );
+
+    for (var filter of filters) {
+      var slug = getSelectFilter(filter);
+      if (slug.length) return await this.getPageData(slug, page);
+    }
+    throw new Error("Please select an filter category");
   }
 
   async formatChapters(doc, movieName, quality, releaseDate) {
@@ -270,7 +287,172 @@ class DefaultExtension extends MProvider {
   }
 
   getFilterList() {
-    throw new Error("getFilterList not implemented");
+    function formateState(type_name, items, values) {
+      var state = [];
+      for (var i = 0; i < items.length; i++) {
+        state.push({ type_name: type_name, name: items[i], value: values[i] });
+      }
+      return state;
+    }
+
+    function formFilters(name, items, values) {
+      items.unshift("None");
+      values.unshift("");
+
+      return {
+        type_name: "SelectFilter",
+        name: `${name} collection`,
+        state: 0,
+        values: formateState("SelectOption", items, values),
+      };
+    }
+
+    var filters = [
+      {
+        type_name: "HeaderFilter",
+        name: "Choose any ONE type of collction. Multicollection filter is NOT SUPPORTED !!",
+      },
+    ];
+
+    // Years
+    const currentYear = new Date().getFullYear();
+    var years = Array.from({ length: currentYear - 2014 }, (_, i) =>
+      (2015 + i).toString()
+    ).reverse();
+    var items = [...years, "2012"];
+    var values = items.map((year) => `/tamil-${year}-movies/`);
+    filters.push(formFilters("Year", items, values));
+
+    // Alphabet
+    items = Array.from({ length: 26 }, (_, i) => String.fromCharCode(i + 97));
+    values = items.map((abc) => `/tamil-movies/${abc}/`);
+    filters.push(formFilters("Alphabet", items, values));
+
+    // Collections
+    items = [
+      "Thala Ajith",
+      "MGR",
+      "Madhavan",
+      "Arjun",
+      "Jiiva",
+      "Jayam Ravi",
+      "Vishal",
+      "Silambarasan",
+      "Vijay Sethupathi",
+      "Dhanush",
+      "Suriya",
+      "Vijayakanth Movie Collections",
+      "Rajinikanth Movie Collections",
+      "Chiyaan Vikram Movie Collections",
+      "Kamal Haasan Movie Collections",
+      "Sasikumar",
+      "Nakul",
+      "Siddharth",
+      "Cheran",
+      "Vimal",
+      "Vijay",
+      "Ramarajan",
+      "Simbu",
+      "Sathiyaraj",
+      "Appukutty",
+      "Surya",
+      "Murali",
+      "Mohan",
+      "Sarathkumar",
+      "Bhagyaraj",
+      "MGR",
+      "Vishal",
+      "Vijayakanth",
+      "Sivakarthikeyan",
+      "Prashanth",
+      "Prabhu",
+      "Prabhu Deva",
+      "Parthiepan",
+      "Kamal Hassan",
+      "Arjun",
+      "Rajinikanth",
+      "Madhavan",
+      "Vikram Movie Collections",
+      "Jeeva",
+      "Dhaunsh",
+      "Dinesh",
+      "Vijay Sethupathi",
+      "Arya",
+      "Jayam Ravi",
+      "Ajith",
+      "Karthik",
+      "Rajkiran",
+      "Karthi",
+      "Sivaji Ganesan",
+      "Kunal",
+    ];
+
+    var values = [
+      "/thala-ajith-movies-collection-download/",
+      "/mgr-movies-collection-download/",
+      "/madhavan-movies-collection-download/",
+      "/arjun-movies-collection-download/",
+      "/jiiva-movies-collection-download/",
+      "/jayam-ravi-movies-collection-download/",
+      "/vishal-movies-collection-download/",
+      "/silambarasan-movies-collection-download/",
+      "/vijay-sethupathi-movies-collection-download/",
+      "/dhanush-movies-collection-download/",
+      "/suriya-movies-collections-download/",
+      "/vijayakanth-movie-collections-download/",
+      "/rajinikanth-movie-collections-download/",
+      "/chiyaan-vikram-movie-collections-download/",
+      "/kamal-haasan-movie-collections-download/",
+      "/actor-sasikumar-movies-collections/",
+      "/actor-nakul-movies-collections/",
+      "/actor-siddharth-movies-collection/",
+      "/actor-cheran-movies-collection/",
+      "/actor-vimal-movies-collection/",
+      "/actor-vijay-movies-collection/",
+      "/actor-ramarajan-movies-collection/",
+      "/actor-simbu-movies-collection/",
+      "/actor-sathiyaraj-movies-collection/",
+      "/actor-appukutty-movies-collection/",
+      "/actor-surya-movies-collection/",
+      "/actor-murali-movies-collection/",
+      "/actor-mohan-movies-collection/",
+      "/actor-sarathkumar-movies-collection/",
+      "/actor-bhagyaraj-movies-collection/",
+      "/actor-mgr-movies-collection/",
+      "/actor-vishal-movies-collection/",
+      "/actor-vijayakanth-movies-collection/",
+      "/actor-sivakarthikeyan-movies-collection/",
+      "/actor-prashanth-movies-collection/",
+      "/actor-prabhu-movies-collection/",
+      "/actor-prabhu-deva-movies-collection/",
+      "/actor-parthiepan-movies-collection/",
+      "/actor-kamal-hassan-movies-collection/",
+      "/actor-arjun-movies-collection/",
+      "/actor-rajinikanth-movies-collection/",
+      "/actor-madhavan-movies-collection/",
+      "/actor-vikram-movie-collections/",
+      "/actor-jeeva-movies-collection/",
+      "/actor-dhaunsh-movies-collection/",
+      "/actor-dinesh-movies-collection/",
+      "/actor-vijay-sethupathi-movies-collection/",
+      "/actor-arya-movies-collection/",
+      "/actor-jayam-ravi-movies-collection/",
+      "/actor-ajith-movies-collection/",
+      "/actor-karthik-movies-collection/",
+      "/actor-rajkiran-movies-collection/",
+      "/actor-karthi-movies-collection/",
+      "/actor-sivaji-ganesan-movies-collection/",
+      "/actor-kunal-movies-collection/",
+    ];
+
+    filters.push(formFilters("Actor", items, values));
+
+    //Other collections
+    items = ["Tamil Dubbed", "HD Movies"];
+    values = ["/tamil-dubbed-movies/", "/tamil-hd-movies-download/"];
+    filters.push(formFilters("Other", items, values));
+
+    return filters;
   }
 
   getSourcePreferences() {
