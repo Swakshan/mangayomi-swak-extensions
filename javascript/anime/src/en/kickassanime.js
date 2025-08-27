@@ -2,7 +2,7 @@ const mangayomiSources = [
   {
     "name": "KickAssAnime",
     "id": 4096048097,
-    "baseUrl": "https://kaa.mx",
+    "baseUrl": "https://kaa.to",
     "lang": "en",
     "typeSource": "multi",
     "iconUrl":
@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.7",
+    "version": "1.0.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -561,8 +561,9 @@ class DefaultExtension extends MProvider {
   }
 
   async decodeVidStreaming(url) {
+    var hdr = this.getHeaders(this.getBaseUrl()); 
     var id = url.substring(url.indexOf("id=") + 3, url.indexOf("&ln="));
-    var body = (await this.client.get(url)).body;
+    var body = (await this.client.get(url,hdr)).body;
 
     var sKey = "cid: '";
     var eKey = "',";
@@ -575,7 +576,7 @@ class DefaultExtension extends MProvider {
     var ip = cidSp[0];
     var route = cidSp[1].replace("player.php", "source.php");
     var key = "e13d38099bf562e8b9851a652d2043d3";
-    var hdr = this.getHeaders("https://krussdomi.com/");
+    var hdr = this.getHeaders("https://krussdomi.com");
     delete hdr["content-type"];
     var ua = hdr["User-Agent"];
     var timestamp = parseInt(Date.now() / 1000);
@@ -664,7 +665,7 @@ class DefaultExtension extends MProvider {
     var doExtract = this.getPreference("kaa_pref_extract_streams");
     if (!doExtract) return streams;
 
-    const response = await new Client().get(url);
+    const response = await new Client().get(url,hdr);
     const body = response.body;
     const lines = body.split("\n");
     var audios = [];
