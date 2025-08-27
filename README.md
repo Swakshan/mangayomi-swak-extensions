@@ -20,10 +20,10 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| XPrime | 2.1.6 | all | 2025/08/27 19:25 IST |
 | KickAssAnime | 1.0.0 | en | 2025/08/27 19:08 IST |
 | Moviesda | 1.1.1 | ta | 2025/08/16 21:57 IST |
 | Aniplay | 1.7.5 | en | 2025/07/26 16:15 IST |
-| XPrime | 2.1.4 | all | 2025/07/26 16:15 IST |
 | SubsPlease | 0.0.5 | en | 2025/07/23 23:21 IST |
 | Aniwatch | 1.0.0 | en | 2025/06/30 23:06 IST |
 | Tamilarasan | 0.0.6 | all | 2025/06/29 22:26 IST |

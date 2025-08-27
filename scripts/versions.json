@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "XPrime": {
+            "name": "XPrime",
+            "version": "2.1.6",
+            "langs": "all",
+            "lastUpd": 1756302905.944256
+        },
         "KickAssAnime": {
             "name": "KickAssAnime",
             "version": "1.0.0",
@@ -48,12 +54,6 @@
             "name": "Aniplay",
             "version": "1.7.5",
             "langs": "en",
-            "lastUpd": 1753526709.455681
-        },
-        "XPrime": {
-            "name": "XPrime",
-            "version": "2.1.4",
-            "langs": "all",
             "lastUpd": 1753526709.455681
         },
         "SubsPlease": {
