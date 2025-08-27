@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.1.4",
+    "version": "2.1.6",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -44,7 +44,7 @@ class DefaultExtension extends MProvider {
 
   async tmdbRequest(slug) {
     var nfsw = this.getPreference("xprime_pref_nfsw_content");
-    var api = `https://tmdb.hexa.watch/api/tmdb/${slug}&include_adult=${nfsw}&include_video=false&language=en-us&api_key=84259f99204eeb7d45c7e3d8e36c6123`;
+    var api = `https://themoviedb.hexa.watch/api/tmdb/${slug}&include_adult=${nfsw}&include_video=false&language=en-us&api_key=84259f99204eeb7d45c7e3d8e36c6123`;
     var response = await new Client().get(api);
     var body = JSON.parse(response.body);
     return body;
@@ -180,12 +180,16 @@ class DefaultExtension extends MProvider {
         var seasonList = batch.join(",");
         var apiEpSlug = `${apiSlug}?append_to_response=${seasonList}`;
         result = await this.tmdbRequest(apiEpSlug);
+
         batch.forEach((season) => {
           var seasonData = result[season];
-          seasonData.episodes.forEach((episode) => {
+          for (let episode of seasonData) {
             release = episode.air_date
               ? new Date(episode.air_date).valueOf()
               : dateNow;
+
+            // Dont add future episodes
+            if (release > dateNow) break;
             var seasonNum = episode.season_number;
             var epNum = episode.episode_number;
 
@@ -203,7 +207,7 @@ class DefaultExtension extends MProvider {
               url: JSON.stringify(eplink),
               dateUpload: release.toString(),
             });
-          });
+          }
         });
       }
     } else {
