@@ -222,7 +222,7 @@
     {
         "name": "KickAssAnime",
         "id": 4096048097,
-        "baseUrl": "https://kaa.mx",
+        "baseUrl": "https://kaa.to",
         "lang": "en",
         "typeSource": "multi",
         "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://kaa.mx/",
@@ -232,7 +232,7 @@
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/en/kickassanime.js",
         "apiUrl": "",
-        "version": "0.0.7",
+        "version": "1.0.0",
         "isManga": false,
         "itemType": 1,
         "isFullData": false,
