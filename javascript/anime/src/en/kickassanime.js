@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -346,17 +346,22 @@ class DefaultExtension extends MProvider {
     var streams = [];
     var doc = await this.apiCall(url);
     var servers = doc.servers;
-    for (var server of servers) {
-      var vidStreams = [];
-      var shortName = server.shortName;
-      var link = server.src;
-      if (shortName == "Vid") {
-        vidStreams = await this.decodeVidStreaming(link);
-      } else if (shortName == "Cat") {
-        vidStreams = await this.decodeCatStreaming(link);
-      }
+    var hdr = this.getHeaders(this.getBaseUrl());
+    try {
+      for (var server of servers) {
+        var vidStreams = [];
+        var shortName = server.shortName;
+        var link = server.src;
+        if (shortName == "Vid") {
+          vidStreams = await this.decodeVidStreaming(link, hdr);
+        } else if (shortName == "Cat") {
+          vidStreams = await this.decodeCatStreaming(link, hdr);
+        }
 
-      streams = [...streams, ...vidStreams];
+        streams = [...streams, ...vidStreams];
+      }
+    } catch (e) {
+      console.log(e);
     }
 
     return this.sortStreams(streams);
@@ -560,10 +565,9 @@ class DefaultExtension extends MProvider {
     );
   }
 
-  async decodeVidStreaming(url) {
-    var hdr = this.getHeaders(this.getBaseUrl()); 
+  async decodeVidStreaming(url, hdr) {
     var id = url.substring(url.indexOf("id=") + 3, url.indexOf("&ln="));
-    var body = (await this.client.get(url,hdr)).body;
+    var body = (await this.client.get(url, hdr)).body;
 
     var sKey = "cid: '";
     var eKey = "',";
@@ -610,7 +614,7 @@ class DefaultExtension extends MProvider {
     var streams = await this.extractStreams(streamUrl, hdr, "VidStreaming");
     var subtitles = [];
 
-    data.subtitles.forEach((sub) => {      
+    data.subtitles.forEach((sub) => {
       subtitles.push({
         file: "https:" + sub.src,
         label: sub.name,
@@ -622,8 +626,7 @@ class DefaultExtension extends MProvider {
     return streams;
   }
 
-  async decodeCatStreaming(url) {
-    var hdr = this.getHeaders("https://krussdomi.com");
+  async decodeCatStreaming(url, hdr) {
     delete hdr["content-type"];
     var body = (await this.client.get(url, hdr)).body;
 
@@ -665,7 +668,7 @@ class DefaultExtension extends MProvider {
     var doExtract = this.getPreference("kaa_pref_extract_streams");
     if (!doExtract) return streams;
 
-    const response = await new Client().get(url,hdr);
+    const response = await new Client().get(url, hdr);
     const body = response.body;
     const lines = body.split("\n");
     var audios = [];
