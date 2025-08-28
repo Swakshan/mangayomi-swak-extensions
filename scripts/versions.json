@@ -32,17 +32,17 @@
         }
     },
     "anime": {
+        "KickAssAnime": {
+            "name": "KickAssAnime",
+            "version": "1.0.1",
+            "langs": "en",
+            "lastUpd": 1756389327.940215
+        },
         "XPrime": {
             "name": "XPrime",
             "version": "2.1.6",
             "langs": "all",
             "lastUpd": 1756302905.944256
-        },
-        "KickAssAnime": {
-            "name": "KickAssAnime",
-            "version": "1.0.0",
-            "langs": "en",
-            "lastUpd": 1756301886.679608
         },
         "Moviesda": {
             "name": "Moviesda",
@@ -116,10 +116,10 @@
             "langs": "all",
             "lastUpd": 1748094760.694626
         },
-        "AnimeGG": {
-            "name": "AnimeGG",
-            "version": "1.0.3",
-            "langs": "en",
+        "Soaper": {
+            "name": "Soaper",
+            "version": "1.0.5",
+            "langs": "all",
             "lastUpd": 1747738043.896285
         },
         "Sudatchi": {
@@ -134,16 +134,16 @@
             "langs": "en, ja",
             "lastUpd": 1747738043.896285
         },
+        "AnimeGG": {
+            "name": "AnimeGG",
+            "version": "1.0.3",
+            "langs": "en",
+            "lastUpd": 1747738043.896285
+        },
         "Gojo": {
             "name": "Gojo",
             "version": "0.0.6",
             "langs": "en",
-            "lastUpd": 1747738043.896285
-        },
-        "Soaper": {
-            "name": "Soaper",
-            "version": "1.0.5",
-            "langs": "all",
             "lastUpd": 1747738043.896285
         },
         "Aniwave": {
