@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -171,42 +171,71 @@ class DefaultExtension extends MProvider {
     var type = anime.type;
     genre.push(type);
 
+    var chapters = [];
+
     var audioPref = this.getPreference("kaa_stream_lang");
     var locales = anime.locales;
-    if (!locales.includes(audioPref)) {
-      if (audioPref === "others") {
-        locales = locales.filter((l) => !["ja-JP", "en-US"].includes(l));
+    if (locales.length > 0) {
+      if (!locales.includes(audioPref)) {
+        if (audioPref === "others") {
+          locales = locales.filter((l) => !["ja-JP", "en-US"].includes(l));
+        }
+        audioPref = locales[0];
       }
-      audioPref = locales[0];
-    }
-    var chapters = [];
-    var hasNextPage = true;
-    var current_page = 1;
-    while (hasNextPage) {
-      var api = `${slug}/episodes?lang=${audioPref}&page=${current_page}`;
-      var response = await this.apiCall(api);
-      var results = response.result;
-      results.forEach((result) => {
-        var epTitle = result.hasOwnProperty("title") ? result.title : "";
-        var epNumber = result.episode_number;
-        var epName = `Episode ${epNumber}`;
-        epName = epTitle.length > 0 ? `${epName}: ${epTitle}` : epName;
-        epName = type == "movie" ? "Movie" : epName;
 
-        var epLink = `${slug}/episode/ep-${epNumber}-${result.slug}`;
+      var addInfoPref = this.getPreference("kaa_ep_addtional_info");
+      // Not searching for movies
+      var additionalEpisodeData =
+        type != "movie" && addInfoPref
+          ? await this.getEpisodeDetails(anime.title,type)
+          : null;
 
-        chapters.push({
-          name: epName,
-          url: epLink,
+      var hasNextPage = true;
+      var current_page = 1;
+      while (hasNextPage) {
+        var api = `${slug}/episodes?lang=${audioPref}&page=${current_page}`;
+        var response = await this.apiCall(api);
+        var results = response.result;
+        results.forEach((result) => {
+          var epTitle = result.hasOwnProperty("title") ? result.title : "";
+          var epNumber = result.episode_string;
+          var epName = `Episode ${epNumber}`;
+          var releaseDate = Date.now();
+
+          if (additionalEpisodeData != null) {
+            var additionalInfo = additionalEpisodeData.hasOwnProperty((epNumber))
+              ? additionalEpisodeData[epNumber]
+              : null;
+
+            if (additionalInfo != null) {
+              epTitle = additionalInfo["title"]["en"];
+              releaseDate = Date.parse(additionalInfo["airDateUtc"]);
+            }
+          }
+          epName = epTitle.length > 0 ? `${epName}: ${epTitle}` : epName;
+
+          if (type == "movie") {
+            epName = "Movie";
+            releaseDate = Date.parse(anime.start_date);
+          }
+
+          var epLink = `${slug}/episode/ep-${epNumber}-${result.slug}`;
+
+          chapters.push({
+            name: epName,
+            url: epLink,
+            dateUpload: releaseDate.valueOf().toString(),
+          });
         });
-      });
 
-      hasNextPage = !(current_page == response.pages.length);
-      current_page++;
+        hasNextPage = !(current_page == response.pages.length);
+        current_page++;
+      }
+
+      chapters.reverse();
+    } else {
+      genre.unshift("Yet to be Added");
     }
-
-    chapters.reverse();
-
     return { name, imageUrl, status, description, genre, link, chapters };
   }
 
@@ -387,6 +416,14 @@ class DefaultExtension extends MProvider {
           valueIndex: 1,
           entries: ["English", "Romaji"],
           entryValues: ["title_en", "title"],
+        },
+      },
+      {
+        key: "kaa_ep_addtional_info",
+        switchPreferenceCompat: {
+          title: "Get additional info about episode",
+          summary: "",
+          value: true,
         },
       },
       {
@@ -734,6 +771,34 @@ class DefaultExtension extends MProvider {
       }
     }
     return [...sortedStreams, ...copyStreams];
+  }
+
+  // --- Episode details
+  async getMalId(animeName,type) {
+    var jikanApi = `https://api.jikan.moe/v4/anime?q=${animeName}&type=${type}`;
+    var req = await this.client.get(jikanApi);
+    if (req.statusCode != 200) return null;
+
+    var res = JSON.parse(req.body);
+    var data = res["data"];
+
+    if (data.length < 0) return null;
+    return data[0]["mal_id"];
+  }
+
+  async getEpisodeDetails(animeName,type) {
+    var malId = await this.getMalId(animeName,type);
+    if (malId == null) return null;
+
+    var addInfoApi = `https://api.ani.zip/mappings?mal_id=${malId}`;
+    var infoReq = await this.client.get(addInfoApi);
+    if (infoReq.statusCode != 200) return null;
+
+    var res = JSON.parse(infoReq.body);
+    var data = res["episodes"];
+    if (data.length < 0) return null;
+
+    return data;
   }
 
   // End
