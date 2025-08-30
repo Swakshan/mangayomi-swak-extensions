@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -417,6 +417,14 @@ class DefaultExtension extends MProvider {
           entryValues: ["auto", "1080", "720", "480", "360"],
         },
       },
+      {
+        key: "kaa_pref_no_sub",
+        switchPreferenceCompat: {
+          title: "No subs mode",
+          summary: "This is req for downloading video. Might remove it later",
+          value: false,
+        },
+      },
     ];
   }
 
@@ -614,12 +622,14 @@ class DefaultExtension extends MProvider {
     var streams = await this.extractStreams(streamUrl, hdr, "VidStreaming");
     var subtitles = [];
 
-    data.subtitles.forEach((sub) => {
-      subtitles.push({
-        file: "https:" + sub.src,
-        label: sub.name,
+    if (!this.getPreference("kaa_pref_no_sub")) {
+      data.subtitles.forEach((sub) => {
+        subtitles.push({
+          file: "https:" + sub.src,
+          label: sub.name,
+        });
       });
-    });
+    }
 
     streams[0].subtitles = subtitles;
 
@@ -640,14 +650,16 @@ class DefaultExtension extends MProvider {
     var streams = await this.extractStreams(streamUrl, hdr, "CatStreaming");
     var subtitles = [];
 
-    data.subtitles[1].forEach((sub) => {
-      sub = sub[1];
-      var label = `${sub.language[1]} - ${sub.name[1]}`;
-      subtitles.push({
-        file: sub.src[1],
-        label,
+    if (!this.getPreference("kaa_pref_no_sub")) {
+      data.subtitles[1].forEach((sub) => {
+        sub = sub[1];
+        var label = `${sub.language[1]} - ${sub.name[1]}`;
+        subtitles.push({
+          file: sub.src[1],
+          label,
+        });
       });
-    });
+    }
 
     streams[0].subtitles = subtitles;
 
