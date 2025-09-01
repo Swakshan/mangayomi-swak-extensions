@@ -208,7 +208,7 @@ class DefaultExtension extends MProvider {
           var thumbnailSlug = result.hasOwnProperty("thumbnail") ? result.thumbnail.hq : null;
           var thumbnailUrl = thumbnailSlug?this.getPoster(baseUrl,"thumbnail",thumbnailSlug):null;
 
-          var duration_ms = result.hasOwnProperty("duration_ms") ? result.duration_ms : null;
+          var duration_ms = result.hasOwnProperty("duration_ms") ? result.duration_ms/60000 : null;
           var epDescription = null;
           var epDescription = null;
 
@@ -240,11 +240,8 @@ class DefaultExtension extends MProvider {
             url: epLink,
             dateUpload: releaseDate.valueOf().toString(),
             thumbnailUrl:thumbnailUrl,
-<<<<<<< HEAD
             description:epDescription,
-=======
             description:description,
->>>>>>> 17a23b4 (anime(kaa): Added more information about the episodes)
             duration:`${duration_ms}`,
           });
         });
