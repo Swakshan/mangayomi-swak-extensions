@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.1.6",
+    "version": "2.2.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -50,6 +50,9 @@ class DefaultExtension extends MProvider {
     return body;
   }
 
+  getPoster(slug){
+    return `https://image.tmdb.org/t/p/w1280/${slug}`
+  }
   async getSearchItems(body, media_type) {
     var items = [];
     var results = body.results;
@@ -58,7 +61,7 @@ class DefaultExtension extends MProvider {
       media_type = media_type || result.media_type;
       items.push({
         name: result.name || result.title,
-        imageUrl: "https://image.tmdb.org/t/p/w1280/" + result.poster_path,
+        imageUrl: this.getPoster(result.poster_path),
         link: `${media_type}||${id}`,
         description: result.description,
         genre: result.genre,
@@ -183,7 +186,8 @@ class DefaultExtension extends MProvider {
 
         batch.forEach((season) => {
           var seasonData = result[season];
-          for (let episode of seasonData) {
+          var episodes = seasonData.episodes
+          for (let episode of episodes) {
             release = episode.air_date
               ? new Date(episode.air_date).valueOf()
               : dateNow;
@@ -192,7 +196,6 @@ class DefaultExtension extends MProvider {
             if (release > dateNow) break;
             var seasonNum = episode.season_number;
             var epNum = episode.episode_number;
-
             var epName = `S${seasonNum}:E${epNum} ${episode.name}`;
             var eplink = {
               name: name,
@@ -202,10 +205,18 @@ class DefaultExtension extends MProvider {
               tmdb: tmdb_id,
               imdb: imdb_id,
             };
+       
+            var epDescription = episode.overview || null;
+            var thumbnailUrl = this.getPoster(episode.still_path) || null;
+            var runtime = episode.runtime || null;
+            
             chapters.push({
               name: epName,
               url: JSON.stringify(eplink),
               dateUpload: release.toString(),
+              duration:`${runtime}`,
+              description:epDescription,
+              thumbnailUrl,
             });
           }
         });
@@ -216,7 +227,7 @@ class DefaultExtension extends MProvider {
           `release?name=${name}&year=${year}`
         );
         var scanlator = vidDetails ? vidDetails.label : null;
-
+        var runtime = result.runtime || null
         status = 1;
         var eplink = {
           name: name,
@@ -229,6 +240,7 @@ class DefaultExtension extends MProvider {
           url: JSON.stringify(eplink),
           dateUpload: release.toString(),
           scanlator,
+          duration:`${runtime}`,
         });
       } else {
         status = 4;
