@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -56,6 +56,10 @@ class DefaultExtension extends MProvider {
     return JSON.parse(res.body);
   }
 
+  getPoster(baseUrl,type,posterSlug){
+    return `${baseUrl}/image/${type}/${posterSlug}.webp`;
+  }
+
   formatList(animeList) {
     var list = [];
     var baseUrl = this.getBaseUrl();
@@ -69,7 +73,7 @@ class DefaultExtension extends MProvider {
         ? anime[titlePref]
         : anime.title;
       var link = `${baseUrl}/${slug}`;
-      var imageUrl = `${baseUrl}/image/poster/${posterSlug}.webp`;
+      var imageUrl = this.getPoster(baseUrl,"poster",posterSlug)
 
       list.push({ name, link, imageUrl });
     });
@@ -164,7 +168,7 @@ class DefaultExtension extends MProvider {
     var posterSlug = anime.hasOwnProperty("poster") ? anime.poster.hq : "";
 
     var name = anime.hasOwnProperty(titlePref) ? anime[titlePref] : anime.title;
-    var imageUrl = `${baseUrl}/image/poster/${posterSlug}.webp`;
+    var imageUrl = this.getPoster(baseUrl,"poster",posterSlug)
     var description = anime.synopsis;
     var genre = anime.genres;
     var status = statusCode(anime.status);
@@ -201,6 +205,12 @@ class DefaultExtension extends MProvider {
           var epNumber = result.episode_string;
           var epName = `Episode ${epNumber}`;
           var releaseDate = Date.now();
+          var thumbnailSlug = result.hasOwnProperty("thumbnail") ? result.thumbnail.hq : null;
+          var thumbnailUrl = thumbnailSlug?this.getPoster(baseUrl,"thumbnail",thumbnailSlug):null;
+
+          var duration_ms = result.hasOwnProperty("duration_ms") ? result.duration_ms : null;
+          var epDescription = null;
+          var epDescription = null;
 
           if (additionalEpisodeData != null) {
             var additionalInfo = additionalEpisodeData.hasOwnProperty((epNumber))
@@ -208,8 +218,12 @@ class DefaultExtension extends MProvider {
               : null;
 
             if (additionalInfo != null) {
-              epTitle = additionalInfo["title"]["en"];
+              epTitle = additionalInfo["title"]["en"] || epTitle;
               releaseDate = Date.parse(additionalInfo["airDateUtc"]);
+              
+              thumbnailUrl = thumbnailUrl || additionalInfo.image
+              duration_ms = duration_ms || (additionalInfo.runtime * 60000)
+              epDescription = epDescription || additionalInfo.overview
             }
           }
           epName = epTitle.length > 0 ? `${epName}: ${epTitle}` : epName;
@@ -225,6 +239,13 @@ class DefaultExtension extends MProvider {
             name: epName,
             url: epLink,
             dateUpload: releaseDate.valueOf().toString(),
+            thumbnailUrl:thumbnailUrl,
+<<<<<<< HEAD
+            description:epDescription,
+=======
+            description:description,
+>>>>>>> 17a23b4 (anime(kaa): Added more information about the episodes)
+            duration:`${duration_ms}`,
           });
         });
 
