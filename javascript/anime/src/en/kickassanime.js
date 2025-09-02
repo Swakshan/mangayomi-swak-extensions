@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -643,7 +643,7 @@ class DefaultExtension extends MProvider {
     var ip = cidSp[0];
     var route = cidSp[1].replace("player.php", "source.php");
     var key = "e13d38099bf562e8b9851a652d2043d3";
-    var hdr = this.getHeaders("https://krussdomi.com");
+    hdr = this.getHeaders("https://krussdomi.com");
     delete hdr["content-type"];
     var ua = hdr["User-Agent"];
     var timestamp = parseInt(Date.now() / 1000);
