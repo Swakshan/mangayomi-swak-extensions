@@ -276,7 +276,7 @@
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/en/kickassanime.js",
         "apiUrl": "",
-        "version": "1.2.0",
+        "version": "1.2.1",
         "isManga": false,
         "itemType": 1,
         "isFullData": false,

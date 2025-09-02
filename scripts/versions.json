@@ -32,16 +32,16 @@
         }
     },
     "anime": {
+        "KickAssAnime": {
+            "name": "KickAssAnime",
+            "version": "1.2.1",
+            "langs": "en",
+            "lastUpd": 1756791330.227013
+        },
         "XPrime": {
             "name": "XPrime",
             "version": "2.2.0",
             "langs": "all",
-            "lastUpd": 1756741073.613005
-        },
-        "KickAssAnime": {
-            "name": "KickAssAnime",
-            "version": "1.2.0",
-            "langs": "en",
             "lastUpd": 1756741073.613005
         },
         "Moviesda": {
