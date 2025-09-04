@@ -330,6 +330,28 @@
         "notes": ""
     },
     {
+        "name": "Anixl",
+        "id": 2448777672,
+        "baseUrl": "https://anixl.to",
+        "lang": "en",
+        "typeSource": "multi",
+        "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://anixl.to/",
+        "dateFormat": "",
+        "dateFormatLocale": "",
+        "isNsfw": false,
+        "hasCloudflare": false,
+        "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/en/anixl.js",
+        "apiUrl": "",
+        "version": "0.0.8",
+        "isManga": false,
+        "itemType": 1,
+        "isFullData": false,
+        "appMinVerReq": "0.5.0",
+        "additionalParams": "",
+        "sourceCodeLanguage": 1,
+        "notes": ""
+    },
+    {
         "name": "AnimeKai",
         "id": 274675053,
         "baseUrl": "https://animekai.to",

@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Anixl": {
+            "name": "Anixl",
+            "version": "0.0.8",
+            "langs": "en",
+            "lastUpd": 1757006699.49494
+        },
         "KickAssAnime": {
             "name": "KickAssAnime",
             "version": "1.2.1",
