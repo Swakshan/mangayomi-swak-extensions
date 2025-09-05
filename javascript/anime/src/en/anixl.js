@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.8",
+    "version": "0.0.81",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -251,7 +251,7 @@ class DefaultExtension extends MProvider {
         name: title,
         dateUpload: dateUpload,
         scanlator: scanlator.trim(),
-        link: JSON.stringify(links),
+        url: JSON.stringify(links),
       });
     });
 
