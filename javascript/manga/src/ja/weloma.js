@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -45,20 +45,23 @@ class DefaultExtension extends MProvider {
   }
 
   async searchPage({
-    name = "",
-    sort = "name",
-    sort_type = "DESC",
+    query = "",
+    sort = "",
+    sort_type = "",
     genres = [],
     status = "",
     page = 1,
   } = {}) {
     function addSlug(para, value) {
-      return `&${para}=${value}`;
+      if(value.length()>0)
+        return `&${para}=${value}`;
+      else
+        return "";
     }
     var slug = "/manga-list.html?";
-    slug += `name=${name}`;
+    slug += `name=${query}`;
     slug += addSlug("sort", sort);
-    slug += addSlug("genre", genres.join(","));
+    slug += addSlug("genre", genres.length()>0?genres.join(","):"");
     slug += addSlug("sort_type", sort_type);
     slug += addSlug("m_status", status);
     slug += addSlug("page", `${page}`);
@@ -112,12 +115,12 @@ class DefaultExtension extends MProvider {
     }
 
     var isFiltersAvailable = !filters || filters.length != 0;
-    var sort = isFiltersAvailable ? selectFiler(filters[0]) : "name";
+    var sort = isFiltersAvailable ? selectFiler(filters[0]) : "";
     var genres = isFiltersAvailable ? checkBox(filters[1].state) : [];
     var status = isFiltersAvailable ? selectFiler(filters[2]) : "";
-    var sortOrder = isFiltersAvailable ? selectFiler(filters[3]) : "ASC";
+    var sortOrder = isFiltersAvailable ? selectFiler(filters[3]) : "";
 
-    return await this.searchPage(query, sort, sortOrder, genres, status, page);
+    return await this.searchPage({query, sort, sortOrder, genres, status, page});
   }
 
   async getDetail(url) {
@@ -252,8 +255,8 @@ class DefaultExtension extends MProvider {
     var values = [];
 
     // Sort
-    items = ["Alphabetical order", "Most views", "Last updated"];
-    values = ["name", "views", "last_update"];
+    items = ["Any","Alphabetical order", "Most views", "Last updated"];
+    values = ["","name", "views", "last_update"];
     filters.push({
       type_name: "SelectFilter",
       name: "Sort",
