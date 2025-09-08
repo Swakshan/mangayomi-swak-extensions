@@ -2,9 +2,9 @@
     "manga": {
         "WeLoMa": {
             "name": "WeLoMa",
-            "version": "0.0.9",
+            "version": "0.0.91",
             "langs": "ja",
-            "lastUpd": 1757330361.3362
+            "lastUpd": 1757353753.908547
         },
         "ReadComicOnline": {
             "name": "ReadComicOnline",
