@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.9",
+    "version": "0.0.91",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -53,7 +53,7 @@ class DefaultExtension extends MProvider {
     page = 1,
   } = {}) {
     function addSlug(para, value) {
-      if(value.length()>0)
+      if(value.length>0)
         return `&${para}=${value}`;
       else
         return "";
@@ -61,7 +61,7 @@ class DefaultExtension extends MProvider {
     var slug = "/manga-list.html?";
     slug += `name=${query}`;
     slug += addSlug("sort", sort);
-    slug += addSlug("genre", genres.length()>0?genres.join(","):"");
+    slug += addSlug("genre", genres.length>0?genres.join(","):"");
     slug += addSlug("sort_type", sort_type);
     slug += addSlug("m_status", status);
     slug += addSlug("page", `${page}`);
