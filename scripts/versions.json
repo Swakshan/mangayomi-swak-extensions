@@ -1,16 +1,16 @@
 {
     "manga": {
+        "WeLoMa": {
+            "name": "WeLoMa",
+            "version": "0.0.9",
+            "langs": "ja",
+            "lastUpd": 1757330361.3362
+        },
         "ReadComicOnline": {
             "name": "ReadComicOnline",
             "version": "0.3.0",
             "langs": "en",
             "lastUpd": 1753526709.455681
-        },
-        "WeLoMa": {
-            "name": "WeLoMa",
-            "version": "0.0.8",
-            "langs": "ja",
-            "lastUpd": 1749313966.44208
         },
         "Mangapark": {
             "name": "Mangapark",
