@@ -32,29 +32,29 @@
         }
     },
     "anime": {
+        "Moviesda": {
+            "name": "Moviesda",
+            "version": "1.2.0",
+            "langs": "ta",
+            "lastUpd": 1757857275.260451
+        },
+        "KickAssAnime": {
+            "name": "KickAssAnime",
+            "version": "1.2.5",
+            "langs": "en",
+            "lastUpd": 1757857275.260451
+        },
         "Anixl": {
             "name": "Anixl",
             "version": "0.0.81",
             "langs": "en",
             "lastUpd": 1757071752.925684
         },
-        "KickAssAnime": {
-            "name": "KickAssAnime",
-            "version": "1.2.1",
-            "langs": "en",
-            "lastUpd": 1756791330.227013
-        },
         "XPrime": {
             "name": "XPrime",
             "version": "2.2.0",
             "langs": "all",
             "lastUpd": 1756741073.613005
-        },
-        "Moviesda": {
-            "name": "Moviesda",
-            "version": "1.1.1",
-            "langs": "ta",
-            "lastUpd": 1755361623.769469
         },
         "Aniplay": {
             "name": "Aniplay",
