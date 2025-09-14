@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -35,14 +35,18 @@ class DefaultExtension extends MProvider {
   }
 
   getBaseUrl() {
-    return "https://moviesda12.net";
+    return this.getPreference("moviesda_base_url");
   }
 
   removeProxy(url) {
-    var slug = url.substring(url.indexOf("translate.goog") + 14);
-    var ind = slug.indexOf("?_x_tr_sl");
-    if (ind > 0) {
-      return slug.substring(0, ind);
+    var slug = url;
+    var proxyStart = url.indexOf("translate.goog");
+    if (proxyStart > 0) {
+      var slug = slug.substring(url.indexOf("translate.goog") + 14);
+      var ind = slug.indexOf("?_x_tr_sl");
+      if (ind > 0) {
+        return slug.substring(0, ind);
+      }
     }
     return slug;
   }
@@ -51,13 +55,14 @@ class DefaultExtension extends MProvider {
     var proxy =
       "https://translate.google.com/translate?sl=ta&tl=en&hl=en&client=webapp&u=";
     var baseUrl = slug.includes("https://") ? "" : this.getBaseUrl();
-    var req = await this.client.get(proxy + baseUrl + slug);
+    var req = await this.client.get(baseUrl + slug);
     return new Document(req.body);
   }
 
   generateImageUrl(slug) {
     var baseUrl = this.getBaseUrl();
-    var imageSlug = slug.replace("-movie-download/", ".webp");
+    var imageSlug = slug
+      .replace("-movie/", ".webp");
     return baseUrl + "/uploads/posters" + imageSlug;
   }
 
@@ -155,7 +160,7 @@ class DefaultExtension extends MProvider {
           contentData["episode"] = episode;
         }
       } else {
-       contentName = contentName
+        contentName = contentName
           .substring(contentName.indexOf(" (") + 2, contentName.length - 1)
           .replace(" HD", ` ${quality}`);
       }
@@ -458,10 +463,21 @@ class DefaultExtension extends MProvider {
   getSourcePreferences() {
     return [
       {
+        key: "moviesda_base_url",
+        editTextPreference: {
+          title: "Override base url",
+          summary: "",
+          value: "https://1moviesda.io",
+          dialogTitle: "Override base url",
+          dialogMessage: "",
+        },
+      },
+      {
         key: "moviesda_fetch_subtitle",
         switchPreferenceCompat: {
           title: "Fetch subtitles",
-          summary: "Turning this on affects downloading. Use it only for streaming",
+          summary:
+            "Turning this on affects downloading. Use it only for streaming",
           value: false,
         },
       },
