@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.2.1",
+    "version": "1.2.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -56,7 +56,7 @@ class DefaultExtension extends MProvider {
     return JSON.parse(res.body);
   }
 
-  getPoster(baseUrl,type,posterSlug){
+  getPoster(baseUrl, type, posterSlug) {
     return `${baseUrl}/image/${type}/${posterSlug}.webp`;
   }
 
@@ -73,7 +73,7 @@ class DefaultExtension extends MProvider {
         ? anime[titlePref]
         : anime.title;
       var link = `${baseUrl}/${slug}`;
-      var imageUrl = this.getPoster(baseUrl,"poster",posterSlug)
+      var imageUrl = this.getPoster(baseUrl, "poster", posterSlug);
 
       list.push({ name, link, imageUrl });
     });
@@ -168,7 +168,7 @@ class DefaultExtension extends MProvider {
     var posterSlug = anime.hasOwnProperty("poster") ? anime.poster.hq : "";
 
     var name = anime.hasOwnProperty(titlePref) ? anime[titlePref] : anime.title;
-    var imageUrl = this.getPoster(baseUrl,"poster",posterSlug)
+    var imageUrl = this.getPoster(baseUrl, "poster", posterSlug);
     var description = anime.synopsis;
     var genre = anime.genres;
     var status = statusCode(anime.status);
@@ -188,10 +188,12 @@ class DefaultExtension extends MProvider {
       }
 
       var addInfoPref = this.getPreference("kaa_ep_addtional_info");
+      var epThumbnailPref = this.getPreference("kaa_pref_ep_thumbnail");
+      var epDetailsPref = this.getPreference("kaa_pref_ep_description");
       // Not searching for movies
       var additionalEpisodeData =
         type != "movie" && addInfoPref
-          ? await this.getEpisodeDetails(anime.title,type)
+          ? await this.getEpisodeDetails(anime.title, type)
           : null;
 
       var hasNextPage = true;
@@ -205,25 +207,31 @@ class DefaultExtension extends MProvider {
           var epNumber = result.episode_string;
           var epName = `Episode ${epNumber}`;
           var releaseDate = Date.now();
-          var thumbnailSlug = result.hasOwnProperty("thumbnail") ? result.thumbnail.hq : null;
-          var thumbnailUrl = thumbnailSlug?this.getPoster(baseUrl,"thumbnail",thumbnailSlug):null;
+          var thumbnailSlug = result.hasOwnProperty("thumbnail")
+            ? result.thumbnail.hq
+            : null;
+          var thumbnailUrl = thumbnailSlug
+            ? this.getPoster(baseUrl, "thumbnail", thumbnailSlug)
+            : null;
 
-          var duration_ms = result.hasOwnProperty("duration_ms") ? result.duration_ms/60000 : null;
+          var duration_ms = result.hasOwnProperty("duration_ms")
+            ? result.duration_ms / 60000
+            : null;
           var epDescription = null;
           var epDescription = null;
 
           if (additionalEpisodeData != null) {
-            var additionalInfo = additionalEpisodeData.hasOwnProperty((epNumber))
+            var additionalInfo = additionalEpisodeData.hasOwnProperty(epNumber)
               ? additionalEpisodeData[epNumber]
               : null;
 
             if (additionalInfo != null) {
               epTitle = additionalInfo["title"]["en"] || epTitle;
               releaseDate = Date.parse(additionalInfo["airDateUtc"]);
-              
-              thumbnailUrl = thumbnailUrl || additionalInfo.image
-              duration_ms = duration_ms || (additionalInfo.runtime * 60000)
-              epDescription = epDescription || additionalInfo.overview
+
+              thumbnailUrl = thumbnailUrl || additionalInfo.image;
+              duration_ms = duration_ms || additionalInfo.runtime * 60000;
+              epDescription = epDescription || additionalInfo.overview;
             }
           }
           epName = epTitle.length > 0 ? `${epName}: ${epTitle}` : epName;
@@ -235,14 +243,16 @@ class DefaultExtension extends MProvider {
 
           var epLink = `${slug}/episode/ep-${epNumber}-${result.slug}`;
 
+          thumbnailUrl = epThumbnailPref ? thumbnailUrl : null;
+          epDescription = epDetailsPref ? epDescription : null;
+
           chapters.push({
             name: epName,
             url: epLink,
             dateUpload: releaseDate.valueOf().toString(),
-            thumbnailUrl:thumbnailUrl,
-            description:epDescription,
-            description:description,
-            duration:`${duration_ms}`,
+            thumbnailUrl: thumbnailUrl,
+            description: epDescription,
+            duration: `${duration_ms}`,
           });
         });
 
@@ -470,6 +480,22 @@ class DefaultExtension extends MProvider {
           valueIndex: 0,
           entries: ["Auto", "1080p", "720p", "480p", "360p"],
           entryValues: ["auto", "1080", "720", "480", "360"],
+        },
+      },
+      {
+        key: "kaa_pref_ep_thumbnail",
+        switchPreferenceCompat: {
+          title: "Episode thumbail",
+          summary: "",
+          value: true,
+        },
+      },
+      {
+        key: "kaa_pref_ep_description",
+        switchPreferenceCompat: {
+          title: "Episode description",
+          summary: "",
+          value: true,
         },
       },
       {
@@ -792,7 +818,7 @@ class DefaultExtension extends MProvider {
   }
 
   // --- Episode details
-  async getMalId(animeName,type) {
+  async getMalId(animeName, type) {
     var jikanApi = `https://api.jikan.moe/v4/anime?q=${animeName}&type=${type}`;
     var req = await this.client.get(jikanApi);
     if (req.statusCode != 200) return null;
@@ -804,8 +830,8 @@ class DefaultExtension extends MProvider {
     return data[0]["mal_id"];
   }
 
-  async getEpisodeDetails(animeName,type) {
-    var malId = await this.getMalId(animeName,type);
+  async getEpisodeDetails(animeName, type) {
+    var malId = await this.getMalId(animeName, type);
     if (malId == null) return null;
 
     var addInfoApi = `https://api.ani.zip/mappings?mal_id=${malId}`;
