@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=64&domain=https://mangapill.com/",
     "typeSource": "single",
     "isManga": true,
-    "version": "1.0.3",
+    "version": "1.0.4",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/en/mangapill.js",
@@ -104,12 +104,14 @@ class DefaultExtension extends MProvider {
   }
 
   async search(query, page, filters) {
-    var type = filters[0].values[filters[0].state].value;
-    var status = filters[1].values[filters[1].state].value;
+    var type = filters[0]?.values[filters[0].state].value ?? "";
+    var status = filters[1]?.values[filters[1].state].value ?? "";
 
     var genre = "";
-    for (var filter of filters[2].state) {
-      if (filter.state == true) genre += `&genre=${filter.value}`;
+    if (filters && filters[2]) {
+      for (var filter of filters[2].state) {
+        if (filter.state == true) genre += `&genre=${filter.value}`;
+      }
     }
     return await this.searchManga(query, status, type, genre, page);
   }

@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -107,7 +107,7 @@ class DefaultExtension extends MProvider {
       )
       .select("a");
 
-    hasNextPage = !(navPages[navPages.length - 1].text == `${page}`);
+    hasNextPage = !(navPages[navPages.length - 1]?.text == `${page}`);
 
     return { list, hasNextPage };
   }
