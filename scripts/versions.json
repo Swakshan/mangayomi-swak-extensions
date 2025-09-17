@@ -1,5 +1,17 @@
 {
     "manga": {
+        "Mangapill": {
+            "name": "Mangapill",
+            "version": "1.0.4",
+            "langs": "en",
+            "lastUpd": 1758079504.835998
+        },
+        "Mangapark": {
+            "name": "Mangapark",
+            "version": "1.0.1",
+            "langs": "en",
+            "lastUpd": 1758079504.835998
+        },
         "WeLoMa": {
             "name": "WeLoMa",
             "version": "0.0.91",
@@ -11,18 +23,6 @@
             "version": "0.3.0",
             "langs": "en",
             "lastUpd": 1753526709.455681
-        },
-        "Mangapark": {
-            "name": "Mangapark",
-            "version": "1.0.0",
-            "langs": "en",
-            "lastUpd": 1749049993.036179
-        },
-        "Mangapill": {
-            "name": "Mangapill",
-            "version": "1.0.3",
-            "langs": "en",
-            "lastUpd": 1747738043.896285
         },
         "Weeb Central": {
             "name": "Weeb Central",
