@@ -40,13 +40,4 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git checkout main
-          git add .
-          if git diff --cached --quiet; then
-            echo "No changes detected, skipping commit."
-          else
-            git commit -m "🤖: Update extensions"
-            git push origin main --force
-          fi
+          python scripts/git.py

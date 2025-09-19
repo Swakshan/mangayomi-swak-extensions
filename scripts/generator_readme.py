@@ -3,6 +3,7 @@ from model import UpdateInfo, Source, ItemType
 from datetime import datetime
 from pytz import timezone
 from pprint import pp
+import shutil
 
 main_dir = getParentPath()
 scripts_dir = main_dir / "scripts"
@@ -93,7 +94,7 @@ def generateExtensionList():
     print("DONE: Table")
     return "\n".join(lines)
 
-
+shutil.copy(scripts_dir / "versions.json",scripts_dir / "prev_versions.json")
 generateVersionData()
 extTable = generateExtensionList()
 temp = readFile(scripts_dir / "README-temp.md")
