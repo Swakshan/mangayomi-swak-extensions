@@ -20,6 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| Kaido | 1.0.0 | en | 2025/09/20 21:48 IST |
 | Moviesda | 1.2.0 | ta | 2025/09/14 19:11 IST |
 | KickAssAnime | 1.2.5 | en | 2025/09/14 19:11 IST |
 | Anixl | 0.0.81 | en | 2025/09/05 16:59 IST |

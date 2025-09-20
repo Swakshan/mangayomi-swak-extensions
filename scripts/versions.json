@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Kaido": {
+            "name": "Kaido",
+            "version": "1.0.0",
+            "langs": "en",
+            "lastUpd": 1758385104.979514
+        },
         "Moviesda": {
             "name": "Moviesda",
             "version": "1.2.0",
