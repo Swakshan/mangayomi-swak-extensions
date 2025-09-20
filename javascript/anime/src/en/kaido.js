@@ -34,8 +34,8 @@ class DefaultExtension extends MProvider {
     return new SharedPreferences().get(key);
   }
 
-  getHeaders(url) {
-    throw new Error("getHeaders not implemented");
+  getHeaders() {
+    return {'referer':"https://rapid-cloud.co/"}
   }
 
   async request(slug) {
@@ -275,11 +275,14 @@ class DefaultExtension extends MProvider {
       return `${res} - ${dubType} : ${serverName}`;
     }
 
+    var hdr = this.getHeaders()
+
     var streams = [
       {
         url: sUrl,
         originalUrl: sUrl,
         quality: streamNamer("Auto"),
+        headers:hdr
       },
     ];
 
@@ -301,6 +304,7 @@ class DefaultExtension extends MProvider {
           url: m3u8Url,
           originalUrl: m3u8Url,
           quality: streamNamer(resolution),
+          headers:hdr
         });
       }
     }
