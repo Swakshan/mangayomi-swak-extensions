@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "0.0.8",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -45,7 +45,7 @@ class DefaultExtension extends MProvider {
   }
 
   async filter({ keyword = "", sort = "default", page = "1" }) {
-    var titlePref = this.getPreference("kaido_title_lang")
+    var titlePref = this.getPreference("kaido_title_lang");
 
     var slug = keyword == "" ? "/filter?" : `/search?keyword=${keyword}&`;
     slug += `sort=${sort}&page=${page}`;
@@ -100,7 +100,7 @@ class DefaultExtension extends MProvider {
       );
     }
 
-    var epTitlePref = this.getPreference("kaido_ep_title_lang")
+    var epTitlePref = this.getPreference("kaido_ep_title_lang");
     var baseUrl = this.source.baseUrl;
     var slug = url.replace(baseUrl, "");
     var link = baseUrl + "/watch" + slug;
@@ -114,14 +114,14 @@ class DefaultExtension extends MProvider {
       .select("a")
       .forEach((item) => genre.push(item.text));
 
-      var status = 5
-      for(var item of anisc_info.select(".item-title")){
-        var head = item.selectFirst(".item-head").text
-        if(head.includes("Status") ){
-            status = statusCode(item.selectFirst(".name").text)
-            break;
-        }
+    var status = 5;
+    for (var item of anisc_info.select(".item-title")) {
+      var head = item.selectFirst(".item-head").text;
+      if (head.includes("Status")) {
+        status = statusCode(item.selectFirst(".name").text);
+        break;
       }
+    }
 
     var totalSub = parseInt(doc.selectFirst(".tick-sub").text);
     var totalDub = parseInt(doc.selectFirst(".tick-dub").text);
@@ -132,7 +132,7 @@ class DefaultExtension extends MProvider {
 
     var chapters = [];
     epiDoc.select("a.ep-item").forEach((item) => {
-      var isFiller = item.className.includes("ssl-item-filler")
+      var isFiller = item.className.includes("ssl-item-filler");
       var episodeNum = item.attr("data-number");
       var episodeTitle = item.selectFirst(".ep-name").attr(epTitlePref);
       var episodeId = item.attr("data-id");
@@ -147,11 +147,42 @@ class DefaultExtension extends MProvider {
       });
     });
     chapters.reverse();
-    return { link, status,description, genre, chapters };
+    return { link, status, description, genre, chapters };
   }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    function serverName(serId) {
+      return (
+        {
+          "1": "Vidcloud",
+          "4": "Vidstreaming",
+        }[serId]
+      );
+    }
+    var streams = [];
+      var prefServer = this.getPreference("kaido_stream_server");
+    // If no server is chosen, use the default server 1
+    if (prefServer.length < 1) prefServer.push("1");
+
+    var prefDubType = this.getPreference("kaido_stream_subdub_type");
+    // If no dubtype is chosen, use the default dubtype sub
+    if (prefDubType.length < 1) prefDubType.push("sub");
+
+    var serRes = await this.ajaxRequest(`/servers?episodeId=${url}`);
+    var serDoc = new Document(serRes);
+
+    for(var serData of serDoc.select(".server-item")){
+      var serId = serData.attr("data-server-id")
+      if(!prefServer.includes(serId)) continue
+
+      var serDubType = serData.attr("data-type")
+      if(!prefDubType.includes(serDubType)) continue
+
+      var dataId = serData.attr("data-id")
+      var streamData = await this.serverData(dataId,serverName(serId),serDubType.toUpperCase());
+      if(streamData!=null) streams = [...streams,...streamData]
+    }
+    return streams;
   }
 
   getFilterList() {
@@ -159,7 +190,7 @@ class DefaultExtension extends MProvider {
   }
 
   getSourcePreferences() {
-    return[
+    return [
       {
         key: "kaido_title_lang",
         listPreference: {
@@ -169,7 +200,8 @@ class DefaultExtension extends MProvider {
           entries: ["English", "Romaji"],
           entryValues: ["title", "data-jname"],
         },
-      },{
+      },
+      {
         key: "kaido_ep_title_lang",
         listPreference: {
           title: "Preferred episode title language",
@@ -179,6 +211,103 @@ class DefaultExtension extends MProvider {
           entryValues: ["title", "data-jname"],
         },
       },
-    ]
+      {
+        key: "kaido_stream_subdub_type",
+        multiSelectListPreference: {
+          title: "Preferred stream sub/dub type",
+          summary: "",
+          values: ["sub", "dub"],
+          entries: ["Soft Sub", "Dub"],
+          entryValues: ["sub", "dub"],
+        },
+      },
+      {
+        key: "kaido_stream_server",
+        multiSelectListPreference: {
+          title: "Preferred server",
+          summary: "Choose the server/s you want to extract streams from",
+          values: ["1","4"],
+          entries: ["Vidcloud", "Vidstreaming"],
+          entryValues: ["1", "4"],
+        },
+      },{
+        key: "kaido_extract_streams",
+        switchPreferenceCompat: {
+          title: "Split stream into different quality streams",
+          summary: "Split stream Auto into 360p/720p/1080p",
+          value: true,
+        },
+      },
+    ];
+  }
+
+  //----------- Server -----------------
+  formatSubtitles(subtitles, dubType) {
+    var subs = [];
+    subtitles.forEach((sub) => {
+      if (!sub.kind.includes("thumbnail")) {
+        subs.push({
+          file: sub.file,
+          label: `${sub.label} - ${dubType}`,
+        });
+      }
+    });
+
+    return subs;
+  }
+
+  async formatStreams(sUrl, serverName, dubType) {
+    function streamNamer(res) {
+      return `${res} - ${dubType} : ${serverName}`;
+    }
+
+    var streams = [
+      {
+        url: sUrl,
+        originalUrl: sUrl,
+        quality: streamNamer("Auto"),
+      },
+    ];
+
+    var pref = this.getPreference("kaido_extract_streams");
+    if (!pref) return streams;
+
+    var baseUrl = sUrl.split("/list.m3u8")[0].split("/list,")[0];
+
+    const response = await new Client().get(sUrl);
+    const body = response.body;
+    const lines = body.split("\n");
+
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith("#EXT-X-STREAM-INF:")) {
+        var resolution = lines[i].match(/RESOLUTION=(\d+x\d+)/)[1];
+        var qUrl = lines[i + 1].trim();
+        var m3u8Url = `${baseUrl}/${qUrl}`;
+        streams.push({
+          url: m3u8Url,
+          originalUrl: m3u8Url,
+          quality: streamNamer(resolution),
+        });
+      }
+    }
+    return streams;
+  }
+
+  async serverData(dataId,serverName,dubType) {
+    var streamLink = await this.ajaxRequest(`/sources?id=${dataId}`);
+    var streamId = streamLink.split("/").pop().slice(0, -3);
+
+    var res = await this.client.get(
+      `https://rapid-cloud.co/embed-2/v2/e-1/getSources?id=${streamId}`
+    );
+    if (res.statusCode != 200) return null;
+
+    var streamData = JSON.parse(res.body);
+
+    var url = streamData.sources[0].file;
+     var streams = await this.formatStreams(url, serverName, dubType);
+     var subtitles = streamData.tracks;
+    streams[0].subtitles = this.formatSubtitles(subtitles, dubType);
+    return streams;
   }
 }
