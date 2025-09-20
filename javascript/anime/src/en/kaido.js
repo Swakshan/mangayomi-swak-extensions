@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.8",
+    "version": "1.0.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -125,6 +125,9 @@ class DefaultExtension extends MProvider {
 
     var totalSub = parseInt(doc.selectFirst(".tick-sub").text);
     var totalDub = parseInt(doc.selectFirst(".tick-dub").text);
+    var statsItem = doc.selectFirst(".film-stats").select("span.item");
+    var animeType = statsItem[0].text.trim();
+    var duration = statsItem[statsItem.length - 1].text.trim();
 
     var data_id = doc.selectFirst("#wrapper").attr("data-id");
     var epiRes = await this.ajaxRequest(`/list/${data_id}`);
@@ -136,14 +139,22 @@ class DefaultExtension extends MProvider {
       var episodeNum = item.attr("data-number");
       var episodeTitle = item.selectFirst(".ep-name").attr(epTitlePref);
       var episodeId = item.attr("data-id");
+      var episodeTitle = `E${episodeNum}: ${episodeTitle}`;
+      if (animeType == "Movie") {
+        episodeTitle = animeType;
+      } else {
+        duration = null;
+      }
       var scanlator = "";
+
       if (parseInt(episodeId) <= totalSub) scanlator += "SUB";
       if (parseInt(episodeId) <= totalDub) scanlator += ", DUB";
       chapters.push({
-        name: `E${episodeNum}: ${episodeTitle}`,
+        name: episodeTitle,
         url: episodeId,
         scanlator,
         isFiller,
+        duration,
       });
     });
     chapters.reverse();
@@ -152,15 +163,13 @@ class DefaultExtension extends MProvider {
 
   async getVideoList(url) {
     function serverName(serId) {
-      return (
-        {
-          "1": "Vidcloud",
-          "4": "Vidstreaming",
-        }[serId]
-      );
+      return {
+        "1": "Vidcloud",
+        "4": "Vidstreaming",
+      }[serId];
     }
     var streams = [];
-      var prefServer = this.getPreference("kaido_stream_server");
+    var prefServer = this.getPreference("kaido_stream_server");
     // If no server is chosen, use the default server 1
     if (prefServer.length < 1) prefServer.push("1");
 
@@ -171,16 +180,20 @@ class DefaultExtension extends MProvider {
     var serRes = await this.ajaxRequest(`/servers?episodeId=${url}`);
     var serDoc = new Document(serRes);
 
-    for(var serData of serDoc.select(".server-item")){
-      var serId = serData.attr("data-server-id")
-      if(!prefServer.includes(serId)) continue
+    for (var serData of serDoc.select(".server-item")) {
+      var serId = serData.attr("data-server-id");
+      if (!prefServer.includes(serId)) continue;
 
-      var serDubType = serData.attr("data-type")
-      if(!prefDubType.includes(serDubType)) continue
+      var serDubType = serData.attr("data-type");
+      if (!prefDubType.includes(serDubType)) continue;
 
-      var dataId = serData.attr("data-id")
-      var streamData = await this.serverData(dataId,serverName(serId),serDubType.toUpperCase());
-      if(streamData!=null) streams = [...streams,...streamData]
+      var dataId = serData.attr("data-id");
+      var streamData = await this.serverData(
+        dataId,
+        serverName(serId),
+        serDubType.toUpperCase()
+      );
+      if (streamData != null) streams = [...streams, ...streamData];
     }
     return streams;
   }
@@ -226,11 +239,12 @@ class DefaultExtension extends MProvider {
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
-          values: ["1","4"],
+          values: ["1", "4"],
           entries: ["Vidcloud", "Vidstreaming"],
           entryValues: ["1", "4"],
         },
-      },{
+      },
+      {
         key: "kaido_extract_streams",
         switchPreferenceCompat: {
           title: "Split stream into different quality streams",
@@ -293,7 +307,7 @@ class DefaultExtension extends MProvider {
     return streams;
   }
 
-  async serverData(dataId,serverName,dubType) {
+  async serverData(dataId, serverName, dubType) {
     var streamLink = await this.ajaxRequest(`/sources?id=${dataId}`);
     var streamId = streamLink.split("/").pop().slice(0, -3);
 
@@ -305,8 +319,8 @@ class DefaultExtension extends MProvider {
     var streamData = JSON.parse(res.body);
 
     var url = streamData.sources[0].file;
-     var streams = await this.formatStreams(url, serverName, dubType);
-     var subtitles = streamData.tracks;
+    var streams = await this.formatStreams(url, serverName, dubType);
+    var subtitles = streamData.tracks;
     streams[0].subtitles = this.formatSubtitles(subtitles, dubType);
     return streams;
   }
