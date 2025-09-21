@@ -320,7 +320,7 @@
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/en/kaido.js",
         "apiUrl": "",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "isManga": false,
         "itemType": 1,
         "isFullData": false,
