@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -289,7 +289,7 @@ class DefaultExtension extends MProvider {
     var pref = this.getPreference("kaido_extract_streams");
     if (!pref) return streams;
 
-    var baseUrl = sUrl.split("/list.m3u8")[0].split("/list,")[0];
+    var baseUrl = sUrl.replace("master.m3u8","")
 
     const response = await new Client().get(sUrl);
     const body = response.body;
@@ -299,7 +299,7 @@ class DefaultExtension extends MProvider {
       if (lines[i].startsWith("#EXT-X-STREAM-INF:")) {
         var resolution = lines[i].match(/RESOLUTION=(\d+x\d+)/)[1];
         var qUrl = lines[i + 1].trim();
-        var m3u8Url = `${baseUrl}/${qUrl}`;
+        var m3u8Url = `${baseUrl}${qUrl}`;
         streams.push({
           url: m3u8Url,
           originalUrl: m3u8Url,
