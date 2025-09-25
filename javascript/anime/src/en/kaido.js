@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -101,9 +101,9 @@ class DefaultExtension extends MProvider {
     }
 
     var epTitlePref = this.getPreference("kaido_ep_title_lang");
-    var baseUrl = this.source.baseUrl;
+    var baseUrl = this.source.baseUrl + "/watch";
     var slug = url.replace(baseUrl, "");
-    var link = baseUrl + "/watch" + slug;
+    var link = baseUrl + slug
 
     var doc = await this.request(slug);
     var anisc_info = doc.selectFirst(".anisc-info");
