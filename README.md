@@ -20,9 +20,9 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| Kaido | 1.0.1 | en | 2025/09/21 11:16 IST |
-| Moviesda | 1.2.0 | ta | 2025/09/14 19:11 IST |
+| Kaido | 1.0.2 | en | 2025/09/25 16:19 IST |
 | KickAssAnime | 1.2.5 | en | 2025/09/14 19:11 IST |
+| Moviesda | 1.2.0 | ta | 2025/09/14 19:11 IST |
 | Anixl | 0.0.81 | en | 2025/09/05 16:59 IST |
 | XPrime | 2.2.0 | all | 2025/09/01 21:07 IST |
 | Aniplay | 1.7.5 | en | 2025/07/26 16:15 IST |
@@ -36,11 +36,11 @@ This repository contains the available javascript extension catalogues for the M
 | Dramacool | 1.1.0 | all | 2025/06/13 11:41 IST |
 | Streamblasters | 1.0.0 | all | 2025/05/31 10:17 IST |
 | Autoembed | 1.3.3 | all | 2025/05/24 19:22 IST |
-| Soaper | 1.0.5 | all | 2025/05/20 16:17 IST |
+| AnimeGG | 1.0.3 | en | 2025/05/20 16:17 IST |
 | Sudatchi | 1.1.1 | en | 2025/05/20 16:17 IST |
 | Animeonsen | 1.0.1 | en, ja | 2025/05/20 16:17 IST |
-| AnimeGG | 1.0.3 | en | 2025/05/20 16:17 IST |
 | Gojo | 0.0.6 | en | 2025/05/20 16:17 IST |
+| Soaper | 1.0.5 | all | 2025/05/20 16:17 IST |
 | Aniwave | 0.0.7 | en | 2025/05/09 00:11 IST |
 | KissKH | 0.1.6 | all | 2025/05/02 22:47 IST |
 
