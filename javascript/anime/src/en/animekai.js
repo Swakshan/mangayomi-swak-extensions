@@ -230,13 +230,14 @@ class DefaultExtension extends MProvider {
 
         var langs = aTag.attr("langs");
         var scanlator = langs === "1" ? "SUB" : "SUB, DUB";
-
+        var isFiller = aTag.className.includes("filler")
         var token = aTag.attr("token");
 
         var epData = {
           name: epName,
           url: token,
           scanlator,
+          isFiller
         };
 
         // Check if the episode is uncensored
