@@ -34,15 +34,15 @@ def getCommitMsg():
 
     commitMsg = ""
     if len(added):
-        commitMsg+="A: "+", ".join(added)+" "
+        commitMsg+="➕: "+", ".join(added)+" "
     if len(updated):
-        commitMsg+="U: "+", ".join(updated)+" "
+        commitMsg+="♻️: "+", ".join(updated)+" "
     if len(deleted):
-        commitMsg+="R: "+", ".join(deleted)+" "
+        commitMsg+="💀: "+", ".join(deleted)+" "
     
     if not len(commitMsg):
         commitMsg+="Updated"
-    return f"🤖: {commitMsg}"
+    return f"🤖:: {commitMsg}"
 
 def run(cmd):
     os.system(cmd)
