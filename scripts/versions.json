@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "AnimeKai": {
+            "name": "AnimeKai",
+            "version": "0.4.0",
+            "langs": "en",
+            "lastUpd": 1759257000.661461
+        },
         "Kaido": {
             "name": "Kaido",
             "version": "1.0.2",
@@ -55,12 +61,6 @@
             "version": "0.0.81",
             "langs": "en",
             "lastUpd": 1757071752.925684
-        },
-        "XPrime": {
-            "name": "XPrime",
-            "version": "2.2.0",
-            "langs": "all",
-            "lastUpd": 1756741073.613005
         },
         "Aniplay": {
             "name": "Aniplay",
@@ -103,12 +103,6 @@
             "version": "1.1.1",
             "langs": "en",
             "lastUpd": 1750504671.044623
-        },
-        "AnimeKai": {
-            "name": "AnimeKai",
-            "version": "0.3.3",
-            "langs": "en",
-            "lastUpd": 1749881588.032278
         },
         "Dramacool": {
             "name": "Dramacool",
