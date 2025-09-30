@@ -173,4 +173,8 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# Mine
 prev_*.json
+
+# Remove extension
+removed/
