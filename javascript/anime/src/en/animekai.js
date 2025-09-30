@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://animekai.to/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.3.3",
+    "version": "0.4.0",
     "pkgPath": "anime/src/en/animekai.js",
   },
 ];
@@ -24,6 +24,12 @@ class DefaultExtension extends MProvider {
 
   getPreference(key) {
     return new SharedPreferences().get(key);
+  }
+
+  getHeaders() {
+    return {
+      "user-agent": "Mangayomi",
+    };
   }
 
   getBaseUrl() {
@@ -709,14 +715,14 @@ class DefaultExtension extends MProvider {
     if (body.status != 200) return;
     var outEnc = body.result;
     var out = await this.kaiDecrypt(outEnc);
-    var o = JSON.parse(out);
-    return decodeURIComponent(o.url);
+    return out.url;
   }
 
   async decryptMegaEmbed(megaUrl, serverName, dubType) {
+    var hdr = this.getHeaders();
     var streams = [];
     megaUrl = megaUrl.replace("/e/", "/media/");
-    var res = await this.client.get(megaUrl);
+    var res = await this.client.get(megaUrl, hdr);
     var body = JSON.parse(res.body);
     if (body.status != 200) return;
     var outEnc = body.result;
@@ -731,33 +737,39 @@ class DefaultExtension extends MProvider {
   }
 
   //----------------AnimeKai Decoders----------------
-  // Credits :- https://github.com/phisher98/cloudstream-extensions-phisher/
+  // Credits :- https://github.com/AzartX47/EncDecEndpoints
 
   async patternExecutor(key, type, data) {
-    var api = "https://gvm-kai001.amarullz.com/";
-    var url = `${api}?f=${type}`;
+    var hdr = this.getHeaders();
+    var api = "https://enc-dec.app/api";
+    var url = `${api}/${type}`;
+    var result = null;
     if (key == "kai") {
-      var url = `${url}&d=${data}`;
-      var res = await this.client.get(url);
-      return res.body;
+      var url = `${url}?text=${data}`;
+      var res = await this.client.get(url, hdr);
+      result = res.body;
     } else {
-      var res = await this.client.post(url, {}, data);
-      return res.body;
+      hdr["Content-Type"] = "application/json";
+      var res = await this.client.post(url, hdr, data);
+      result = res.body;
     }
+    return result != null ? JSON.parse(result)["result"] : null;
   }
 
   async kaiEncrypt(id) {
-    var token = await this.patternExecutor("kai", "e", id);
+    var token = await this.patternExecutor("kai", "enc-kai", id);
     return token;
   }
 
   async kaiDecrypt(id) {
-    var token = await this.patternExecutor("kai", "d", id);
+    var token = await this.patternExecutor("kai", "dec-kai", id);
     return token;
   }
 
   async megaDecrypt(data) {
-    var streamData = await this.patternExecutor("megaup", "m", data);
-    return JSON.parse(streamData);
+    var hdr = this.getHeaders();
+    var body = { "text": data, "agent": hdr["user-agent"] };
+    var streamData = await this.patternExecutor("megaup", "dec-mega", body);
+    return streamData;
   }
 }
