@@ -222,6 +222,7 @@ class DefaultExtension extends MProvider {
 
       for (var item of episodes) {
         var aTag = item.selectFirst("a");
+        if (aTag.attr("slug") == "trailer") continue;
 
         var num = parseInt(aTag.attr("num"));
         var title = aTag.selectFirst("span").text;
@@ -230,14 +231,14 @@ class DefaultExtension extends MProvider {
 
         var langs = aTag.attr("langs");
         var scanlator = langs === "1" ? "SUB" : "SUB, DUB";
-        var isFiller = aTag.className.includes("filler")
+        var isFiller = aTag.className.includes("filler");
         var token = aTag.attr("token");
 
         var epData = {
           name: epName,
           url: token,
           scanlator,
-          isFiller
+          isFiller,
         };
 
         // Check if the episode is uncensored
