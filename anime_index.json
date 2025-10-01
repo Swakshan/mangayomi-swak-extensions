@@ -342,7 +342,7 @@
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/en/animekai.js",
         "apiUrl": "",
-        "version": "0.4.0",
+        "version": "0.4.5",
         "isManga": false,
         "itemType": 1,
         "isFullData": false,

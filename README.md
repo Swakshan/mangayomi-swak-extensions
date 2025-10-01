@@ -20,7 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| AnimeKai | 0.4.0 | en | 2025/10/01 00:00 IST |
+| AnimeKai | 0.4.5 | en | 2025/10/01 22:18 IST |
 | Kaido | 1.0.2 | en | 2025/09/25 16:19 IST |
 | KickAssAnime | 1.2.5 | en | 2025/09/14 19:11 IST |
 | Moviesda | 1.2.0 | ta | 2025/09/14 19:11 IST |
