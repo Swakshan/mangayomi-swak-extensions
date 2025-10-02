@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "XPrime": {
+            "name": "XPrime",
+            "version": "2.3.2",
+            "langs": "all",
+            "lastUpd": 1759403778.564649
+        },
         "AnimeKai": {
             "name": "AnimeKai",
             "version": "0.4.5",

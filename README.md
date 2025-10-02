@@ -20,6 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| XPrime | 2.3.2 | all | 2025/10/02 16:46 IST |
 | AnimeKai | 0.4.5 | en | 2025/10/01 22:18 IST |
 | Kaido | 1.0.2 | en | 2025/09/25 16:19 IST |
 | KickAssAnime | 1.2.5 | en | 2025/09/14 19:11 IST |

@@ -440,6 +440,28 @@
         "notes": ""
     },
     {
+        "name": "XPrime",
+        "id": 113063025,
+        "baseUrl": "https://xprime.tv",
+        "lang": "all",
+        "typeSource": "multi",
+        "iconUrl": "https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/javascript/icon/all.xprime.jpg",
+        "dateFormat": "",
+        "dateFormatLocale": "",
+        "isNsfw": false,
+        "hasCloudflare": false,
+        "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/all/xprime.js",
+        "apiUrl": "https://backend.xprime.tv",
+        "version": "2.3.2",
+        "isManga": false,
+        "itemType": 1,
+        "isFullData": false,
+        "appMinVerReq": "0.5.0",
+        "additionalParams": "",
+        "sourceCodeLanguage": 1,
+        "notes": ""
+    },
+    {
         "name": "Streamblasters",
         "id": 1069142360,
         "baseUrl": "https://www.streamblasters.party",
