@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.2.3",
+    "version": "2.3.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -379,14 +379,24 @@ class DefaultExtension extends MProvider {
 
   // -------- Servers --------
 
+  async serverDataDecryption(encData) {
+    var body = { "text": encData };
+    var decApi = "https://enc-dec.app/api/dec-xprime";
+    var hdr = { "Content-Type": "application/json", "user-agent": "Mangayomi" };
+    var req = await this.client.post(decApi, hdr, body);
+
+    if (req.statusCode != 200) return null;
+    var res = JSON.parse(req.body);
+    if (res.status != 200) return null;
+    return res.result;
+  }
+
   async serverRequest(slug) {
     var api = this.source.apiUrl + "/" + slug;
     var req = await this.client.get(api);
-    if (req.statusCode == 200) {
-      return JSON.parse(req.body);
-    } else {
-      return null;
-    }
+
+    if (req.statusCode != 200) return null;
+    return this.serverDataDecryption(req.body);
   }
 
   async downloadServer(data) {
