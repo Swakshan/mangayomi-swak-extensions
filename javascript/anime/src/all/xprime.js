@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.3.0",
+    "version": "2.3.2",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -259,7 +259,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    var prefServer = this.getPreference("xprime_pref_stream_server_6");
+    var prefServer = this.getPreference("xprime_pref_stream_server_7");
     if (prefServer.length < 1) prefServer = ["primebox"];
 
     var streams = [];
@@ -276,17 +276,9 @@ class DefaultExtension extends MProvider {
         serverData = await this.primenet(data);
       } else if (server == "fox") {
         serverData = await this.fox(data);
-      } else if (server == "phoenix") {
-        serverData = await this.phoenix(data);
-      } else if (server == "kraken") {
-        serverData = await this.kraken(data);
-      } else if (server == "harbour") {
-        serverData = await this.harbour(data);
-      } else if (server == "volkswagen") {
-        serverData = await this.volkswagen(data);
-      } else if (server == "fendi") {
-        serverData = await this.fendi(data);
-      } else {
+      } else if (server == "primesrc") {
+        serverData = await this.primesrc(data);
+      }else {
         continue;
       }
 
@@ -294,10 +286,10 @@ class DefaultExtension extends MProvider {
       subtitles = [...subtitles, ...serverData.subtitles];
     }
 
-    if (this.getPreference("xprime_pref_download_server")) {
-      var streamUrls = await this.downloadServer(data);
-      streams = [...streams, ...streamUrls];
-    }
+    // if (this.getPreference("xprime_pref_download_server")) {
+    //   var streamUrls = await this.downloadServer(data);
+    //   streams = [...streams, ...streamUrls];
+    // }
 
     if (streams.length < 1)
       throw new Error("No streams found from any selected servers");
@@ -339,7 +331,7 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "xprime_pref_stream_server_6",
+        key: "xprime_pref_stream_server_7",
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
@@ -348,32 +340,17 @@ class DefaultExtension extends MProvider {
             "Primebox",
             "Fox",
             "Primenet",
-            "Phoenix",
-            "Kraken",
-            "Harbour",
-            "Volkswagen - GER",
-            "Fendi - FRA",
+            "Primesrc",
           ],
           entryValues: [
             "primebox",
             "fox",
             "primenet",
-            "phoenix",
-            "kraken",
-            "harbour",
-            "volkswagen",
-            "fendi",
+            "primesrc",
           ],
         },
       },
-      {
-        key: "xprime_pref_download_server",
-        switchPreferenceCompat: {
-          title: "Include download server",
-          summary: "",
-          value: true,
-        },
-      },
+      
     ];
   }
 
@@ -399,6 +376,7 @@ class DefaultExtension extends MProvider {
     return this.serverDataDecryption(req.body);
   }
 
+  // *** DEAD ***
   async downloadServer(data) {
     var slug = "servers/downloader";
     slug += "?name=" + data.name;
@@ -517,9 +495,9 @@ class DefaultExtension extends MProvider {
     }
     return { streamUrls, subtitles: [] };
   }
-
-  async phoenix(data) {
-    var serverName = "phoenix";
+  
+  async primesrc(data) {
+    var serverName = "primesrc";
 
     var slug = serverName;
     slug += "?name=" + data.name;
@@ -550,6 +528,7 @@ class DefaultExtension extends MProvider {
     return { streamUrls, subtitles: subtitles };
   }
 
+  // *** DEAD ***
   async harbour(data) {
     var serverName = "harbour";
 
@@ -577,6 +556,7 @@ class DefaultExtension extends MProvider {
     return { streamUrls, subtitles: [] };
   }
 
+  // *** DEAD ***
   async kraken(data) {
     var serverName = "kraken";
 
@@ -604,6 +584,7 @@ class DefaultExtension extends MProvider {
     return { streamUrls, subtitles: [] };
   }
 
+  // *** DEAD ***
   async volkswagen(data) {
     var serverName = "volkswagen";
 
@@ -631,6 +612,7 @@ class DefaultExtension extends MProvider {
     return { streamUrls, subtitles: [] };
   }
 
+  // *** DEAD ***
   async fendi(data) {
     var serverName = "fendi";
 
