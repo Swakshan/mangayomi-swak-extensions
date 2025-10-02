@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.2.0",
+    "version": "2.2.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -50,8 +50,8 @@ class DefaultExtension extends MProvider {
     return body;
   }
 
-  getPoster(slug){
-    return `https://image.tmdb.org/t/p/w1280/${slug}`
+  getPoster(slug) {
+    return `https://image.tmdb.org/t/p/w1280/${slug}`;
   }
   async getSearchItems(body, media_type) {
     var items = [];
@@ -116,6 +116,45 @@ class DefaultExtension extends MProvider {
     };
   }
 
+  async getEpisodes(mediaData, batch, api) {
+    var dateNow = Date.now().valueOf();
+
+    var result = await this.tmdbRequest(api);
+    var chapters = [];
+    batch.forEach((season) => {
+      var seasonData = result[season];
+      var episodes = seasonData.episodes;
+      for (let episode of episodes) {
+        var release = episode.air_date
+          ? new Date(episode.air_date).valueOf()
+          : dateNow;
+
+        // Dont add future episodes
+        if (release > dateNow) break;
+        var seasonNum = episode.season_number;
+        var epNum = episode.episode_number;
+        var epName = `S${seasonNum}:E${epNum} ${episode.name}`;
+        var epData = mediaData;
+        epData["season"] = seasonNum;
+        epData["episode"] = epNum;
+        var epDescription = episode.overview || null;
+        var thumbnailUrl = this.getPoster(episode.still_path) || null;
+        var runtime = episode.runtime || null;
+
+        chapters.push({
+          name: epName,
+          url: JSON.stringify(epData),
+          dateUpload: release.toString(),
+          duration: `${runtime}`,
+          description: epDescription,
+          thumbnailUrl,
+        });
+      }
+    });
+
+    return chapters;
+  }
+
   async getDetail(url) {
     function statusCode(status) {
       return (
@@ -168,79 +207,44 @@ class DefaultExtension extends MProvider {
     var status = 5;
     var description = result.overview;
     var genre = result.genres.map((g) => g.name);
-
     var year = release_date.split("-")[0];
-    var chapters = [];
 
+    var chapters = [];
+    var mediaData = {
+      name: name,
+      year: year,
+      tmdb: tmdb_id,
+      imdb: imdb_id,
+    };
     if (media_type == "tv") {
       status = statusCode(result.status);
       linkCode = `t${tmdb_id}`;
       var seasonListBatch = chunkArray(
         result.seasons.map((s) => `season/${s.season_number}`)
       );
-
-      for (let batch of seasonListBatch) {
+      for (const batch of seasonListBatch) {
         var seasonList = batch.join(",");
         var apiEpSlug = `${apiSlug}?append_to_response=${seasonList}`;
-        result = await this.tmdbRequest(apiEpSlug);
 
-        batch.forEach((season) => {
-          var seasonData = result[season];
-          var episodes = seasonData.episodes
-          for (let episode of episodes) {
-            release = episode.air_date
-              ? new Date(episode.air_date).valueOf()
-              : dateNow;
-
-            // Dont add future episodes
-            if (release > dateNow) break;
-            var seasonNum = episode.season_number;
-            var epNum = episode.episode_number;
-            var epName = `S${seasonNum}:E${epNum} ${episode.name}`;
-            var eplink = {
-              name: name,
-              season: seasonNum,
-              episode: epNum,
-              year: year,
-              tmdb: tmdb_id,
-              imdb: imdb_id,
-            };
-       
-            var epDescription = episode.overview || null;
-            var thumbnailUrl = this.getPoster(episode.still_path) || null;
-            var runtime = episode.runtime || null;
-            
-            chapters.push({
-              name: epName,
-              url: JSON.stringify(eplink),
-              dateUpload: release.toString(),
-              duration:`${runtime}`,
-              description:epDescription,
-              thumbnailUrl,
-            });
-          }
-        });
+        var eps = await this.getEpisodes(mediaData, batch, apiEpSlug);
+        chapters.push(...eps);
       }
+      // chapters.push(...newEpisodes);
     } else {
       if (release < dateNow) {
         var vidDetails = await this.serverRequest(
           `release?name=${name}&year=${year}`
         );
         var scanlator = vidDetails ? vidDetails.label : null;
-        var runtime = result.runtime || null
+        var runtime = result.runtime || null;
         status = 1;
-        var eplink = {
-          name: name,
-          year: year,
-          tmdb: tmdb_id,
-          imdb: imdb_id,
-        };
+
         chapters.push({
           name: "Movie",
-          url: JSON.stringify(eplink),
+          url: JSON.stringify(mediaData),
           dateUpload: release.toString(),
           scanlator,
-          duration:`${runtime}`,
+          duration: `${runtime}`,
         });
       } else {
         status = 4;
