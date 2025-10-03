@@ -32,17 +32,17 @@
         }
     },
     "anime": {
-        "XPrime": {
-            "name": "XPrime",
-            "version": "2.3.2",
-            "langs": "all",
-            "lastUpd": 1759403778.564649
-        },
         "AnimeKai": {
             "name": "AnimeKai",
-            "version": "0.4.5",
+            "version": "0.5.0",
             "langs": "en",
-            "lastUpd": 1759337287.411973
+            "lastUpd": 1759509359.327986
+        },
+        "XPrime": {
+            "name": "XPrime",
+            "version": "2.3.3",
+            "langs": "all",
+            "lastUpd": 1759509359.327986
         },
         "Kaido": {
             "name": "Kaido",
