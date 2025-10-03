@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://animekai.to/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.4.6",
+    "version": "0.5.0",
     "pkgPath": "anime/src/en/animekai.js",
   },
 ];
@@ -679,6 +679,14 @@ class DefaultExtension extends MProvider {
         },
       },
       {
+        key: "animekai_pref_api_fallback",
+        switchPreferenceCompat: {
+          title: "Alternative decryption API",
+          summary: "Use this when the other fails",
+          value: false,
+        },
+      },
+      {
         key: "animekai_pref_ep_thumbnail",
         switchPreferenceCompat: {
           title: "Episode thumbail",
@@ -792,7 +800,7 @@ class DefaultExtension extends MProvider {
   //----------------AnimeKai Decoders----------------
   // Credits :- https://github.com/AzartX47/EncDecEndpoints
 
-  async patternExecutor(key, type, data) {
+  async patternExecutor2(key, type, data) {
     var hdr = this.getHeaders();
     var api = "https://enc-dec.app/api";
     var url = `${api}/${type}`;
@@ -809,20 +817,37 @@ class DefaultExtension extends MProvider {
     return result != null ? JSON.parse(result)["result"] : null;
   }
 
+  // Credits :- https://github.com/amarullz/kaicodex
+  async patternExecutor(type, data) {
+    var api = "https://c-kai-8090.amarullz.com/";
+    var url = `${api}?f=${type}&d=${data}`;
+
+    var res = await this.client.get(url);
+    var result = res.body || null;
+    if (type == "d") {
+      result = JSON.parse(result);
+    }
+    return result;
+  }
+
   async kaiEncrypt(id) {
-    var token = await this.patternExecutor("kai", "enc-kai", id);
-    return token;
+    if (this.getPreference("animekai_pref_api_fallback")) {
+      return await this.patternExecutor2("kai", "enc-kai", id);
+    }
+    return await this.patternExecutor("e", id);
   }
 
   async kaiDecrypt(id) {
-    var token = await this.patternExecutor("kai", "dec-kai", id);
-    return token;
+    if (this.getPreference("animekai_pref_api_fallback")) {
+      return await this.patternExecutor2("kai", "dec-kai", id);
+    }
+    return await this.patternExecutor("d", id);
   }
 
   async megaDecrypt(data) {
     var hdr = this.getHeaders();
     var body = { "text": data, "agent": hdr["user-agent"] };
-    var streamData = await this.patternExecutor("megaup", "dec-mega", body);
+    var streamData = await this.patternExecutor2("megaup", "dec-mega", body);
     return streamData;
   }
 }
