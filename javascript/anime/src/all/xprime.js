@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.3.2",
+    "version": "2.3.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -117,6 +117,9 @@ class DefaultExtension extends MProvider {
   }
 
   async getEpisodes(mediaData, batch, api) {
+    var epThumbPref = this.getPreference("xprime_pref_ep_thumbnail");
+    var epDescPref = this.getPreference("xprime_pref_ep_description");
+
     var dateNow = Date.now().valueOf();
 
     var result = await this.tmdbRequest(api);
@@ -146,8 +149,8 @@ class DefaultExtension extends MProvider {
           url: JSON.stringify(epData),
           dateUpload: release.toString(),
           duration: `${runtime}`,
-          description: epDescription,
-          thumbnailUrl,
+          description: epDescPref ? epDescription : null,
+          thumbnailUrl: epThumbPref ? thumbnailUrl : null,
         });
       }
     });
@@ -278,7 +281,7 @@ class DefaultExtension extends MProvider {
         serverData = await this.fox(data);
       } else if (server == "primesrc") {
         serverData = await this.primesrc(data);
-      }else {
+      } else {
         continue;
       }
 
@@ -336,21 +339,26 @@ class DefaultExtension extends MProvider {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
           values: ["primebox", "primenet", "phoenix", "fox"],
-          entries: [
-            "Primebox",
-            "Fox",
-            "Primenet",
-            "Primesrc",
-          ],
-          entryValues: [
-            "primebox",
-            "fox",
-            "primenet",
-            "primesrc",
-          ],
+          entries: ["Primebox", "Fox", "Primenet", "Primesrc"],
+          entryValues: ["primebox", "fox", "primenet", "primesrc"],
         },
       },
-      
+      {
+        key: "xprime_pref_ep_thumbnail",
+        switchPreferenceCompat: {
+          title: "Episode thumbail",
+          summary: "",
+          value: true,
+        },
+      },
+      {
+        key: "xprime_pref_ep_description",
+        switchPreferenceCompat: {
+          title: "Episode description",
+          summary: "",
+          value: true,
+        },
+      },
     ];
   }
 
@@ -495,7 +503,7 @@ class DefaultExtension extends MProvider {
     }
     return { streamUrls, subtitles: [] };
   }
-  
+
   async primesrc(data) {
     var serverName = "primesrc";
 
