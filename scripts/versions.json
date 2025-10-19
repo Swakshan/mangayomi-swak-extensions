@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Moviesda": {
+            "name": "Moviesda",
+            "version": "1.2.1",
+            "langs": "ta",
+            "lastUpd": 1760858557.64676
+        },
         "AnimeKai": {
             "name": "AnimeKai",
             "version": "0.5.0",
@@ -54,12 +60,6 @@
             "name": "KickAssAnime",
             "version": "1.2.5",
             "langs": "en",
-            "lastUpd": 1757857275.260451
-        },
-        "Moviesda": {
-            "name": "Moviesda",
-            "version": "1.2.0",
-            "langs": "ta",
             "lastUpd": 1757857275.260451
         },
         "Anixl": {
@@ -128,15 +128,15 @@
             "langs": "all",
             "lastUpd": 1748094760.694626
         },
-        "AnimeGG": {
-            "name": "AnimeGG",
-            "version": "1.0.3",
-            "langs": "en",
-            "lastUpd": 1747738043.896285
-        },
         "Sudatchi": {
             "name": "Sudatchi",
             "version": "1.1.1",
+            "langs": "en",
+            "lastUpd": 1747738043.896285
+        },
+        "AnimeGG": {
+            "name": "AnimeGG",
+            "version": "1.0.3",
             "langs": "en",
             "lastUpd": 1747738043.896285
         },
