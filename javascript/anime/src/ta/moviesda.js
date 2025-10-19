@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -62,6 +62,7 @@ class DefaultExtension extends MProvider {
   generateImageUrl(slug) {
     var baseUrl = this.getBaseUrl();
     var imageSlug = slug
+      .replace("-tamil-movie/", ".webp")
       .replace("-movie/", ".webp");
     return baseUrl + "/uploads/posters" + imageSlug;
   }
