@@ -10,9 +10,9 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| WeLoMa | 1.0.0 | ja | 2025/10/29 23:26 IST |
 | Mangapill | 1.0.4 | en | 2025/09/17 08:55 IST |
 | Mangapark | 1.0.1 | en | 2025/09/17 08:55 IST |
-| WeLoMa | 0.0.91 | ja | 2025/09/08 23:19 IST |
 | ReadComicOnline | 0.3.0 | en | 2025/07/26 16:15 IST |
 | Weeb Central | 0.1.0 | en | 2025/03/15 03:44 IST |
 
@@ -26,21 +26,17 @@ This repository contains the available javascript extension catalogues for the M
 | Kaido | 1.0.2 | en | 2025/09/25 16:19 IST |
 | KickAssAnime | 1.2.5 | en | 2025/09/14 19:11 IST |
 | Anixl | 0.0.81 | en | 2025/09/05 16:59 IST |
-| Aniplay | 1.7.5 | en | 2025/07/26 16:15 IST |
 | SubsPlease | 0.0.5 | en | 2025/07/23 23:21 IST |
 | Aniwatch | 1.0.0 | en | 2025/06/30 23:06 IST |
-| Tamilarasan | 0.0.6 | all | 2025/06/29 22:26 IST |
 | Anicrush | 0.0.5 | en | 2025/06/27 22:11 IST |
 | AnimeParadise | 0.1.0 | en | 2025/06/21 18:06 IST |
 | AnimeZZ | 1.1.1 | en | 2025/06/21 16:47 IST |
 | Dramacool | 1.1.0 | all | 2025/06/13 11:41 IST |
-| Streamblasters | 1.0.0 | all | 2025/05/31 10:17 IST |
 | Autoembed | 1.3.3 | all | 2025/05/24 19:22 IST |
-| Sudatchi | 1.1.1 | en | 2025/05/20 16:17 IST |
 | AnimeGG | 1.0.3 | en | 2025/05/20 16:17 IST |
+| Sudatchi | 1.1.1 | en | 2025/05/20 16:17 IST |
 | Animeonsen | 1.0.1 | en, ja | 2025/05/20 16:17 IST |
 | Gojo | 0.0.6 | en | 2025/05/20 16:17 IST |
-| Soaper | 1.0.5 | all | 2025/05/20 16:17 IST |
 | Aniwave | 0.0.7 | en | 2025/05/09 00:11 IST |
 | KissKH | 0.1.6 | all | 2025/05/02 22:47 IST |
 

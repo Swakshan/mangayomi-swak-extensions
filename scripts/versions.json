@@ -1,5 +1,11 @@
 {
     "manga": {
+        "WeLoMa": {
+            "name": "WeLoMa",
+            "version": "1.0.0",
+            "langs": "ja",
+            "lastUpd": 1761760611.599596
+        },
         "Mangapill": {
             "name": "Mangapill",
             "version": "1.0.4",
@@ -11,12 +17,6 @@
             "version": "1.0.1",
             "langs": "en",
             "lastUpd": 1758079504.835998
-        },
-        "WeLoMa": {
-            "name": "WeLoMa",
-            "version": "0.0.91",
-            "langs": "ja",
-            "lastUpd": 1757353753.908547
         },
         "ReadComicOnline": {
             "name": "ReadComicOnline",
@@ -68,12 +68,6 @@
             "langs": "en",
             "lastUpd": 1757071752.925684
         },
-        "Aniplay": {
-            "name": "Aniplay",
-            "version": "1.7.5",
-            "langs": "en",
-            "lastUpd": 1753526709.455681
-        },
         "SubsPlease": {
             "name": "SubsPlease",
             "version": "0.0.5",
@@ -85,12 +79,6 @@
             "version": "1.0.0",
             "langs": "en",
             "lastUpd": 1751305007.371692
-        },
-        "Tamilarasan": {
-            "name": "Tamilarasan",
-            "version": "0.0.6",
-            "langs": "all",
-            "lastUpd": 1751216173.527032
         },
         "Anicrush": {
             "name": "Anicrush",
@@ -116,27 +104,21 @@
             "langs": "all",
             "lastUpd": 1749795088.253707
         },
-        "Streamblasters": {
-            "name": "Streamblasters",
-            "version": "1.0.0",
-            "langs": "all",
-            "lastUpd": 1748666820.889896
-        },
         "Autoembed": {
             "name": "Autoembed",
             "version": "1.3.3",
             "langs": "all",
             "lastUpd": 1748094760.694626
         },
-        "Sudatchi": {
-            "name": "Sudatchi",
-            "version": "1.1.1",
-            "langs": "en",
-            "lastUpd": 1747738043.896285
-        },
         "AnimeGG": {
             "name": "AnimeGG",
             "version": "1.0.3",
+            "langs": "en",
+            "lastUpd": 1747738043.896285
+        },
+        "Sudatchi": {
+            "name": "Sudatchi",
+            "version": "1.1.1",
             "langs": "en",
             "lastUpd": 1747738043.896285
         },
@@ -150,12 +132,6 @@
             "name": "Gojo",
             "version": "0.0.6",
             "langs": "en",
-            "lastUpd": 1747738043.896285
-        },
-        "Soaper": {
-            "name": "Soaper",
-            "version": "1.0.5",
-            "langs": "all",
             "lastUpd": 1747738043.896285
         },
         "Aniwave": {
