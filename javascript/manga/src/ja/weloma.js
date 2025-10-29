@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.91",
+    "version": "1.0.0",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -35,12 +35,16 @@ class DefaultExtension extends MProvider {
   }
 
   getHeaders(url) {
-    throw new Error("getHeaders not implemented");
+    return {
+      "user-agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+      "Cookie": "smartlink_shown=1;",
+    };
   }
 
   async request(slug) {
     var url = `${this.source.baseUrl}${slug}`;
-    var body = (await this.client.get(url)).body;
+    var body = (await this.client.get(url, this.getHeaders())).body;
     return new Document(body);
   }
 
@@ -53,15 +57,13 @@ class DefaultExtension extends MProvider {
     page = 1,
   } = {}) {
     function addSlug(para, value) {
-      if(value.length>0)
-        return `&${para}=${value}`;
-      else
-        return "";
+      if (value.length > 0) return `&${para}=${value}`;
+      else return "";
     }
     var slug = "/manga-list.html?";
     slug += `name=${query}`;
     slug += addSlug("sort", sort);
-    slug += addSlug("genre", genres.length>0?genres.join(","):"");
+    slug += addSlug("genre", genres.length > 0 ? genres.join(",") : "");
     slug += addSlug("sort_type", sort_type);
     slug += addSlug("m_status", status);
     slug += addSlug("page", `${page}`);
@@ -120,7 +122,14 @@ class DefaultExtension extends MProvider {
     var status = isFiltersAvailable ? selectFiler(filters[2]) : "";
     var sortOrder = isFiltersAvailable ? selectFiler(filters[3]) : "";
 
-    return await this.searchPage({query, sort, sortOrder, genres, status, page});
+    return await this.searchPage({
+      query,
+      sort,
+      sortOrder,
+      genres,
+      status,
+      page,
+    });
   }
 
   async getDetail(url) {
@@ -197,7 +206,7 @@ class DefaultExtension extends MProvider {
         chapters.push({
           name: chapName,
           url: chapLink,
-          dateUpload: ""+uploadTime(dateUpload),
+          dateUpload: "" + uploadTime(dateUpload),
         });
       });
 
@@ -230,7 +239,6 @@ class DefaultExtension extends MProvider {
         ((h = (d >>> (c -= 8)) & 255) || a < l - 2) && (e += k(h));
     return e;
   }
-
   async getPageList(url) {
     var urls = [];
     var body = await this.request(url);
@@ -255,8 +263,8 @@ class DefaultExtension extends MProvider {
     var values = [];
 
     // Sort
-    items = ["Any","Alphabetical order", "Most views", "Last updated"];
-    values = ["","name", "views", "last_update"];
+    items = ["Any", "Alphabetical order", "Most views", "Last updated"];
+    values = ["", "name", "views", "last_update"];
     filters.push({
       type_name: "SelectFilter",
       name: "Sort",
