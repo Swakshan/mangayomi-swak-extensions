@@ -32,17 +32,17 @@
         }
     },
     "anime": {
+        "AnimeKai": {
+            "name": "AnimeKai",
+            "version": "0.5.1",
+            "langs": "en",
+            "lastUpd": 1762790154.654533
+        },
         "Moviesda": {
             "name": "Moviesda",
             "version": "1.2.1",
             "langs": "ta",
             "lastUpd": 1760858557.64676
-        },
-        "AnimeKai": {
-            "name": "AnimeKai",
-            "version": "0.5.0",
-            "langs": "en",
-            "lastUpd": 1759509359.327986
         },
         "XPrime": {
             "name": "XPrime",
