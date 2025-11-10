@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://animekai.to/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.5.0",
+    "version": "0.5.1",
     "pkgPath": "anime/src/en/animekai.js",
   },
 ];
@@ -236,11 +236,12 @@ class DefaultExtension extends MProvider {
 
         var numStr = aTag.attr("num");
         var num = parseInt(numStr);
-        var addEpDetail = additionalDetails[numStr] || null;
-        var duration = addEpDetail["runtime"] || null;
-        var epDescription = addEpDetail["overview"] || null;
-        var thumbnailUrl = addEpDetail["image"] || null;
-        var dateUpload = new Date(addEpDetail["airdate"]) || new Date();
+
+        var addEpDetail = additionalDetails?additionalDetails[numStr] : null;
+        var duration = addEpDetail?addEpDetail["runtime"] : null;
+        var epDescription = addEpDetail?addEpDetail["overview"] : null;
+        var thumbnailUrl = addEpDetail?addEpDetail["image"] : null;
+        var dateUpload = addEpDetail?new Date(addEpDetail["airdate"]) : new Date();
 
         epDescription = showEpDescription ? epDescription : null;
         thumbnailUrl = showEpThumbnail ? thumbnailUrl : null;
