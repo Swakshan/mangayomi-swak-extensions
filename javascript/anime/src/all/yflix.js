@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -177,9 +177,11 @@ class DefaultExtension extends MProvider {
         var seasonNum = item.attr("data-season");
         item.select("a").forEach((epItem) => {
           var token = epItem.attr("eid");
-          var epTitle = `S${seasonNum}${epItem.text}`
-            .trim()
-            .replace(" EP ", "E");
+          var epText = epItem.text;
+          var epTitle = epText.startsWith(" Movie")
+            ? epText
+            : `S${seasonNum}${epText}`;
+          epTitle = epTitle.trim().replace(" EP ", "E");
           var dateUpload = new Date(epItem.attr("title"));
           var epData = {
             name: epTitle,
@@ -589,13 +591,13 @@ class DefaultExtension extends MProvider {
 
     var streams = await this.formatStreams(url, serverName);
     var subtitles = streamData.tracks;
-     if(megaUrl.includes("sub.list")){
-      var encSubUrl = megaUrl.split("?sub.list=")[1]
+    if (megaUrl.includes("sub.list")) {
+      var encSubUrl = megaUrl.split("?sub.list=")[1];
       const subUrl = decodeURIComponent(encSubUrl);
-      var subRes = await this.request(subUrl)
+      var subRes = await this.request(subUrl);
       subtitles = JSON.parse(subRes);
     }
-    
+
     streams[0].subtitles = this.formatSubtitles(subtitles);
     return streams;
   }
