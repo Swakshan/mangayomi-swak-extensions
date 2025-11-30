@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -34,8 +34,10 @@ class DefaultExtension extends MProvider {
     return new SharedPreferences().get(key);
   }
 
-  getHeaders(url) {
-    throw new Error("getHeaders not implemented");
+  getHeaders() {
+    return {
+      "user-agent": "Mangayomi",
+    };
   }
 
   getBaseUrl() {
@@ -153,7 +155,7 @@ class DefaultExtension extends MProvider {
 
     var body = await this.getPage(slug);
     var description = body.selectFirst("div.description.text-expand").text;
-    var quality = body.selectFirst(".quality").text
+    var quality = body.selectFirst(".quality").text;
     var genre = [];
     body
       .selectFirst("ul.mics")
@@ -175,12 +177,14 @@ class DefaultExtension extends MProvider {
         var seasonNum = item.attr("data-season");
         item.select("a").forEach((epItem) => {
           var token = epItem.attr("eid");
-          var epTitle = `S${seasonNum}${epItem.text}`.trim().replace(" EP ","E");
+          var epTitle = `S${seasonNum}${epItem.text}`
+            .trim()
+            .replace(" EP ", "E");
           var dateUpload = new Date(epItem.attr("title"));
           var epData = {
             name: epTitle,
             url: token,
-            scanlator:quality,
+            scanlator: quality,
             dateUpload: dateUpload.valueOf().toString(),
           };
           chapters.push(epData);
@@ -193,7 +197,29 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    var streams = [];
+    var prefServer = this.getPreference("yflix_pref_stream_server");
+    // If no server is chosen, use the default server 1
+    if (prefServer.length < 1) prefServer.push("3");
+
+    var token = await this.encryptId(url);
+    var res = await this.request(`/ajax/links/list?eid=${url}&_=${token}`);
+    var body = JSON.parse(res);
+    if (body.status != 200) return streams;
+
+    var serverDoc = new Document(body.result);
+
+    for (var item of serverDoc.select("li")) {
+      var serverId = item.attr("data-sid");
+      if (!prefServer.includes(serverId)) continue;
+      var serverCode = item.attr("data-lid");
+      var serverName = item.selectFirst("span").text;
+      var megaUrl = await this.getMegaUrl(serverCode);
+
+      var serverStreams = await this.decryptMegaEmbed(megaUrl, serverName);
+      streams = [...streams, ...serverStreams];
+    }
+    return streams;
   }
 
   getFilterList() {
@@ -481,14 +507,118 @@ class DefaultExtension extends MProvider {
           dialogMessage: "",
         },
       },
+      {
+        key: "yflix_pref_stream_server",
+        multiSelectListPreference: {
+          title: "Preferred server",
+          summary: "Choose the server/s you want to extract streams from",
+          values: ["3"],
+          entries: ["Server 1", "Server 2"],
+          entryValues: ["3", "2"],
+        },
+      },
+
+      {
+        key: "yflix_pref_extract_streams",
+        switchPreferenceCompat: {
+          title: "Split stream into different quality streams",
+          summary: "Split stream Auto into 360p/720p/1080p",
+          value: true,
+        },
+      },
     ];
+  }
+
+  async formatStreams(sUrl, serverName) {
+    function streamNamer(res) {
+      return `${res} : ${serverName}`;
+    }
+
+    var streams = [
+      {
+        url: sUrl,
+        originalUrl: sUrl,
+        quality: streamNamer("Auto"),
+      },
+    ];
+
+    var pref = this.getPreference("yflix_pref_extract_streams");
+    if (!pref) return streams;
+
+    var baseUrl = sUrl.split("/list.m3u8")[0].split("/list,")[0];
+
+    const response = await new Client().get(sUrl);
+    const body = response.body;
+    const lines = body.split("\n");
+
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith("#EXT-X-STREAM-INF:")) {
+        var resolution = lines[i].match(/RESOLUTION=(\d+x\d+)/)[1];
+        var qUrl = lines[i + 1].trim();
+        var m3u8Url = `${baseUrl}/${qUrl}`;
+        streams.push({
+          url: m3u8Url,
+          originalUrl: m3u8Url,
+          quality: streamNamer(resolution),
+        });
+      }
+    }
+    return streams;
+  }
+
+  async getMegaUrl(vidId) {
+    var token = await this.encryptId(vidId);
+    var res = await this.request(`/ajax/links/view?id=${vidId}&_=${token}`);
+    var body = JSON.parse(res);
+    if (body.status != 200) return;
+    var outEnc = body.result;
+    var out = await this.decryptId(outEnc);
+    return out.url;
+  }
+
+  async decryptMegaEmbed(megaUrl, serverName) {
+    var hdr = this.getHeaders();
+    var streams = [];
+    megaUrl = megaUrl.replace("/e/", "/media/");
+    var res = await this.client.get(megaUrl, hdr);
+    var body = JSON.parse(res.body);
+    if (body.status != 200) return;
+    var outEnc = body.result;
+    var streamData = await this.megaDecrypt(outEnc);
+    var url = streamData.sources[0].file;
+
+    var streams = await this.formatStreams(url, serverName);
+    var subtitles = streamData.tracks;
+     if(megaUrl.includes("sub.list")){
+      var encSubUrl = megaUrl.split("?sub.list=")[1]
+      const subUrl = decodeURIComponent(encSubUrl);
+      var subRes = await this.request(subUrl)
+      subtitles = JSON.parse(subRes);
+    }
+    
+    streams[0].subtitles = this.formatSubtitles(subtitles);
+    return streams;
+  }
+
+  formatSubtitles(subtitles) {
+    var subs = [];
+    subtitles.forEach((sub) => {
+      if (!sub.kind.includes("thumbnail")) {
+        subs.push({
+          file: sub.file,
+          label: `${sub.label}`,
+        });
+      }
+    });
+
+    return subs;
   }
 
   //----------------Decoders----------------
   // Credits :- https://github.com/AzartX47/EncDecEndpoints
 
   async patternExecutor(key, type, data) {
-    var hdr = {}
+    var hdr = {};
     var api = "https://enc-dec.app/api";
     var url = `${api}/${type}`;
     var result = null;
@@ -510,5 +640,12 @@ class DefaultExtension extends MProvider {
 
   async decryptId(id) {
     return await this.patternExecutor("yf", "dec-movies-flix", id);
+  }
+
+  async megaDecrypt(data) {
+    var hdr = this.getHeaders();
+    var body = { "text": data, "agent": hdr["user-agent"] };
+    var streamData = await this.patternExecutor("megaup", "dec-mega", body);
+    return streamData;
   }
 }
