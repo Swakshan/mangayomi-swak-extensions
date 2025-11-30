@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -147,7 +147,49 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    var baseUrl = this.getBaseUrl();
+    var slug = "/watch/" + url.split("/watch/")[1];
+    var link = `${baseUrl}${slug}`;
+
+    var body = await this.getPage(slug);
+    var description = body.selectFirst("div.description.text-expand").text;
+    var quality = body.selectFirst(".quality").text
+    var genre = [];
+    body
+      .selectFirst("ul.mics")
+      .select("li")[1]
+      .select("a")
+      .forEach((item) => genre.push(item.text));
+
+    var chapters = [];
+    var ratingField = body.selectFirst("#movie-rating");
+    var mediaId = ratingField.attr("data-id");
+    var token = await this.encryptId(mediaId);
+    var res = await this.request(
+      `/ajax/episodes/list?id=${mediaId}&_=${token}`
+    );
+    body = JSON.parse(res);
+    if (body.status == 200) {
+      var doc = new Document(body["result"]);
+      doc.select("ul").forEach((item) => {
+        var seasonNum = item.attr("data-season");
+        item.select("a").forEach((epItem) => {
+          var token = epItem.attr("eid");
+          var epTitle = `S${seasonNum}${epItem.text}`.trim().replace(" EP ","E");
+          var dateUpload = new Date(epItem.attr("title"));
+          var epData = {
+            name: epTitle,
+            url: token,
+            scanlator:quality,
+            dateUpload: dateUpload.valueOf().toString(),
+          };
+          chapters.push(epData);
+        });
+      });
+
+      chapters.reverse();
+    }
+    return { link, description, genre, chapters };
   }
 
   async getVideoList(url) {
@@ -440,5 +482,33 @@ class DefaultExtension extends MProvider {
         },
       },
     ];
+  }
+
+  //----------------Decoders----------------
+  // Credits :- https://github.com/AzartX47/EncDecEndpoints
+
+  async patternExecutor(key, type, data) {
+    var hdr = {}
+    var api = "https://enc-dec.app/api";
+    var url = `${api}/${type}`;
+    var result = null;
+    if (key == "yf") {
+      var url = `${url}?text=${data}`;
+      var res = await this.client.get(url, hdr);
+      result = res.body;
+    } else {
+      hdr["Content-Type"] = "application/json";
+      var res = await this.client.post(url, hdr, data);
+      result = res.body;
+    }
+    return result != null ? JSON.parse(result)["result"] : null;
+  }
+
+  async encryptId(id) {
+    return await this.patternExecutor("yf", "enc-movies-flix", id);
+  }
+
+  async decryptId(id) {
+    return await this.patternExecutor("yf", "dec-movies-flix", id);
   }
 }
