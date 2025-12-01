@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://backend.xprime.tv",
-    "version": "2.3.3",
+    "version": "2.3.4",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -44,7 +44,7 @@ class DefaultExtension extends MProvider {
 
   async tmdbRequest(slug) {
     var nfsw = this.getPreference("xprime_pref_nfsw_content");
-    var api = `https://themoviedb.hexa.watch/api/tmdb/${slug}&include_adult=${nfsw}&include_video=false&language=en-us&api_key=84259f99204eeb7d45c7e3d8e36c6123`;
+    var api = `https://themoviedb.hexa.su/api/tmdb/${slug}&include_adult=${nfsw}&include_video=false&language=en-us&api_key=84259f99204eeb7d45c7e3d8e36c6123`;
     var response = await new Client().get(api);
     var body = JSON.parse(response.body);
     return body;
