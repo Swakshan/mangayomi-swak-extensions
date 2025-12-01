@@ -32,23 +32,29 @@
         }
     },
     "anime": {
+        "Moviesda": {
+            "name": "Moviesda",
+            "version": "1.2.2",
+            "langs": "ta",
+            "lastUpd": 1764609098.718991
+        },
+        "XPrime": {
+            "name": "XPrime",
+            "version": "2.3.4",
+            "langs": "all",
+            "lastUpd": 1764609098.718991
+        },
+        "yFlix": {
+            "name": "yFlix",
+            "version": "0.0.6",
+            "langs": "all",
+            "lastUpd": 1764609098.718991
+        },
         "AnimeKai": {
             "name": "AnimeKai",
             "version": "0.5.1",
             "langs": "en",
             "lastUpd": 1762790154.654533
-        },
-        "Moviesda": {
-            "name": "Moviesda",
-            "version": "1.2.1",
-            "langs": "ta",
-            "lastUpd": 1760858557.64676
-        },
-        "XPrime": {
-            "name": "XPrime",
-            "version": "2.3.3",
-            "langs": "all",
-            "lastUpd": 1759509359.327986
         },
         "Kaido": {
             "name": "Kaido",

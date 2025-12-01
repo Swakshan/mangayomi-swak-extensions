@@ -20,9 +20,10 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| Moviesda | 1.2.2 | ta | 2025/12/01 22:41 IST |
+| XPrime | 2.3.4 | all | 2025/12/01 22:41 IST |
+| yFlix | 0.0.6 | all | 2025/12/01 22:41 IST |
 | AnimeKai | 0.5.1 | en | 2025/11/10 21:25 IST |
-| Moviesda | 1.2.1 | ta | 2025/10/19 12:52 IST |
-| XPrime | 2.3.3 | all | 2025/10/03 22:05 IST |
 | Kaido | 1.0.2 | en | 2025/09/25 16:19 IST |
 | KickAssAnime | 1.2.5 | en | 2025/09/14 19:11 IST |
 | Anixl | 0.0.81 | en | 2025/09/05 16:59 IST |
