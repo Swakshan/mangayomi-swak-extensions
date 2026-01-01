@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "AnimeKai": {
+            "name": "AnimeKai",
+            "version": "0.5.3",
+            "langs": "en",
+            "lastUpd": 1767292216.738821
+        },
         "Moviesda": {
             "name": "Moviesda",
             "version": "1.2.2",
@@ -49,12 +55,6 @@
             "version": "0.0.6",
             "langs": "all",
             "lastUpd": 1764609098.718991
-        },
-        "AnimeKai": {
-            "name": "AnimeKai",
-            "version": "0.5.1",
-            "langs": "en",
-            "lastUpd": 1762790154.654533
         },
         "Kaido": {
             "name": "Kaido",
