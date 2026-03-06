@@ -201,6 +201,7 @@ class DefaultExtension extends MProvider {
             })
           }
         }
+        chaptersList.reverse();
         
         // Return all the info
         return {
