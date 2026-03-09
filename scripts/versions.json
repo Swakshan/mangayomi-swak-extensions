@@ -38,12 +38,6 @@
             "langs": "en",
             "lastUpd": 1767292216.738821
         },
-        "Moviesda": {
-            "name": "Moviesda",
-            "version": "1.2.2",
-            "langs": "ta",
-            "lastUpd": 1764609098.718991
-        },
         "XPrime": {
             "name": "XPrime",
             "version": "2.3.4",
@@ -54,6 +48,12 @@
             "name": "yFlix",
             "version": "0.0.6",
             "langs": "all",
+            "lastUpd": 1764609098.718991
+        },
+        "Moviesda": {
+            "name": "Moviesda",
+            "version": "1.2.2",
+            "langs": "ta",
             "lastUpd": 1764609098.718991
         },
         "Kaido": {
@@ -116,9 +116,9 @@
             "langs": "all",
             "lastUpd": 1748094760.694626
         },
-        "AnimeGG": {
-            "name": "AnimeGG",
-            "version": "1.0.3",
+        "Gojo": {
+            "name": "Gojo",
+            "version": "0.0.6",
             "langs": "en",
             "lastUpd": 1747738043.896285
         },
@@ -128,16 +128,16 @@
             "langs": "en",
             "lastUpd": 1747738043.896285
         },
+        "AnimeGG": {
+            "name": "AnimeGG",
+            "version": "1.0.3",
+            "langs": "en",
+            "lastUpd": 1747738043.896285
+        },
         "Animeonsen": {
             "name": "Animeonsen",
             "version": "1.0.1",
             "langs": "en, ja",
-            "lastUpd": 1747738043.896285
-        },
-        "Gojo": {
-            "name": "Gojo",
-            "version": "0.0.6",
-            "langs": "en",
             "lastUpd": 1747738043.896285
         },
         "Aniwave": {
@@ -154,6 +154,12 @@
         }
     },
     "novel": {
+        "bookReadFree": {
+            "name": "bookReadFree",
+            "version": "0.0.1",
+            "langs": "en",
+            "lastUpd": 1773069753.928136
+        },
         "Novelbuddy": {
             "name": "Novelbuddy",
             "version": "0.0.9",
