@@ -27,17 +27,18 @@ class DefaultExtension extends MProvider {
         const bookList = [];
         const books = doc.select('ul.novel-list li.novel-item');
         for (const book of books) {
-          const bookAncher = book.selectFirst('a');
-          const bookTitle = bookAncher.attr("title");
-          const bookLink = `${this.source.baseUrl}${bookAncher.attr("href")}`;
-          const bookImg = book.selectFirst('img');
-          const imageUrl = `${this.source.baseUrl}${bookImg.attr("data-src")}`
-      
-          bookList.push({
-            'name': bookTitle,
-            'link': bookLink,
-            'imageUrl': imageUrl
-          })
+            const bookAncher = book.selectFirst('a');
+            const bookTitle = bookAncher.attr("title");
+            const bookLink = `${this.source.baseUrl}${bookAncher.attr("href")}`;
+            const bookImg = book.selectFirst('figure.novel-cover img');
+            const imgAttr = bookImg.attr("data-src") || bookImg.attr("src");
+            const imageUrl = imgAttr.startsWith('http') ? imgAttr : `${this.source.baseUrl}${imgAttr}`;
+          
+            bookList.push({
+                'name': bookTitle,
+                'link': bookLink,
+                'imageUrl': imageUrl
+            })
         } 
         
         const nextButton = doc.selectFirst("ul.pagination li.page-item:last-child a");
@@ -56,7 +57,7 @@ class DefaultExtension extends MProvider {
         return await this.getBooks(url);
     }
     get supportsLatest() {
-        throw new Error("supportsLatest not implemented");
+        return true;
     }
     async getLatestUpdates(page) {
         const baseUrl = this.source.baseUrl;
@@ -65,8 +66,8 @@ class DefaultExtension extends MProvider {
     }
     async search(query, page, filters) {
         const baseUrl = this.source.baseUrl;
-        const url = `${baseUrl}/search?keyword=${query}&type=both&page=${page}`
-        return await this.getBooks(url);
+        let searchUrl = `${baseUrl}/search?keyword=${query}&type=both&page=${page}`
+        return await this.getBooks(searchUrl);
     }
     async getDetail(url) {
         const client = new Client();
@@ -148,15 +149,28 @@ class DefaultExtension extends MProvider {
     }
     // Clean html up for reader
     async cleanHtmlContent(html) {
-        throw new Error("cleanHtmlContent not implemented");
-    }
-    // For anime episode video list
-    async getVideoList(url) {
-        throw new Error("getVideoList not implemented");
-    }
-    // For manga chapter pages
-    async getPageList(url) {
-        throw new Error("getPageList not implemented");
+        const doc = new Document(html);
+        
+        const content = doc.selectFirst("div#content");
+        if (!content) return html;
+
+        // Get all paragraphs
+        const paragraphs = content.select("p");
+        let cleanedHtml = "";
+
+        for (const p of paragraphs) {
+            const pText = p.text;
+            
+            // Skip the credits paragraph
+            if (pText.includes("Translator:") || pText.includes("Editor:")) {
+                continue;
+            }
+
+            // Append the outer HTML
+            cleanedHtml += p.outerHtml;
+        }
+
+        return cleanedHtml;
     }
     getFilterList() {
         throw new Error("getFilterList not implemented");
