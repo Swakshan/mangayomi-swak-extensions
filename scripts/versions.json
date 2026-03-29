@@ -6,15 +6,15 @@
             "langs": "ja",
             "lastUpd": 1761760611.599596
         },
-        "Mangapill": {
-            "name": "Mangapill",
-            "version": "1.0.4",
-            "langs": "en",
-            "lastUpd": 1758079504.835998
-        },
         "Mangapark": {
             "name": "Mangapark",
             "version": "1.0.1",
+            "langs": "en",
+            "lastUpd": 1758079504.835998
+        },
+        "Mangapill": {
+            "name": "Mangapill",
+            "version": "1.0.4",
             "langs": "en",
             "lastUpd": 1758079504.835998
         },
@@ -32,24 +32,6 @@
         }
     },
     "anime": {
-        "AnimeKai": {
-            "name": "AnimeKai",
-            "version": "0.5.3",
-            "langs": "en",
-            "lastUpd": 1767292216.738821
-        },
-        "XPrime": {
-            "name": "XPrime",
-            "version": "2.3.4",
-            "langs": "all",
-            "lastUpd": 1764609098.718991
-        },
-        "yFlix": {
-            "name": "yFlix",
-            "version": "0.0.6",
-            "langs": "all",
-            "lastUpd": 1764609098.718991
-        },
         "Moviesda": {
             "name": "Moviesda",
             "version": "1.2.2",
@@ -68,29 +50,11 @@
             "langs": "en",
             "lastUpd": 1757857275.260451
         },
-        "Anixl": {
-            "name": "Anixl",
-            "version": "0.0.81",
-            "langs": "en",
-            "lastUpd": 1757071752.925684
-        },
         "SubsPlease": {
             "name": "SubsPlease",
             "version": "0.0.5",
             "langs": "en",
             "lastUpd": 1753293069.296975
-        },
-        "Aniwatch": {
-            "name": "Aniwatch",
-            "version": "1.0.0",
-            "langs": "en",
-            "lastUpd": 1751305007.371692
-        },
-        "Anicrush": {
-            "name": "Anicrush",
-            "version": "0.0.5",
-            "langs": "en",
-            "lastUpd": 1751042518.408327
         },
         "AnimeParadise": {
             "name": "AnimeParadise",
@@ -104,23 +68,11 @@
             "langs": "en",
             "lastUpd": 1750504671.044623
         },
-        "Dramacool": {
-            "name": "Dramacool",
-            "version": "1.1.0",
-            "langs": "all",
-            "lastUpd": 1749795088.253707
-        },
         "Autoembed": {
             "name": "Autoembed",
             "version": "1.3.3",
             "langs": "all",
             "lastUpd": 1748094760.694626
-        },
-        "Gojo": {
-            "name": "Gojo",
-            "version": "0.0.6",
-            "langs": "en",
-            "lastUpd": 1747738043.896285
         },
         "Sudatchi": {
             "name": "Sudatchi",
@@ -139,12 +91,6 @@
             "version": "1.0.1",
             "langs": "en, ja",
             "lastUpd": 1747738043.896285
-        },
-        "Aniwave": {
-            "name": "Aniwave",
-            "version": "0.0.7",
-            "langs": "en",
-            "lastUpd": 1746729660
         },
         "KissKH": {
             "name": "KissKH",
