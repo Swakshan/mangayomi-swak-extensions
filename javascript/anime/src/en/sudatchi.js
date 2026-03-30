@@ -1,4 +1,3 @@
-//update
 const mangayomiSources = [
   {
     "name": "Sudatchi",
@@ -9,7 +8,7 @@ const mangayomiSources = [
     "iconUrl":
       "https://www.google.com/s2/favicons?sz=128&domain=https://sudatchi.com",
     "typeSource": "single",
-    "version": "1.1.1",
+    "version": "2.0.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "itemType": 1,
@@ -18,9 +17,14 @@ const mangayomiSources = [
 ];
 
 class DefaultExtension extends MProvider {
+
+  getBaseUrl(){
+    return this.source.baseUrl;
+  }
+
   getHeaders(url) {
     return {
-      "Referer": this.source.baseUrl,
+      "Referer": this.getBaseUrl(),
     };
   }
 
@@ -34,7 +38,7 @@ class DefaultExtension extends MProvider {
   }
 
   async requestApi(slug) {
-    var url = this.source.baseUrl + "/api" + slug;
+    var url = this.getBaseUrl() + "/api" + slug;
 
     var res = await new Client().get(url, this.getHeaders());
 
@@ -76,15 +80,16 @@ class DefaultExtension extends MProvider {
     var lang = this.getPreference("sudatchi_pref_lang");
     for (var item of animes) {
       var details = "Anime" in item ? item.Anime : item;
-      var name =
-        "titleRomanji" in details ? details.titleRomanji : details.title;
+      var titleInfo = "animeTitle" in details ? details.animeTitle : details.title
+
+      var name = titleInfo.romaji
       switch (lang) {
         case "e": {
-          name = "titleEnglish" in details ? details.titleEnglish : name;
+          name = "english" in details ? details.english : name;
           break;
         }
         case "j": {
-          name = "titleJapanese" in details ? details.titleJapanese : name;
+          name = "native" in details ? details.native : name;
           break;
         }
       }
@@ -103,12 +108,8 @@ class DefaultExtension extends MProvider {
   }
 
   async getPopular(page) {
-    var pageProps = await this.requestApi("/fetchHomeData");
-    //  var  = extract
-    var latestEpisodes = await this.formList(pageProps.latestEpisodes);
-    var latestAnimes = await this.formListForAnilist(pageProps.ongoingAnimes);
-    var animeSpotlight = await this.formList(pageProps.AnimeSpotlight);
-    var list = [...animeSpotlight, ...latestAnimes, ...latestEpisodes];
+    var pageProps = await this.requestApi("/home");
+    var list = await this.formList(pageProps.top10Animes);
     return {
       list,
       hasNextPage: false,
@@ -118,9 +119,11 @@ class DefaultExtension extends MProvider {
     throw new Error("supportsLatest not implemented");
   }
   async getLatestUpdates(page) {
-    var pageProps = await this.requestApi("/fetchHomeData");
-    var list = await this.formList(pageProps.latestEpisodes);
-
+    var pageProps = await this.requestApi("/home");
+    var latestEpisodes = await this.formList(pageProps.latestEpisodes);
+    var recentUpdatedShows = await this.formList(pageProps.recentUpdatedShows);
+    var currentSeasonAnime = await this.formList(pageProps.currentSeasonAnime);
+   var list = [...latestEpisodes, ...recentUpdatedShows, ...currentSeasonAnime];
     return {
       list,
       hasNextPage: false,
@@ -129,7 +132,7 @@ class DefaultExtension extends MProvider {
   async search(query, page, filters) {
     var body = await this.requestApi("/fetchAnime");
 
-    var url = this.source.baseUrl + "/api/fetchAnime";
+    var url = this.getBaseUrl() + "/api/fetchAnime";
 
     var res = await new Client().post(url, this.getHeaders(), {
       "query": query,
@@ -158,7 +161,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    var linkSlug = "https://sudatchi.com/anime/";
+    var linkSlug = this.getBaseUrl()+"/anime/";
     if (url.includes(linkSlug)) url = url.replace(linkSlug, "");
 
     var lang = this.getPreference("sudatchi_pref_lang");
@@ -178,7 +181,7 @@ class DefaultExtension extends MProvider {
     }
     var description = details.description;
     var status = this.statusCode(details.status);
-    var imageUrl = details.coverImage;
+    var imageUrl = details.coverImage.extraLarge;
     var genre = details.genres;
 
     var chapters = [];
@@ -213,6 +216,8 @@ class DefaultExtension extends MProvider {
   }
 
   async extractStreams(url) {
+    var baseUrl = this.getBaseUrl();
+
     const response = await new Client().get(url);
     const body = response.body;
     const lines = body.split("\n");
@@ -231,7 +236,7 @@ class DefaultExtension extends MProvider {
       if (currentLine.startsWith("#EXT-X-STREAM-INF:")) {
         var resolution = currentLine.match(/RESOLUTION=(\d+x\d+)/)[1];
         var m3u8Url = lines[i + 1].trim();
-        m3u8Url = m3u8Url.replace("./", `${url}/`);
+        m3u8Url = baseUrl + m3u8Url
         streams.push({
           url: m3u8Url,
           originalUrl: m3u8Url,
@@ -248,7 +253,7 @@ class DefaultExtension extends MProvider {
           if (key === "NAME") {
             trackInfo.label = value;
           } else if (key === "URI") {
-            trackInfo.file = value;
+            trackInfo.file = baseUrl+value;
           }
         }
         audios.push(trackInfo);
@@ -260,18 +265,21 @@ class DefaultExtension extends MProvider {
 
   // For anime episode video list
   async getVideoList(url) {
+    var baseUrl = this.getBaseUrl();
+
     var jsonData = await this.requestApi(`/episode/${url}`);
     var episodeData = jsonData.episode;
     var epId = episodeData.id;
 
-    var epLink = `https://sudatchi.com/videos/m3u8/episode-${epId}.m3u8`;
+    var epLink = `${baseUrl}/api/streams?episodeId=${epId}`;
     var streams = await this.extractStreams(epLink);
 
     var subs = JSON.parse(jsonData.subtitlesJson);
     var subtitles = [];
     for (var sub of subs) {
-      var file = `https://ipfs.sudatchi.com${sub.url}`;
-      var label = sub.SubtitlesName.name;
+      if(sub.kind != "subtitles") continue;
+      var file = sub.file.replace("/ipfs/",`${baseUrl}/api/proxy/`)
+      var label = sub.lang;
       subtitles.push({ file: file, label: label });
     }
     streams[0].subtitles = subtitles;
