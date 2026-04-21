@@ -8,7 +8,7 @@ const mangayomiSources = [
     "iconUrl":
       "https://www.google.com/s2/favicons?sz=128&domain=https://sudatchi.com",
     "typeSource": "single",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "itemType": 1,
@@ -130,17 +130,16 @@ class DefaultExtension extends MProvider {
     };
   }
   async search(query, page, filters) {
-    var body = await this.requestApi("/fetchAnime");
-
-    var url = this.getBaseUrl() + "/api/fetchAnime";
+    var url = this.getBaseUrl() + "/api/search";
 
     var res = await new Client().post(url, this.getHeaders(), {
       "query": query,
+      "page":""+page
     });
     var body = JSON.parse(res.body);
 
     var list = await this.formListForAnilist(body.results);
-    var hasNextPage = body.pages > page ? true : false;
+    var hasNextPage = false;
 
     return {
       list,
