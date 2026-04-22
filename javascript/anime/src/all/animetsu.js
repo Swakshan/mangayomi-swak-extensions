@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -97,7 +97,11 @@ class DefaultExtension extends MProvider {
   }
 
   async getLatestUpdates(page) {
-    return await this.searchAnime({ sort: "date_desc", status:"RELEASING",page: page });
+    return await this.searchAnime({
+      sort: "date_desc",
+      status: "RELEASING",
+      page: page,
+    });
   }
 
   async search(query, page, filters) {
@@ -150,17 +154,18 @@ class DefaultExtension extends MProvider {
 
       var thumbnailUrl = epThumbPref ? this.getProxyMediaUrl(item.img) : null;
       var epDescription = epDescPref ? item.desc : null;
-      var dateUpload = new Date(item.aired_at).valueOf().toString();
+      var dateUpload = item.hasOwnProperty("aired_at")
+        ? new Date(item.aired_at).valueOf().toString()
+        : null;
 
-      var epData = {
+      chapters.push({
         name: epName,
         url: token,
         isFiller,
         thumbnailUrl,
         description: epDescription,
         dateUpload: dateUpload,
-      };
-      chapters.push(epData);
+      });
     });
 
     chapters.reverse();
@@ -182,14 +187,16 @@ class DefaultExtension extends MProvider {
         var epData = await this.request(epSlug);
 
         var serverStreams = [];
-        if (serverName == "pahe" || serverName == "meg") {
-          serverStreams = this.getPaheMegStreams(
-            epData.sources,
-            audioType,
-            serverName,
-          );
-        } else if (serverName == "kite") {
-          serverStreams = this.getKiteStreams(epData, audioType);
+        if (epData.hasOwnProperty("sources")) {
+          if (serverName == "pahe" || serverName == "meg") {
+            serverStreams = this.getPaheMegStreams(
+              epData.sources,
+              audioType,
+              serverName,
+            );
+          } else if (serverName == "kite") {
+            serverStreams = this.getKiteStreams(epData, audioType);
+          }
         }
 
         streams = [...streams, ...serverStreams];
@@ -223,6 +230,7 @@ class DefaultExtension extends MProvider {
   getKiteStreams(epData, audioType) {
     var hdr = this.getHeaders();
     var streams = [];
+
     epData.sources.forEach((item) => {
       var quality = "Auto";
       var link = this.getProxyMediaUrl(item.url);
@@ -235,15 +243,16 @@ class DefaultExtension extends MProvider {
     });
 
     var subtitles = [];
-    epData.subs.forEach((item) => {
-      subtitles.push({
-        file: item.url,
-        label: item.lang,
-        headers: hdr,
+    if (epData.hasOwnProperty("subs")) {
+      epData.subs.forEach((item) => {
+        subtitles.push({
+          file: item.url,
+          label: item.lang,
+          headers: hdr,
+        });
       });
-    });
-
-    streams[0]["subtitles"] = subtitles;
+    }
+    if (streams.length > 0) streams[0]["subtitles"] = subtitles;
     return streams;
   }
 
