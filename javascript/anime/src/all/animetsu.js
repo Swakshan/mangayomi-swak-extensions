@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.9",
+    "version": "1.0.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -57,12 +57,18 @@ class DefaultExtension extends MProvider {
     return JSON.parse(res.body);
   }
 
-  async searchAnime({ query = "", sort = "popularity", page = "1" }) {
+  async searchAnime({
+    query = "",
+    sort = "popularity",
+    status = "",
+    page = "1",
+  }) {
     var titlePref = this.getPreference("animetsu_title_lang");
 
     var slug = "/search/?";
     if (query.length > 0) slug += "query=" + query + "&";
     slug += "sort=" + sort;
+    if (status.length > 0) slug += "&status=" + status;
     slug += "&page=" + page;
     slug += "&per_page=20";
 
@@ -91,7 +97,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getLatestUpdates(page) {
-    return await this.searchAnime({ sort: "date_desc", page: page });
+    return await this.searchAnime({ sort: "date_desc", status:"RELEASING",page: page });
   }
 
   async search(query, page, filters) {
