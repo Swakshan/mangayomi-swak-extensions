@@ -20,7 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| Animetsu | 1.0.0 | all | 2026/04/22 11:07 IST |
+| Animetsu | 1.0.2 | all | 2026/04/22 14:24 IST |
 | Sudatchi | 2.0.1 | en | 2026/04/22 11:07 IST |
 | Animeonsen | 1.0.5 | en, ja | 2026/04/22 11:07 IST |
 | Moviesda | 1.2.2 | ta | 2025/12/01 22:41 IST |

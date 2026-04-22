@@ -34,7 +34,7 @@
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/all/animetsu.js",
         "apiUrl": "",
-        "version": "1.0.0",
+        "version": "1.0.2",
         "isManga": false,
         "itemType": 1,
         "isFullData": false,
