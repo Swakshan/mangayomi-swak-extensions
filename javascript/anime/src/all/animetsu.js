@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "0.0.9",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -39,7 +39,7 @@ class DefaultExtension extends MProvider {
   }
 
   getHeaders(url) {
-    url = url.length > 0 ? url : this.getBaseUrl();
+    url = url != null && url.length > 0 ? url : this.getBaseUrl();
     return {
       "Referer": url,
     };
@@ -57,7 +57,7 @@ class DefaultExtension extends MProvider {
     return JSON.parse(res.body);
   }
 
-  async filter({ query = "", sort = "popularity", page = "1" }) {
+  async searchAnime({ query = "", sort = "popularity", page = "1" }) {
     var titlePref = this.getPreference("animetsu_title_lang");
 
     var slug = "/search/?";
@@ -87,15 +87,15 @@ class DefaultExtension extends MProvider {
   }
 
   async getPopular(page) {
-    return await this.filter({ page: page });
+    return await this.searchAnime({ page: page });
   }
 
   async getLatestUpdates(page) {
-    return await this.filter({ sort: "date_desc", page: page });
+    return await this.searchAnime({ sort: "date_desc", page: page });
   }
 
   async search(query, page, filters) {
-    throw new Error("search not implemented");
+    return await this.searchAnime({ query: query, page: page });
   }
 
   async getDetail(url) {
@@ -162,7 +162,83 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    var serverPref = this.getPreference("animetsu_pref_stream_server");
+    if (serverPref.length < 1) serverPref.push("pahe");
+
+    var audioPref = this.getPreference("animetsu_pref_stream_subdub_type");
+    if (audioPref.length < 1) audioPref.push("sub");
+
+    var streams = [];
+
+    for (var serverName of serverPref) {
+      for (var audioType of audioPref) {
+        var epSlug = `/oppai/${url}?server=${serverName}&source_type=${audioType}`;
+        var epData = await this.request(epSlug);
+
+        var serverStreams = [];
+        if (serverName == "pahe" || serverName == "meg") {
+          serverStreams = this.getPaheMegStreams(
+            epData.sources,
+            audioType,
+            serverName,
+          );
+        } else if (serverName == "kite") {
+          serverStreams = this.getKiteStreams(epData, audioType);
+        }
+
+        streams = [...streams, ...serverStreams];
+      }
+    }
+
+    return streams;
+  }
+
+  streamNamer(res, dubType, serverName) {
+    return `${res.toUpperCase()} - ${dubType.toUpperCase()} : ${serverName.toUpperCase()}`;
+  }
+
+  getPaheMegStreams(epData, audioType, serverName) {
+    var hdr = this.getHeaders();
+    var streams = [];
+    epData.forEach((item) => {
+      var quality = item.quality;
+      var link = this.getProxyMediaUrl(item.url);
+      streams.push({
+        url: link,
+        originalUrl: link,
+        quality: this.streamNamer(quality, audioType, serverName),
+        headers: hdr,
+      });
+    });
+
+    return streams;
+  }
+
+  getKiteStreams(epData, audioType) {
+    var hdr = this.getHeaders();
+    var streams = [];
+    epData.sources.forEach((item) => {
+      var quality = "Auto";
+      var link = this.getProxyMediaUrl(item.url);
+      streams.push({
+        url: link,
+        originalUrl: link,
+        quality: this.streamNamer(quality, "soft" + audioType, "kite"),
+        headers: hdr,
+      });
+    });
+
+    var subtitles = [];
+    epData.subs.forEach((item) => {
+      subtitles.push({
+        file: item.url,
+        label: item.lang,
+        headers: hdr,
+      });
+    });
+
+    streams[0]["subtitles"] = subtitles;
+    return streams;
   }
 
   getFilterList() {
@@ -205,6 +281,26 @@ class DefaultExtension extends MProvider {
           title: "Episode description",
           summary: "",
           value: true,
+        },
+      },
+      {
+        key: "animetsu_pref_stream_server",
+        multiSelectListPreference: {
+          title: "Preferred server",
+          summary: "Choose the server/s you want to extract streams from",
+          values: ["pahe", "kite", "meg"],
+          entries: ["Pahe", "Kite", "Meg"],
+          entryValues: ["pahe", "kite", "meg"],
+        },
+      },
+      {
+        key: "animetsu_pref_stream_subdub_type",
+        multiSelectListPreference: {
+          title: "Preferred stream sub/dub type",
+          summary: "",
+          values: ["sub", "dub"],
+          entries: ["Sub", "Dub"],
+          entryValues: ["sub", "dub"],
         },
       },
     ];
