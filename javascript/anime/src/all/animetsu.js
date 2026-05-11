@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -46,7 +46,7 @@ class DefaultExtension extends MProvider {
   }
 
   getProxyMediaUrl(url) {
-    return "https://mega-cloud.top/proxy" + url;
+    return "https://swiftstream.top/proxy" + url;
   }
 
   async request(slug) {
