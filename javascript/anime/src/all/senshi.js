@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -132,7 +132,7 @@ class DefaultExtension extends MProvider {
       );
     }
 
-    if (url.includes("/anime/")) url = url.split("/anime/")[1];
+    if (url.includes("/watch/")) url = url.split("/watch/")[1].split("/")[0];
     var id = url;
 
     var baseUrl = this.getBaseUrl();
@@ -186,11 +186,11 @@ class DefaultExtension extends MProvider {
         });
       });
     }
-
+    var link = `${baseUrl}/watch/${id}/1`
     returnData["genre"] = genres;
     returnData["status"] = statusCode(status);
     returnData["description"] = description;
-    returnData["link"] = baseUrl + slug;
+    returnData["link"] = link
     returnData["chapters"] = chapters.reverse();
     return returnData;
   }
