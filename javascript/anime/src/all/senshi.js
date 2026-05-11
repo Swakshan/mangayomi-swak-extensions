@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "1.0.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -38,7 +38,7 @@ class DefaultExtension extends MProvider {
     return "https://senshi.live";
   }
 
-  getHeaders(url) {
+  getHeaders() {
     return {
       Referer: this.getBaseUrl(),
       Origin: this.getBaseUrl(),
@@ -196,7 +196,21 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    var hdr = this.getHeaders();
+    var streams = [];
+    var slug = `/episode-embeds/${url}`;
+    var doc = await this.request(slug);
+    doc.forEach((item) => {
+      var link = item.url;
+      streams.push({
+        url: link,
+        originalUrl: link,
+        quality: item.status,
+        headers: hdr,
+      });
+    });
+
+    return streams;
   }
 
   getFilterList() {
