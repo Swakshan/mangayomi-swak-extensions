@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -58,10 +58,26 @@ class DefaultExtension extends MProvider {
     return JSON.parse(res.body);
   }
 
+  animeDetailFormat(item, titlePref) {
+    var baseUrl = this.getBaseUrl();
+
+    item = item.hasOwnProperty("anime") ? item.anime : item;
+    var romajiTitle = item.title;
+    var englishTitle = item.hasOwnProperty("title_english")
+      ? item.title_english
+      : romajiTitle;
+    var name = titlePref == "e" ? englishTitle : romajiTitle;
+
+    var anime_picture = item.anime_picture;
+    var imageUrl = baseUrl + anime_picture;
+
+    var link = item.public_id;
+    return { name, imageUrl, link };
+  }
+
   async formatList(slug, body, page, perPageLimit) {
     var doc = await this.request(slug, body);
 
-    var baseUrl = this.getBaseUrl();
     var titlePref = this.getPreference("senshi_title_lang");
 
     var totalCount = doc.total;
@@ -69,23 +85,7 @@ class DefaultExtension extends MProvider {
     var list = [];
 
     doc.data.forEach((item) => {
-      item = item.hasOwnProperty("anime") ? item.anime : item;
-      var romajiTitle = item.title;
-      var englishTitle = item.hasOwnProperty("title_english")
-        ? item.title_english
-        : romajiTitle;
-      var name = titlePref == "e" ? englishTitle : romajiTitle;
-
-      var anime_picture = item.anime_picture;
-      var imageUrl = baseUrl + anime_picture;
-
-      var link = item.public_id;
-
-      list.push({
-        name,
-        link,
-        imageUrl,
-      });
+      list.push(this.animeDetailFormat(item, titlePref));
     });
     return { list, hasNextPage };
   }
@@ -122,7 +122,77 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    function statusCode(status) {
+      return (
+        {
+          "Currently Airing": 0,
+          "Finished Airing": 1,
+          "Not yet aired": 4,
+        }[status] ?? 5
+      );
+    }
+
+    if (url.includes("/anime/")) url = url.split("/anime/")[1];
+    var id = url;
+
+    var baseUrl = this.getBaseUrl();
+    var titlePref = this.getPreference("senshi_title_lang");
+
+    var slug = "/anime/" + id;
+
+    var doc = await this.request(slug);
+    var animeId = doc.id;
+    var returnData = this.animeDetailFormat(doc, titlePref);
+    var description = doc.ani_description;
+    var status = doc.ani_status;
+    var genres = doc.genres.split(", ");
+    var type = doc.type;
+
+    var chapters = [];
+    if (type == "Movie") {
+      var epName = type;
+      var epUrl = `${animeId}/1`;
+      var isFiller = false;
+      var dateUpload = doc.hasOwnProperty("created_at")
+        ? new Date(doc.created_at).valueOf().toString()
+        : null;
+
+      chapters.push({
+        name: epName,
+        url: epUrl,
+        isFiller,
+        dateUpload,
+      });
+    } else {
+      var epslug = `/episodes/${animeId}`;
+      doc = await this.request(epslug);
+      doc.forEach((item) => {
+        var ep_id = item.ep_id;
+        var epTitle = item.hasOwnProperty("ep_title") ? item.ep_title : null;
+        var epName = epTitle ? `E${ep_id}: ${epTitle}` : `E${ep_id}`;
+
+        var isFiller = item.ep_filler || item.ep_recap;
+        var dateUpload = item.hasOwnProperty("created_at")
+          ? new Date(item.created_at).valueOf().toString()
+          : null;
+
+        var epUrl = `${animeId}/${ep_id}`;
+
+        chapters.push({
+          name: epName,
+          url: epUrl,
+          isFiller,
+          dateUpload,
+        });
+      });
+    }
+
+    returnData["genre"] = genres;
+    returnData["status"] = statusCode(status);
+    returnData["description"] = description;
+    returnData["link"] = baseUrl + slug;
+    returnData["chapters"] = chapters.reverse();
+    return returnData;
   }
 
   async getVideoList(url) {
