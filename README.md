@@ -20,6 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| Senshi | 1.0.1 | all | 2026/05/11 12:15 IST |
 | Animetsu | 1.0.3 | all | 2026/05/11 10:13 IST |
 | Sudatchi | 2.0.1 | en | 2026/04/22 11:07 IST |
 | Animeonsen | 1.0.5 | en, ja | 2026/04/22 11:07 IST |

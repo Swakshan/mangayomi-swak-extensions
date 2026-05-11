@@ -1,5 +1,27 @@
 [
     {
+        "name": "Senshi",
+        "id": 4254616130,
+        "baseUrl": "https://senshi.live",
+        "lang": "all",
+        "typeSource": "single",
+        "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://senshi.live",
+        "dateFormat": "",
+        "dateFormatLocale": "",
+        "isNsfw": false,
+        "hasCloudflare": false,
+        "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/all/senshi.js",
+        "apiUrl": "",
+        "version": "1.0.1",
+        "isManga": false,
+        "itemType": 1,
+        "isFullData": false,
+        "appMinVerReq": "0.5.0",
+        "additionalParams": "",
+        "sourceCodeLanguage": 1,
+        "notes": ""
+    },
+    {
         "name": "KissKH",
         "id": 4029425029,
         "baseUrl": "https://kisskh.ovh",

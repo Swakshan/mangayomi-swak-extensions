@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Senshi": {
+            "name": "Senshi",
+            "version": "1.0.1",
+            "langs": "all",
+            "lastUpd": 1778481909.284884
+        },
         "Animetsu": {
             "name": "Animetsu",
             "version": "1.0.3",
