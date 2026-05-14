@@ -17,8 +17,9 @@ def createFunction(isAsync: bool, funcName: str, args: list, code=""):
 
 def builder(source: dict, itemType: ItemType):
     lines = []
-
-    code = "const mangayomiSources = [<>];".replace("<>", str(jsonExt))
+    baseUrl = source["baseUrl"]
+    source = json.dumps(source)
+    code = "const mangayomiSources = [<>];".replace("<>", str(source))
     lines.append("class DefaultExtension extends MProvider {")
     lines.append(
         createFunction(
@@ -30,7 +31,8 @@ def builder(source: dict, itemType: ItemType):
             False, "getPreference", ["key"], "return new SharedPreferences().get(key);"
         )
     )
-    lines.append(createFunction(False, "getHeaders", ["url"]))
+
+    lines.append(createFunction(False, "getHeaders", ["url"],"return { Referer:\""+baseUrl+"\",Origin:\""+baseUrl+"\",\"User-Agent\":\"MangaYomi\"};"))
     lines.append(createFunction(True, "getPopular", ["page"]))
     lines.append(createFunction(True, "getLatestUpdates", ["page"]))
     lines.append(createFunction(True, "search", ["query", "page", "filters"]))
@@ -107,7 +109,6 @@ if len(langs) > 1:
 pkgPath = f"{itemType.name}/src/{langs[0]}/{name.lower()}.js"
 jsonExt["pkgPath"] = pkgPath
 
-jsonExt = json.dumps(jsonExt)
 code = builder(jsonExt, itemType)
 
 filePath = getParentPath() / "javascript" / pkgPath

@@ -20,31 +20,25 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| AnimeKai | 0.5.3 | en | 2026/01/02 00:00 IST |
-| XPrime | 2.3.4 | all | 2025/12/01 22:41 IST |
-| yFlix | 0.0.6 | all | 2025/12/01 22:41 IST |
+| Senshi | 1.0.1 | all | 2026/05/11 12:15 IST |
+| Animetsu | 1.0.3 | all | 2026/05/11 10:13 IST |
+| Sudatchi | 2.0.1 | en | 2026/04/22 11:07 IST |
+| Animeonsen | 1.0.5 | en, ja | 2026/04/22 11:07 IST |
 | Moviesda | 1.2.2 | ta | 2025/12/01 22:41 IST |
 | Kaido | 1.0.2 | en | 2025/09/25 16:19 IST |
 | KickAssAnime | 1.2.5 | en | 2025/09/14 19:11 IST |
-| Anixl | 0.0.81 | en | 2025/09/05 16:59 IST |
 | SubsPlease | 0.0.5 | en | 2025/07/23 23:21 IST |
-| Aniwatch | 1.0.0 | en | 2025/06/30 23:06 IST |
-| Anicrush | 0.0.5 | en | 2025/06/27 22:11 IST |
 | AnimeParadise | 0.1.0 | en | 2025/06/21 18:06 IST |
 | AnimeZZ | 1.1.1 | en | 2025/06/21 16:47 IST |
-| Dramacool | 1.1.0 | all | 2025/06/13 11:41 IST |
 | Autoembed | 1.3.3 | all | 2025/05/24 19:22 IST |
-| Gojo | 0.0.6 | en | 2025/05/20 16:17 IST |
-| Sudatchi | 1.1.1 | en | 2025/05/20 16:17 IST |
 | AnimeGG | 1.0.3 | en | 2025/05/20 16:17 IST |
-| Animeonsen | 1.0.1 | en, ja | 2025/05/20 16:17 IST |
-| Aniwave | 0.0.7 | en | 2025/05/09 00:11 IST |
 | KissKH | 0.1.6 | all | 2025/05/02 22:47 IST |
 
 ## Novel
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| NovelFire | 0.0.1 | en | 2026/04/04 12:12 IST |
 | bookReadFree | 0.0.1 | en | 2026/03/09 20:52 IST |
 | Novelbuddy | 0.0.9 | en | 2025/06/09 23:24 IST |
 
