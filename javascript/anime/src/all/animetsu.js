@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -173,7 +173,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    var serverPref = this.getPreference("animetsu_pref_stream_server");
+    var serverPref = this.getPreference("animetsu_pref_stream_server_1");
     if (serverPref.length < 1) serverPref.push("pahe");
 
     var audioPref = this.getPreference("animetsu_pref_stream_subdub_type");
@@ -188,14 +188,22 @@ class DefaultExtension extends MProvider {
 
         var serverStreams = [];
         if (epData.hasOwnProperty("sources")) {
-          if (serverName == "pahe" || serverName == "meg") {
-            serverStreams = this.getPaheMegStreams(
+          if (
+            serverName == "pahe" ||
+            serverName == "meg" ||
+            serverName == "kiss"
+          ) {
+            serverStreams = this.getHardSubStreams(
               epData.sources,
               audioType,
               serverName,
             );
-          } else if (serverName == "kite") {
-            serverStreams = this.getKiteStreams(epData, audioType);
+          } else if (serverName == "kite" || serverName == "dio") {
+            serverStreams = this.getSoftSubStreams(
+              epData,
+              audioType,
+              serverName,
+            );
           }
         }
 
@@ -210,7 +218,7 @@ class DefaultExtension extends MProvider {
     return `${res.toUpperCase()} - ${dubType.toUpperCase()} : ${serverName.toUpperCase()}`;
   }
 
-  getPaheMegStreams(epData, audioType, serverName) {
+  getHardSubStreams(epData, audioType, serverName) {
     var hdr = this.getHeaders();
     var streams = [];
     epData.forEach((item) => {
@@ -227,7 +235,7 @@ class DefaultExtension extends MProvider {
     return streams;
   }
 
-  getKiteStreams(epData, audioType) {
+  getSoftSubStreams(epData, audioType, serverName) {
     var hdr = this.getHeaders();
     var streams = [];
 
@@ -237,7 +245,7 @@ class DefaultExtension extends MProvider {
       streams.push({
         url: link,
         originalUrl: link,
-        quality: this.streamNamer(quality, "soft" + audioType, "kite"),
+        quality: this.streamNamer(quality, "soft" + audioType, serverName),
         headers: hdr,
       });
     });
@@ -299,13 +307,13 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "animetsu_pref_stream_server",
+        key: "animetsu_pref_stream_server_1",
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
-          values: ["pahe", "kite", "meg"],
-          entries: ["Pahe", "Kite", "Meg"],
-          entryValues: ["pahe", "kite", "meg"],
+          values: ["pahe", "kite", "meg", "dio", "kiss"],
+          entries: ["Pahe", "Kite", "Meg", "Dio", "Kiss"],
+          entryValues: ["pahe", "kite", "meg", "dio", "kiss"],
         },
       },
       {
