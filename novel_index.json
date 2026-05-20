@@ -1,11 +1,11 @@
 [
     {
-        "name": "NovelFire",
-        "id": 1881171594,
-        "baseUrl": "https://novelfire.net",
+        "name": "bookReadFree",
+        "id": 2088776723,
+        "baseUrl": "https://bookreadfree.com",
         "lang": "en",
         "typeSource": "single",
-        "iconUrl": "https://m.media-amazon.com/images/I/31957gKv8WL.jpg",
+        "iconUrl": "https://cdn.pixabay.com/photo/2016/09/16/09/20/books-1673578_1280.png",
         "dateFormat": "",
         "dateFormatLocale": "",
         "isNsfw": false,
@@ -44,12 +44,12 @@
         "notes": ""
     },
     {
-        "name": "bookReadFree",
-        "id": 2088776723,
-        "baseUrl": "https://bookreadfree.com",
+        "name": "NovelFire",
+        "id": 1881171594,
+        "baseUrl": "https://novelfire.net",
         "lang": "en",
         "typeSource": "single",
-        "iconUrl": "https://cdn.pixabay.com/photo/2016/09/16/09/20/books-1673578_1280.png",
+        "iconUrl": "https://m.media-amazon.com/images/I/31957gKv8WL.jpg",
         "dateFormat": "",
         "dateFormatLocale": "",
         "isNsfw": false,

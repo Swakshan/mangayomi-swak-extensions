@@ -32,17 +32,17 @@
         }
     },
     "anime": {
+        "Animetsu": {
+            "name": "Animetsu",
+            "version": "1.1.0",
+            "langs": "all",
+            "lastUpd": 1779253831.818091
+        },
         "Senshi": {
             "name": "Senshi",
             "version": "1.0.1",
             "langs": "all",
             "lastUpd": 1778481909.284884
-        },
-        "Animetsu": {
-            "name": "Animetsu",
-            "version": "1.0.3",
-            "langs": "all",
-            "lastUpd": 1778474597.123223
         },
         "Sudatchi": {
             "name": "Sudatchi",
