@@ -112,6 +112,12 @@
         }
     },
     "novel": {
+        "RoyalRoad": {
+            "name": "RoyalRoad",
+            "version": "0.0.1",
+            "langs": "en",
+            "lastUpd": 1779977117.297965
+        },
         "NovelFire": {
             "name": "NovelFire",
             "version": "0.0.1",
