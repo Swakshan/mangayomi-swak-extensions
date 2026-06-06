@@ -1,11 +1,11 @@
 [
     {
-        "name": "RoyalRoad",
-        "id": 1494678207,
-        "baseUrl": "https://www.royalroad.com",
+        "name": "NovelFire",
+        "id": 1881171594,
+        "baseUrl": "https://novelfire.net",
         "lang": "en",
         "typeSource": "single",
-        "iconUrl": "https://www.royalroad.com/dist/img/logo/rr-logo-gold-white-small-min.png",
+        "iconUrl": "https://m.media-amazon.com/images/I/31957gKv8WL.jpg",
         "dateFormat": "",
         "dateFormatLocale": "",
         "isNsfw": false,
@@ -66,12 +66,12 @@
         "notes": ""
     },
     {
-        "name": "NovelFire",
-        "id": 1881171594,
-        "baseUrl": "https://novelfire.net",
+        "name": "RoyalRoad",
+        "id": 1494678207,
+        "baseUrl": "https://www.royalroad.com",
         "lang": "en",
         "typeSource": "single",
-        "iconUrl": "https://m.media-amazon.com/images/I/31957gKv8WL.jpg",
+        "iconUrl": "https://www.royalroad.com/dist/img/logo/rr-logo-gold-white-small-min.png",
         "dateFormat": "",
         "dateFormatLocale": "",
         "isNsfw": false,

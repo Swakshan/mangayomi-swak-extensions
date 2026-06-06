@@ -11,8 +11,8 @@ This repository contains the available javascript extension catalogues for the M
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
 | WeLoMa | 1.0.0 | ja | 2025/10/29 23:26 IST |
-| Mangapill | 1.0.4 | en | 2025/09/17 08:55 IST |
 | Mangapark | 1.0.1 | en | 2025/09/17 08:55 IST |
+| Mangapill | 1.0.4 | en | 2025/09/17 08:55 IST |
 | ReadComicOnline | 0.3.0 | en | 2025/07/26 16:15 IST |
 | Weeb Central | 0.1.0 | en | 2025/03/15 03:44 IST |
 
@@ -20,13 +20,10 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
-| Animetsu | 1.1.0 | all | 2026/05/20 10:40 IST |
 | Senshi | 1.0.1 | all | 2026/05/11 12:15 IST |
-| Sudatchi | 2.0.1 | en | 2026/04/22 11:07 IST |
 | Animeonsen | 1.0.5 | en, ja | 2026/04/22 11:07 IST |
+| Sudatchi | 2.0.1 | en | 2026/04/22 11:07 IST |
 | Moviesda | 1.2.2 | ta | 2025/12/01 22:41 IST |
-| Kaido | 1.0.2 | en | 2025/09/25 16:19 IST |
-| KickAssAnime | 1.2.5 | en | 2025/09/14 19:11 IST |
 | SubsPlease | 0.0.5 | en | 2025/07/23 23:21 IST |
 | AnimeParadise | 0.1.0 | en | 2025/06/21 18:06 IST |
 | AnimeZZ | 1.1.1 | en | 2025/06/21 16:47 IST |
