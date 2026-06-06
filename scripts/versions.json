@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Anikoto": {
+            "name": "Anikoto",
+            "version": "1.0.0",
+            "langs": "all",
+            "lastUpd": 1780734782.275507
+        },
         "Senshi": {
             "name": "Senshi",
             "version": "1.0.1",
