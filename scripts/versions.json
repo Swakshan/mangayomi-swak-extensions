@@ -32,6 +32,12 @@
         }
     },
     "anime": {
+        "Animetsu": {
+            "name": "Animetsu",
+            "version": "1.2.1",
+            "langs": "all",
+            "lastUpd": 1780763552.837602
+        },
         "Anikoto": {
             "name": "Anikoto",
             "version": "1.0.2",
