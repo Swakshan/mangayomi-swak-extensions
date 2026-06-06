@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "1.0.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -60,9 +60,14 @@ class DefaultExtension extends MProvider {
     return new Document(res);
   }
 
-  async requestJson(slug) {
+  async jsonRequest(slug) {
     var res = await this.request(slug);
-    return new Document(JSON.parse(res)["result"]);
+    return JSON.parse(res)["result"];
+  }
+
+  async requestJson(slug) {
+    var res = await this.jsonRequest(slug);
+    return new Document(res);
   }
 
   async filter({ keyword = "", sort = "default", page = "1" }) {
@@ -177,11 +182,80 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    var audioPref = this.getPreference("anikoto_stream_subdub_type");
+    var streams = [];
+    var slug = `/ajax/server/list?servers=${url}`;
+    var doc = await this.requestJson(slug);
+
+    var tags = doc.select(".type");
+
+    for (var tag of tags) {
+      var dubType = tag.attr("data-type").toUpperCase();
+      if (!audioPref.includes(dubType)) continue;
+
+      var serverTags = tag.selectFirst("ul").select("li");
+      for (var item of serverTags) {
+        var serverName = item.text.trim();
+
+        if (serverName.includes("VidCloud")) continue;
+        var serverId = item.attr("data-link-id");
+        var streamData = await this.serverData(serverId, serverName, dubType);
+
+        if (streamData) streams.push(streamData);
+      }
+    }
+
+    return streams;
   }
 
   getFilterList() {
     throw new Error("getFilterList not implemented");
+  }
+
+  formatSubtitles(subtitles, dubType) {
+    var subs = [];
+    subtitles.forEach((sub) => {
+      if (!sub.kind.includes("thumbnail")) {
+        subs.push({
+          file: sub.file,
+          label: `${sub.label} - ${dubType}`,
+        });
+      }
+    });
+
+    return subs;
+  }
+
+  async serverData(dataId, serverName, dubType) {
+    function streamNamer(res) {
+      return `${res} - ${dubType} : ${serverName}`;
+    }
+
+    var streamLinkData = await this.jsonRequest(`/ajax/server?get=${dataId}`);
+    var streamId = streamLinkData["url"].split("/").reverse()[1];
+    var megaBuzzUrl = "https://megaplay.buzz/";
+    var streamApi = `${megaBuzzUrl}stream/getSources?id=${streamId}`;
+    var hdr = this.getHeaders();
+    hdr["Referer"] = streamApi;
+    var res = await this.client.get(streamApi, hdr);
+    if (res.statusCode != 200) return null;
+
+    hdr = hdr = {
+      Referer: megaBuzzUrl,
+      Origin: megaBuzzUrl,
+      "User-Agent": "MangaYomi",
+    };
+    var streamData = JSON.parse(res.body);
+    var url = streamData.sources.file;
+    var subtitles = streamData.tracks;
+    subtitles = this.formatSubtitles(subtitles, dubType);
+    return {
+      url: url,
+      originalUrl: url,
+      quality: streamNamer("Auto"),
+      headers: hdr,
+      subtitles,
+    };
   }
 
   getSourcePreferences() {
@@ -204,6 +278,16 @@ class DefaultExtension extends MProvider {
           valueIndex: 0,
           entries: ["English", "Romaji"],
           entryValues: ["e", "r"],
+        },
+      },
+      {
+        key: "anikoto_stream_subdub_type",
+        multiSelectListPreference: {
+          title: "Preferred stream sub/dub type",
+          summary: "",
+          values: ["SUB", "DUB"],
+          entries: ["Soft Sub", "Dub"],
+          entryValues: ["SUB", "DUB"],
         },
       },
     ];
