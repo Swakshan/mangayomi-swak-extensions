@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -47,21 +47,26 @@ class DefaultExtension extends MProvider {
     return this.getPreference("anikoto_base_url");
   }
 
-  async request(slug) {
-    var baseUrl = this.getBaseUrl();
-    var hdr = this.getHeaders();
-    var url = slug.includes(baseUrl) ? slug : baseUrl + slug;
+  async request(url,hdr){
     var res = await this.client.get(url, hdr);
+    if(res.statusCode!=200) return null;
     return res.body;
   }
 
+  async aniRequest(slug) {
+    var baseUrl = this.getBaseUrl();
+    var hdr = this.getHeaders();
+    var url = slug.includes(baseUrl) ? slug : baseUrl + slug;
+    return await this.request(url,hdr)
+  }
+
   async requestDoc(slug) {
-    var res = await this.request(slug);
+    var res = await this.aniRequest(slug);
     return new Document(res);
   }
 
   async jsonRequest(slug) {
-    var res = await this.request(slug);
+    var res = await this.aniRequest(slug);
     return JSON.parse(res)["result"];
   }
 
@@ -232,20 +237,24 @@ class DefaultExtension extends MProvider {
     }
 
     var streamLinkData = await this.jsonRequest(`/ajax/server?get=${dataId}`);
-    var streamId = streamLinkData["url"].split("/").reverse()[1];
-    var megaBuzzUrl = "https://megaplay.buzz/";
-    var streamApi = `${megaBuzzUrl}stream/getSources?id=${streamId}`;
-    var hdr = this.getHeaders();
-    hdr["Referer"] = streamApi;
-    var res = await this.client.get(streamApi, hdr);
-    if (res.statusCode != 200) return null;
+    var streamEmbedUrl = streamLinkData["url"]
 
-    hdr = hdr = {
+    var megaBuzzUrl = "https://megaplay.buzz/"
+    var hdr = {
       Referer: megaBuzzUrl,
       Origin: megaBuzzUrl,
       "User-Agent": "MangaYomi",
     };
-    var streamData = JSON.parse(res.body);
+
+    var res = await this.request(streamEmbedUrl,hdr);
+    var doc = new Document(res);
+
+    var data_id = doc.selectFirst("#megaplay-player").attr("data-id");
+    if(data_id.length<1) return null;
+    var streamApi = `${megaBuzzUrl}stream/getSourcesNew?id=${data_id}&id=${data_id}`;
+    res = await this.request(streamApi,hdr);
+        if(res==null) return null;
+    var streamData = JSON.parse(res);
     var url = streamData.sources.file;
     var subtitles = streamData.tracks;
     subtitles = this.formatSubtitles(subtitles, dubType);
@@ -285,9 +294,9 @@ class DefaultExtension extends MProvider {
         multiSelectListPreference: {
           title: "Preferred stream sub/dub type",
           summary: "",
-          values: ["SUB", "DUB"],
-          entries: ["Soft Sub", "Dub"],
-          entryValues: ["SUB", "DUB"],
+          values: ["SUB", "HSUB", "DUB"],
+          entries: ["Soft Sub", "Hard Sub", "Dub"],
+          entryValues: ["SUB", "HSUB", "DUB"],
         },
       },
     ];
