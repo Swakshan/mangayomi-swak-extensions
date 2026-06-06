@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -173,7 +173,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    var serverPref = this.getPreference("animetsu_pref_stream_server_1");
+    var serverPref = this.getPreference("animetsu_pref_stream_server_2");
     if (serverPref.length < 1) serverPref.push("pahe");
 
     var audioPref = this.getPreference("animetsu_pref_stream_subdub_type");
@@ -198,7 +198,7 @@ class DefaultExtension extends MProvider {
               audioType,
               serverName,
             );
-          } else if (serverName == "kite" || serverName == "dio") {
+          } else if (serverName == "kite" || serverName == "dio" ||serverName == "baku") {
             serverStreams = this.getSoftSubStreams(
               epData,
               audioType,
@@ -307,13 +307,13 @@ class DefaultExtension extends MProvider {
         },
       },
       {
-        key: "animetsu_pref_stream_server_1",
+        key: "animetsu_pref_stream_server_2",
         multiSelectListPreference: {
           title: "Preferred server",
           summary: "Choose the server/s you want to extract streams from",
-          values: ["pahe", "kite", "meg", "dio", "kiss"],
-          entries: ["Pahe", "Kite", "Meg", "Dio", "Kiss"],
-          entryValues: ["pahe", "kite", "meg", "dio", "kiss"],
+          values: ["pahe", "kite", "meg", "dio", "kiss","baku"],
+          entries: ["Pahe", "Kite", "Meg", "Dio", "Kiss", "Baku"],
+          entryValues: ["pahe", "kite", "meg", "dio", "kiss","baku"],
         },
       },
       {
