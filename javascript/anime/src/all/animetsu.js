@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -42,6 +42,7 @@ class DefaultExtension extends MProvider {
     url = url != null && url.length > 0 ? url : this.getBaseUrl();
     return {
       "Referer": url,
+      "User-Agent":"MangaYomi"
     };
   }
 
