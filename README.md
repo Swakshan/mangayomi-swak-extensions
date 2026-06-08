@@ -20,6 +20,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| AniDB | 1.0.1 | all | 2026/06/08 13:09 IST |
 | Animetsu | 1.2.2 | all | 2026/06/07 14:15 IST |
 | Anikoto | 1.0.2 | all | 2026/06/06 17:02 IST |
 | Senshi | 1.0.1 | all | 2026/05/11 12:15 IST |

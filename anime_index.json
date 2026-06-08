@@ -264,6 +264,28 @@
         "notes": ""
     },
     {
+        "name": "AniDB",
+        "id": 952169136,
+        "baseUrl": "https://anidb.app",
+        "lang": "all",
+        "typeSource": "single",
+        "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://anidb.app/",
+        "dateFormat": "",
+        "dateFormatLocale": "",
+        "isNsfw": false,
+        "hasCloudflare": false,
+        "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/all/anidb.js",
+        "apiUrl": "",
+        "version": "1.0.1",
+        "isManga": false,
+        "itemType": 1,
+        "isFullData": false,
+        "appMinVerReq": "0.5.0",
+        "additionalParams": "",
+        "sourceCodeLanguage": 1,
+        "notes": ""
+    },
+    {
         "name": "Moviesda",
         "id": 3570935492,
         "baseUrl": "https://moviesda14.net",
