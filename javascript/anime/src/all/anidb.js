@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.5",
+    "version": "1.0.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -172,7 +172,26 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    throw new Error("getVideoList not implemented");
+    var streams = [];
+    var includeDub = this.getPreference("anidb_include_other_audio");
+
+    var episodeSlug = `/api/frontend/episode/${url}/languages`;
+    var doc = await this.requestJson(episodeSlug);
+
+    for (var item of doc.languages) {
+      var code = item.code;
+      if (code != "jpn" && !code) continue;
+      var language = item.name;
+      var embed_url = item.embed_url;
+      var streamUrl = await this.extractFromEmbed(embed_url);
+      streams.push({
+        url: streamUrl,
+        originalUrl: streamUrl,
+        quality: language,
+      });
+    }
+
+    return streams.reverse();
   }
 
   getFilterList() {
@@ -180,6 +199,28 @@ class DefaultExtension extends MProvider {
   }
 
   getSourcePreferences() {
-    throw new Error("getSourcePreferences not implemented");
+  return [
+   {
+        key: "anidb_include_other_audio",
+        "switchPreferenceCompat": {
+          "title": "Include other audio streams",
+          "summary": "Include streams ther than Japanese audio",
+          "value": true,
+        },
+      },
+    ];
+  }
+
+
+  async extractFromEmbed(url) {
+    var doc = await this.requestDoc(url);
+    var startKey = "file: '";
+    var endKey = "', type: ";
+    var body = doc.html;
+
+    var start = body.indexOf(startKey) + startKey.length;
+    var end = body.indexOf(endKey, start);
+
+    return body.substring(start, end);
   }
 }
