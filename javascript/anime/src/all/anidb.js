@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.1",
+    "version": "0.0.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -48,7 +48,12 @@ class DefaultExtension extends MProvider {
   }
 
   async request(slug) {
-    var url = this.getBaseUrl() + slug;
+    var baseUrl = this.getBaseUrl();
+    if (slug.includes(baseUrl)) {
+      url = slug;
+    } else {
+      var url = baseUrl + slug;
+    }
     var res = await this.client.get(url, this.getHeaders());
     if (res.statusCode != 200) return null;
     return res.body;
@@ -85,9 +90,9 @@ class DefaultExtension extends MProvider {
 
     var hasNextPage = false;
     var paginationSection = doc.selectFirst(".mt-10");
-    
-      var spans = paginationSection.select("span")
-      if (spans != null && spans.length > 1) {
+
+    var spans = paginationSection.select("span");
+    if (spans != null && spans.length > 1) {
       var lastSpan = spans.reverse()[0];
       hasNextPage = !lastSpan.className.includes("cursor-not-allowed");
     }
@@ -108,7 +113,62 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    throw new Error("getDetail not implemented");
+    function statusCode(status) {
+      return (
+        {
+          "Currently Airing": 0,
+          "Finished Airing": 1,
+        }[status] ?? 5
+      );
+    }
+
+    function formChapter(item, epSlug) {
+      var epNum = item.number;
+      var epName = `${epSlug} ${epNum}`;
+      var token = `${item.id}`;
+      var isFiller = item.filler;
+
+      return {
+        name: epName,
+        url: token,
+        isFiller,
+      };
+    }
+
+    var doc = await this.requestDoc(url);
+
+    var description = doc.selectFirst(
+      ".text-sm.text-faint.leading-relaxed",
+    ).text;
+    var statusText = doc.selectFirst(".badge.badge-gray").text;
+    var status = statusCode(statusText);
+    var genre = [];
+    doc
+      .selectFirst(".flex-1.pt-2")
+      .selectFirst(".flex.flex-wrap.gap-1.5.mb-4")
+      .select("a")
+      .forEach((item) => {
+        genre.push(item.text);
+      });
+    var animeType = doc.selectFirst(".badge.badge-orange").text.toUpperCase();
+    var isMovie = animeType == "MOVIE";
+    var animeId = url.split("-").reverse()[0];
+
+    var chapters = [];
+    var chaptersSlug = `/api/frontend/anime/${animeId}/episodes`;
+    doc = await this.requestJson(chaptersSlug);
+    var episodeList = doc.episodes;
+    if (isMovie) {
+      var item = doc.episodes[0];
+      chapters.push(formChapter(item, "Movie"));
+    } else {
+      episodeList.forEach((item) => {
+        chapters.push(formChapter(item, "Episode"));
+      });
+    }
+
+    chapters.reverse();
+    return { link: url, description, genre, status, chapters };
   }
 
   async getVideoList(url) {
