@@ -13,7 +13,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -122,9 +122,7 @@ class DefaultExtension extends MProvider {
       );
     }
 
-    function formChapter(item, epSlug) {
-      var epNum = item.number;
-      var epName = `${epSlug} ${epNum}`;
+    function formChapter(item, epName) {
       var token = `${item.id}`;
       var isFiller = item.filler;
 
@@ -162,9 +160,11 @@ class DefaultExtension extends MProvider {
       var item = doc.episodes[0];
       chapters.push(formChapter(item, "Movie"));
     } else {
-      episodeList.forEach((item) => {
-        chapters.push(formChapter(item, "Episode"));
-      });
+      for (var index = 0; index < episodeList.length; index++) {
+        var item = episodeList[index];
+        var epName = `Episode ${index + 1}`;
+        chapters.push(formChapter(item, epName));
+      }
     }
 
     chapters.reverse();
@@ -199,8 +199,8 @@ class DefaultExtension extends MProvider {
   }
 
   getSourcePreferences() {
-  return [
-   {
+    return [
+      {
         key: "anidb_include_other_audio",
         "switchPreferenceCompat": {
           "title": "Include other audio streams",
@@ -210,7 +210,6 @@ class DefaultExtension extends MProvider {
       },
     ];
   }
-
 
   async extractFromEmbed(url) {
     var doc = await this.requestDoc(url);
