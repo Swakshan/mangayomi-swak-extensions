@@ -34,9 +34,9 @@
     "anime": {
         "AniDB": {
             "name": "AniDB",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "langs": "all",
-            "lastUpd": 1780904396.235975
+            "lastUpd": 1781089725.310316
         },
         "Animetsu": {
             "name": "Animetsu",
