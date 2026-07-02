@@ -1,5 +1,11 @@
 {
     "manga": {
+        "Atsumaru": {
+            "name": "Atsumaru",
+            "version": "0.0.1",
+            "langs": "en",
+            "lastUpd": 1782987882.185013
+        },
         "WeLoMa": {
             "name": "WeLoMa",
             "version": "1.0.0",
@@ -56,16 +62,16 @@
             "langs": "all",
             "lastUpd": 1778481909.284884
         },
-        "Animeonsen": {
-            "name": "Animeonsen",
-            "version": "1.0.5",
-            "langs": "en, ja",
-            "lastUpd": 1776836230.987179
-        },
         "Sudatchi": {
             "name": "Sudatchi",
             "version": "2.0.1",
             "langs": "en",
+            "lastUpd": 1776836230.987179
+        },
+        "Animeonsen": {
+            "name": "Animeonsen",
+            "version": "1.0.5",
+            "langs": "en, ja",
             "lastUpd": 1776836230.987179
         },
         "Moviesda": {
