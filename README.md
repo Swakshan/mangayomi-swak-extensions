@@ -10,6 +10,7 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| Mangafire | 1.0.2 | all | 2026/07/13 23:59 IST |
 | Atsumaru | 0.0.1 | en | 2026/07/02 15:54 IST |
 | WeLoMa | 1.0.0 | ja | 2025/10/29 23:26 IST |
 | Mangapark | 1.0.1 | en | 2025/09/17 08:55 IST |

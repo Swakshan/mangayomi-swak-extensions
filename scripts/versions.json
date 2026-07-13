@@ -1,5 +1,11 @@
 {
     "manga": {
+        "Mangafire": {
+            "name": "Mangafire",
+            "version": "1.0.2",
+            "langs": "all",
+            "lastUpd": 1783967381.509707
+        },
         "Atsumaru": {
             "name": "Atsumaru",
             "version": "0.0.1",
