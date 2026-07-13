@@ -12,7 +12,7 @@ const mangayomiSources = [
         hasCloudflare: false,
         sourceCodeUrl: "",
         apiUrl: "https://mangafire.to/api",
-        version: "1.0.0",
+        version: "1.0.1",
         isManga: true,
         itemType: 0,
         isFullData: false,
@@ -105,7 +105,7 @@ class DefaultExtension extends MProvider {
             mangaId = url.split("/title/")[1]
         }
 
-        var link = `${baseUrl}/title/${slug}`
+        var link = `${baseUrl}/title/${mangaId}`
         var description = ""
         var genre = []
         var status = 5
