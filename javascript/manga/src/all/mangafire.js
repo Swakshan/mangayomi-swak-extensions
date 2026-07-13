@@ -12,7 +12,7 @@ const mangayomiSources = [
         hasCloudflare: false,
         sourceCodeUrl: "",
         apiUrl: "https://mangafire.to/api",
-        version: "0.0.5",
+        version: "1.0.0",
         isManga: true,
         itemType: 0,
         isFullData: false,
@@ -47,7 +47,7 @@ class DefaultExtension extends MProvider {
     }
 
     async requestAPI(slug) {
-        var api = `${this.source.apiUrl}/${slug}`
+        var api = `${this.getBaseUrl()}/api/${slug}`
         var res = await this.client.get(api, this.getHeaders());
         if (res.statusCode != 200) return null;
         return JSON.parse(res.body);
@@ -193,7 +193,18 @@ class DefaultExtension extends MProvider {
     }
 
     async getPageList(url) {
-        throw new Error("getPageList not implemented");
+        var res = await this.requestAPI(url)
+        var urls = [];
+        var headers = this.getHeaders()
+
+        res['data']['pages'].forEach(item=>{
+            urls.push({
+                url: item.url,
+                headers
+            })
+        })
+
+        return urls
     }
 
     getFilterList() {
