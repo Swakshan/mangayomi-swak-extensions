@@ -12,7 +12,7 @@ const mangayomiSources = [
         "hasCloudflare": false,
         "sourceCodeUrl": "",
         "apiUrl": "https://mangafire.to/api",
-        "version": "1.0.2",
+        "version": "1.0.3",
         "isManga": true,
         "itemType": 0,
         "isFullData": false,
@@ -123,47 +123,56 @@ class DefaultExtension extends MProvider {
                 genre.push(item.title)
             })
 
+            var prefLang = "en"            
             var readingType = this.getPreference("mf_reading_type")
             var isVolumeEmpty = false;
-            
-            if(readingType.startsWith("v")){
+
+            if (readingType.startsWith("v")) {
                 var volSlug = `${slug}/${readingType}`
                 res = await this.requestAPI(volSlug)
-                if(res == null){
+                if (res == null) {
                     isVolumeEmpty = true;
-                }else{
+                } else {
                     var items = res.items
-                    if(items.length > 1) {
+                    if (items.length > 1) {
                         items.forEach(item => {
-                            var number = item.number
-                            var volumeTitle = `Volume ${number}`
-                            var volumeId = item.id
-                            var description = `Includes ${item.chapterCount} chapters`
+                            var volLang = item.language
+                            if (volLang == prefLang) {
+                                var number = item.number
+                                var volumeTitle = `Volume ${number}`
+                                var volumeId = item.id
+                                var description = `Includes ${item.chapterCount} chapters`
 
-                            chapters.push({
-                                name:volumeTitle,
-                                url: `${readingType}/${volumeId}`,
-                                description,
-                            })
-
+                                chapters.push({
+                                    name: volumeTitle,
+                                    url: `${readingType}/${volumeId}`,
+                                    description,
+                                })
+                            }
                         })
-                        isVolumeEmpty = false;
-                    }else{
-                          readingType = "chapters"
-                         isVolumeEmpty = true;
+                        if (chapters.length == 0 && items.length > 0) {
+                            //throw new Error("Volumes for " + prefLang + "language not available.");
+                            readingType = "chapters"
+                            isVolumeEmpty = true;
+                        }else{
+                            isVolumeEmpty = false;
+                        }
+                    } else {
+                        readingType = "chapters"
+                        isVolumeEmpty = true;
                     }
                 }
             }
 
             if (readingType.startsWith("c") || isVolumeEmpty) {
-                slug = `${slug}/${readingType}?language=en&limit=200`
+                slug = `${slug}/${readingType}?language=${prefLang}&limit=200`
                 var pageNum = 1
                 var shouldContinue = true
 
                 while (shouldContinue) {
                     var newSlug = `${slug}&page=${pageNum}`
                     res = await this.requestAPI(newSlug)
-                    if(res == null) break
+                    if (res == null) break
                     var meta = res.meta
                     shouldContinue = meta.hasNext
 
@@ -177,7 +186,7 @@ class DefaultExtension extends MProvider {
                         var dateUpload = `${item.createdAt}`
 
                         chapters.push({
-                            name:chapterTitle,
+                            name: chapterTitle,
                             url: `${readingType}/${chapterId}`,
                             scanlator,
                             dateUpload,
@@ -197,7 +206,7 @@ class DefaultExtension extends MProvider {
         var urls = [];
         var headers = this.getHeaders()
 
-        res['data']['pages'].forEach(item=>{
+        res['data']['pages'].forEach(item => {
             urls.push({
                 url: item.url,
                 headers
