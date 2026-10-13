@@ -10,8 +10,8 @@ This repository contains the available javascript extension catalogues for the M
 
 | Name | Version | Language | Last Updated |
 |------|---------|----------|---------------|
+| Mangafire | 2.0.0 | all | 2026/10/13 22:13 IST |
 | Atsumaru | 0.0.2 | en | 2026/09/18 07:22 IST |
-| Mangafire | 1.0.3 | all | 2026/07/16 21:31 IST |
 | WeLoMa | 1.0.0 | ja | 2025/10/29 23:26 IST |
 | Mangapark | 1.0.1 | en | 2025/09/17 08:55 IST |
 | Mangapill | 1.0.4 | en | 2025/09/17 08:55 IST |
@@ -27,8 +27,8 @@ This repository contains the available javascript extension catalogues for the M
 | Anikoto | 1.0.5 | all | 2026/09/05 11:00 IST |
 | Animetsu | 1.2.2 | all | 2026/06/07 14:15 IST |
 | Senshi | 1.0.1 | all | 2026/05/11 12:15 IST |
-| Sudatchi | 2.0.1 | en | 2026/04/22 11:07 IST |
 | Animeonsen | 1.0.5 | en, ja | 2026/04/22 11:07 IST |
+| Sudatchi | 2.0.1 | en | 2026/04/22 11:07 IST |
 | Moviesda | 1.2.2 | ta | 2025/12/01 22:41 IST |
 | SubsPlease | 0.0.5 | en | 2025/07/23 23:21 IST |
 | AnimeParadise | 0.1.0 | en | 2025/06/21 18:06 IST |
