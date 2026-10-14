@@ -1,4 +1,4 @@
-import os
+import subprocess
 from common import readJsonFile, readFile, writeFile, getParentPath, writeJsonFile
 
 main_dir = getParentPath()
@@ -44,17 +44,17 @@ def getCommitMsg():
         commitMsg+="Updated"
     return f"🤖:: {commitMsg}"
 
-def run(cmd):
-    os.system(cmd)
+def run(args):
+    subprocess.run(args, check=True)
 
 
 commit_msg = getCommitMsg()
 
 MAIL_ID = "github-actions[bot]@users.noreply.github.com"
 NAME = "github-actions[bot]"
-run(f'git config --global user.email "{MAIL_ID}"')
-run(f'git config --global user.name "{NAME}"')
-run("git checkout main")
-run(f'git add .')
-run(f'git commit -m "{commit_msg}"')
-run(f'git push origin main --force')
+run(["git", "config", "--global", "user.email", MAIL_ID])
+run(["git", "config", "--global", "user.name", NAME])
+run(["git", "checkout", "main"])
+run(["git", "add", "."])
+run(["git", "commit", "-m", commit_msg])
+run(["git", "push", "origin", "main", "--force"])
