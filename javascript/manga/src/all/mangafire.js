@@ -12,7 +12,7 @@ const mangayomiSources = [
         "hasCloudflare": false,
         "sourceCodeUrl": "",
         "apiUrl": "https://mangafire.to/api",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "isManga": true,
         "itemType": 0,
         "isFullData": false,
@@ -48,10 +48,9 @@ class DefaultExtension extends MProvider {
 
     async requestAPI(slug) {
         var api = `${this.getBaseUrl()}/api/${slug}`
-        if (!slug.includes("vrf=")) {
-            var vrf = this.generateVRF(slug);
-            api += `&vrf=${vrf}`
-        }
+        var vrf = this.generateVRF(slug);
+        var appendChar = slug.includes("=") ? "&" : "?";
+        api += `${appendChar}vrf=${vrf}`
         var res = await this.client.get(api, this.getHeaders());
         if (res.statusCode != 200) return null;
         return JSON.parse(res.body);
@@ -116,8 +115,7 @@ class DefaultExtension extends MProvider {
         var status = 5
         var chapters = []
         var slug = `/titles/${mangaId}`
-        var vrf = this.generateVRF(slug);
-        var res = await this.requestAPI(`${slug}?vrf=${vrf}`);
+        var res = await this.requestAPI(slug);
 
         if (res != null) {
             if (res.hasOwnProperty("message")) throw new Error(res.message);
@@ -151,7 +149,7 @@ class DefaultExtension extends MProvider {
 
                                 chapters.push({
                                     name: volumeTitle,
-                                    url: `${readingType}/${volumeId}`,
+                                    url: `/${readingType}/${volumeId}`,
                                     description,
                                 })
                             }
@@ -208,8 +206,6 @@ class DefaultExtension extends MProvider {
     }
 
     async getPageList(url) {
-        var vrf = this.generateVRF(url);
-        url += `?vrf=${vrf}`
         var res = await this.requestAPI(url)
         var urls = [];
         var headers = this.getHeaders()
