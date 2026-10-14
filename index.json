@@ -144,7 +144,7 @@
         "hasCloudflare": false,
         "sourceCodeUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/manga/src/all/mangafire.js",
         "apiUrl": "https://mangafire.to/api",
-        "version": "2.0.0",
+        "version": "2.1.1",
         "isManga": true,
         "itemType": 0,
         "isFullData": false,
