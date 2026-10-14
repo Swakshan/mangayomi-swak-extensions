@@ -12,7 +12,7 @@ const mangayomiSources = [
         "hasCloudflare": false,
         "sourceCodeUrl": "",
         "apiUrl": "https://mangafire.to/api",
-        "version": "2.1.0",
+        "version": "2.1.1",
         "isManga": true,
         "itemType": 0,
         "isFullData": false,
@@ -121,6 +121,8 @@ class DefaultExtension extends MProvider {
             if (res.hasOwnProperty("message")) throw new Error(res.message);
 
             var data = res.data
+            var name = data.title
+            var imageUrl = data.poster.medium
             description = data.synopsisHtml
             status = statusCode(res.status)
             data['genres'].forEach(item => {
@@ -202,7 +204,7 @@ class DefaultExtension extends MProvider {
 
         }
 
-        return { link, description, genre, status, chapters };
+        return { name, imageUrl, link, description, genre, status, chapters };
     }
 
     async getPageList(url) {
