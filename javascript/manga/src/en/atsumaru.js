@@ -12,7 +12,7 @@ const mangayomiSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -128,14 +128,16 @@ class DefaultExtension extends MProvider {
   }
 
   async getPopular(page) {
-    var apiPage = Math.max(parseInt(page) - 1, 0);
-    var slug = `/api/infinite/trending?page=${apiPage}&types=Manga,Manwha,Manhua,OEL${this.getAdultParam()}`;
+    var limit = 40;
+    var offset = Math.max(parseInt(page) - 1, 0) * limit;
+    var slug = `/api/home2/popular?offset=${offset}&limit=${limit}&types=Manga,Manwha,Manhua,OEL&mediums=Comic${this.getAdultParam()}`;
     return await this.browse(slug);
   }
 
   async getLatestUpdates(page) {
-    var apiPage = Math.max(parseInt(page) - 1, 0);
-    var slug = `/api/infinite/recentlyUpdated?page=${apiPage}&types=Manga,Manwha,Manhua,OEL${this.getAdultParam()}`;
+    var limit = 40;
+    var offset = Math.max(parseInt(page) - 1, 0) * limit;
+    var slug = `/api/home2/recentlyUpdated?offset=${offset}&limit=${limit}&types=Manga,Manwha,Manhua,OEL&mediums=Comic${this.getAdultParam()}`;
     return await this.browse(slug);
   }
 
