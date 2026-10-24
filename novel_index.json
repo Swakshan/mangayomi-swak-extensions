@@ -22,12 +22,12 @@
         "notes": ""
     },
     {
-        "name": "bookReadFree",
-        "id": 2088776723,
-        "baseUrl": "https://bookreadfree.com",
+        "name": "RoyalRoad",
+        "id": 1494678207,
+        "baseUrl": "https://www.royalroad.com",
         "lang": "en",
         "typeSource": "single",
-        "iconUrl": "https://cdn.pixabay.com/photo/2016/09/16/09/20/books-1673578_1280.png",
+        "iconUrl": "https://www.royalroad.com/dist/img/logo/rr-logo-gold-white-small-min.png",
         "dateFormat": "",
         "dateFormatLocale": "",
         "isNsfw": false,
@@ -66,12 +66,12 @@
         "notes": ""
     },
     {
-        "name": "RoyalRoad",
-        "id": 1494678207,
-        "baseUrl": "https://www.royalroad.com",
+        "name": "bookReadFree",
+        "id": 2088776723,
+        "baseUrl": "https://bookreadfree.com",
         "lang": "en",
         "typeSource": "single",
-        "iconUrl": "https://www.royalroad.com/dist/img/logo/rr-logo-gold-white-small-min.png",
+        "iconUrl": "https://cdn.pixabay.com/photo/2016/09/16/09/20/books-1673578_1280.png",
         "dateFormat": "",
         "dateFormatLocale": "",
         "isNsfw": false,

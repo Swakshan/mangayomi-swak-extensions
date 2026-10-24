@@ -1,16 +1,16 @@
 {
     "manga": {
+        "Atsumaru": {
+            "name": "Atsumaru",
+            "version": "0.0.3",
+            "langs": "en",
+            "lastUpd": 1792848965.908876
+        },
         "Mangafire": {
             "name": "Mangafire",
             "version": "2.1.1",
             "langs": "all",
             "lastUpd": 1791958335.108332
-        },
-        "Atsumaru": {
-            "name": "Atsumaru",
-            "version": "0.0.2",
-            "langs": "en",
-            "lastUpd": 1789696344.449002
         },
         "WeLoMa": {
             "name": "WeLoMa",
